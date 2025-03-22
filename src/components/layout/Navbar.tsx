@@ -24,10 +24,10 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
     { name: "Features", path: "/#features" },
-    { name: "Security", path: "/#security" },
-    { name: "Integrations", path: "/#integrations" },
-    { name: "Contact", path: "/#contact" }
+    { name: "FAQ", path: "/faq" },
+    { name: "Contact", path: "/contact" }
   ];
 
   return (
@@ -39,7 +39,7 @@ const Navbar = () => {
     >
       <div className="container-custom flex items-center justify-between">
         <Link to="/" className="flex items-center">
-          <span className="text-2xl font-bold text-custodia">Custodia</span>
+          <span className="text-2xl font-bold text-custodia">OFSLEDGER</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -47,20 +47,28 @@ const Navbar = () => {
           <ul className="flex space-x-1">
             {navLinks.map((link) => (
               <li key={link.name}>
-                <a 
-                  href={link.path}
+                <Link 
+                  to={link.path}
                   className="px-4 py-2 rounded-full text-sm font-medium text-gray-600 hover:text-custodia transition-colors"
                 >
                   {link.name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
-          <div className="ml-4">
+          <div className="ml-4 flex gap-2">
             <Button
+              asChild
+              variant="outline"
+              className="rounded-full border-custodia text-custodia hover:bg-custodia hover:text-white"
+            >
+              <Link to="/sign-in">Sign In</Link>
+            </Button>
+            <Button
+              asChild
               className="rounded-full bg-custodia hover:bg-custodia-light text-white transition-colors"
             >
-              Get Started
+              <Link to="/sign-up">Sign Up</Link>
             </Button>
           </div>
         </div>
@@ -80,20 +88,30 @@ const Navbar = () => {
           <ul className="py-4 px-6 space-y-4">
             {navLinks.map((link) => (
               <li key={link.name}>
-                <a 
-                  href={link.path}
+                <Link 
+                  to={link.path}
                   className="block py-2 text-gray-800 hover:text-custodia transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.name}
-                </a>
+                </Link>
               </li>
             ))}
             <li>
               <Button
+                asChild
+                variant="outline"
+                className="w-full mb-2 rounded-full border-custodia text-custodia hover:bg-custodia hover:text-white"
+              >
+                <Link to="/sign-in">Sign In</Link>
+              </Button>
+            </li>
+            <li>
+              <Button
+                asChild
                 className="w-full rounded-full bg-custodia hover:bg-custodia-light text-white"
               >
-                Get Started
+                <Link to="/sign-up">Sign Up</Link>
               </Button>
             </li>
           </ul>
