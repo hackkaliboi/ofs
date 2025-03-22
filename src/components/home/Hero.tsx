@@ -3,6 +3,7 @@ import React from "react";
 import { ArrowRight, Shield, Lock, BarChart } from "lucide-react";
 import ButtonEffect from "@/components/ui/ButtonEffect";
 import AnimatedSection from "@/components/ui/AnimatedSection";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -16,7 +17,7 @@ const Hero = () => {
         <div className="text-center max-w-4xl mx-auto">
           <AnimatedSection>
             <div className="inline-block mb-4 px-3 py-1 rounded-full bg-custodia/10 text-custodia-dark text-sm font-medium">
-              Quantum Financial System
+              The Future of Global Finance
             </div>
           </AnimatedSection>
           
@@ -24,6 +25,9 @@ const Hero = () => {
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6">
               Welcome to <span className="text-gradient">OFSLEDGER</span>
             </h1>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-medium mb-6 text-gray-700">
+              Quantum Financial System
+            </h2>
           </AnimatedSection>
           
           <AnimatedSection delay={3}>
@@ -35,12 +39,16 @@ const Hero = () => {
           
           <AnimatedSection delay={4}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <ButtonEffect variant="primary" className="group">
-                Connect Wallet <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </ButtonEffect>
-              <ButtonEffect variant="secondary">
-                Learn More
-              </ButtonEffect>
+              <Link to="/sign-in">
+                <ButtonEffect variant="primary" className="group">
+                  Get Started <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </ButtonEffect>
+              </Link>
+              <a href="#market">
+                <ButtonEffect variant="secondary">
+                  Market Updates
+                </ButtonEffect>
+              </a>
             </div>
           </AnimatedSection>
           
@@ -66,8 +74,8 @@ const Hero = () => {
                 <div className="bg-custodia/10 p-3 rounded-full mb-4">
                   <BarChart className="h-6 w-6 text-custodia" />
                 </div>
-                <h3 className="font-medium mb-2">Secure Validation</h3>
-                <p className="text-sm text-gray-600 text-center">Validate your digital assets for maximum security</p>
+                <h3 className="font-medium mb-2">Secure Transactions</h3>
+                <p className="text-sm text-gray-600 text-center">End-to-end encrypted transactions for maximum security</p>
               </div>
             </div>
           </AnimatedSection>

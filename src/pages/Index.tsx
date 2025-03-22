@@ -6,7 +6,7 @@ import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
 import Security from "@/components/home/Security";
 import Integration from "@/components/home/Integration";
-import SeedValidation from "@/components/home/SeedValidation";
+import CryptoMarket from "@/components/home/CryptoMarket";
 
 const Index = () => {
   useEffect(() => {
@@ -53,8 +53,8 @@ const Index = () => {
       <Navbar />
       <main className="flex-grow">
         <Hero />
+        <CryptoMarket />
         <Features />
-        <SeedValidation />
         <Security />
         <Integration />
       </main>
