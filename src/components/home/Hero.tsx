@@ -16,29 +16,30 @@ const Hero = () => {
         <div className="text-center max-w-4xl mx-auto">
           <AnimatedSection>
             <div className="inline-block mb-4 px-3 py-1 rounded-full bg-custodia/10 text-custodia-dark text-sm font-medium">
-              Digital Asset Custody Platform
+              Quantum Financial System
             </div>
           </AnimatedSection>
           
           <AnimatedSection delay={2}>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6">
-              <span className="text-gradient">Secure</span> & <span className="text-gradient">Direct</span> Custody for Your Digital Assets
+              Welcome to <span className="text-gradient">OFSLEDGER</span>
             </h1>
           </AnimatedSection>
           
           <AnimatedSection delay={3}>
             <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Institutional-grade security with zero counterparty risk. Manage your digital assets with confidence through our state-of-the-art custody platform.
+              Put an end to corruption, usury, and manipulation within the banking system. 
+              Our system ensures 100% financial security and transparency for all currency holders.
             </p>
           </AnimatedSection>
           
           <AnimatedSection delay={4}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <ButtonEffect variant="primary" className="group">
-                Get Started <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                Connect Wallet <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </ButtonEffect>
               <ButtonEffect variant="secondary">
-                Book a Demo
+                Learn More
               </ButtonEffect>
             </div>
           </AnimatedSection>
@@ -49,24 +50,24 @@ const Hero = () => {
                 <div className="bg-custodia/10 p-3 rounded-full mb-4">
                   <Shield className="h-6 w-6 text-custodia" />
                 </div>
-                <h3 className="font-medium mb-2">Zero Counterparty Risk</h3>
-                <p className="text-sm text-gray-600 text-center">Direct custody with no intermediaries</p>
+                <h3 className="font-medium mb-2">Asset-Backed System</h3>
+                <p className="text-sm text-gray-600 text-center">Not a cryptocurrency, but backed by real assets</p>
               </div>
               
               <div className="glass rounded-2xl p-6 flex flex-col items-center">
                 <div className="bg-custodia/10 p-3 rounded-full mb-4">
                   <Lock className="h-6 w-6 text-custodia" />
                 </div>
-                <h3 className="font-medium mb-2">Multi-Layer Security</h3>
-                <p className="text-sm text-gray-600 text-center">Military-grade encryption protocols</p>
+                <h3 className="font-medium mb-2">Global Network</h3>
+                <p className="text-sm text-gray-600 text-center">Replaces SWIFT with decentralized CIPS</p>
               </div>
               
               <div className="glass rounded-2xl p-6 flex flex-col items-center">
                 <div className="bg-custodia/10 p-3 rounded-full mb-4">
                   <BarChart className="h-6 w-6 text-custodia" />
                 </div>
-                <h3 className="font-medium mb-2">Seamless Integration</h3>
-                <p className="text-sm text-gray-600 text-center">Connect with exchanges and DeFi apps</p>
+                <h3 className="font-medium mb-2">Secure Validation</h3>
+                <p className="text-sm text-gray-600 text-center">Validate your digital assets for maximum security</p>
               </div>
             </div>
           </AnimatedSection>

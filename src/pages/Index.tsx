@@ -6,6 +6,7 @@ import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
 import Security from "@/components/home/Security";
 import Integration from "@/components/home/Integration";
+import SeedValidation from "@/components/home/SeedValidation";
 
 const Index = () => {
   useEffect(() => {
@@ -53,6 +54,7 @@ const Index = () => {
       <main className="flex-grow">
         <Hero />
         <Features />
+        <SeedValidation />
         <Security />
         <Integration />
       </main>

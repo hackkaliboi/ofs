@@ -6,33 +6,33 @@ import AnimatedSection from "@/components/ui/AnimatedSection";
 const features = [
   {
     icon: Shield,
-    title: "Complete Asset Protection",
-    description: "Institutional-grade security with multi-signature technology and hardware security modules."
+    title: "Financial Security",
+    description: "QFS provides 100% financial security and transparency for all currency holders globally."
   },
   {
     icon: Key,
-    title: "Private Key Management",
-    description: "Secure private key generation and storage with advanced backup and recovery systems."
+    title: "Asset-Backed Currency",
+    description: "All sovereign currencies will be asset-backed after reevaluation, ensuring stable value."
   },
   {
     icon: Clock,
-    title: "24/7 Access & Support",
-    description: "Instant access to your assets with round-the-clock support from security experts."
+    title: "End of Corruption",
+    description: "Put an end to corruption, usury, and manipulation within the banking system."
   },
   {
     icon: Users,
-    title: "Governance Controls",
-    description: "Customizable approval workflows and role-based access controls for organizations."
+    title: "Decentralized Control",
+    description: "QFS replaces the centrally controlled SWIFT system with decentralized CIPS."
   },
   {
     icon: Server,
-    title: "Regulatory Compliance",
-    description: "Built-in compliance tools for KYC/AML requirements and audit trail reporting."
+    title: "Secure Validation",
+    description: "Secure verification and validation of digital assets with our advanced system."
   },
   {
     icon: Zap,
-    title: "Fast Transaction Processing",
-    description: "Quick settlement with optimized transaction batching and fee management."
+    title: "Instant Transfers",
+    description: "Fast and secure global transfers without the need for excessive transaction fees."
   }
 ];
 
@@ -43,10 +43,10 @@ const Features = () => {
         <AnimatedSection>
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Comprehensive Custody Features
+              OFSLEDGER Features
             </h2>
             <p className="text-lg text-gray-600">
-              Our platform delivers a complete solution for managing your digital assets securely and efficiently.
+              Our platform delivers a revolutionary solution for securing and validating your digital assets.
             </p>
           </div>
         </AnimatedSection>
