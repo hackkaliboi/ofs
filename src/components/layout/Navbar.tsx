@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
@@ -37,17 +36,14 @@ const Navbar = () => {
   }, [location.pathname]);
 
   const aboutItems = [
-    { name: "About OFS", path: "/about" },
-    { name: "Our Mission", path: "/about#mission" },
-    { name: "Team", path: "/about#team" },
-    { name: "Roadmap", path: "/about#roadmap" },
+    { name: "About OFS", path: "/about" }
   ];
 
   const resourceItems = [
     { name: "FAQ", path: "/faq" },
     { name: "Documentation", path: "/documentation" },
     { name: "Support", path: "/contact" },
-    { name: "News", path: "/#news" },
+    { name: "Blog", path: "/blog" }
   ];
 
   const isActive = (path: string) => {
@@ -91,30 +87,17 @@ const Navbar = () => {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuTrigger className={cn(
-                  "px-3 py-2 rounded-md text-sm font-semibold bg-transparent hover:bg-transparent",
-                  isActive("/about") || aboutItems.some(item => isActive(item.path))
-                    ? "text-indigo-600" 
-                    : "text-gray-800 hover:text-indigo-600"
-                )}>
+                <Link 
+                  to="/about" 
+                  className={cn(
+                    "px-4 py-2 rounded-md text-sm font-semibold transition-colors",
+                    isActive("/about") 
+                      ? "text-indigo-600" 
+                      : "text-gray-800 hover:text-indigo-600"
+                  )}
+                >
                   About
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[220px] gap-1 p-2 bg-white rounded-md shadow-lg">
-                    {aboutItems.map((item) => (
-                      <li key={item.name}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            to={item.path}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-indigo-50 hover:text-indigo-600 focus:bg-indigo-50 focus:text-indigo-600"
-                          >
-                            <div className="text-sm font-medium">{item.name}</div>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
+                </Link>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
@@ -220,37 +203,17 @@ const Navbar = () => {
             </li>
             
             <li>
-              <div className="py-2 flex items-center justify-between font-semibold" onClick={(e) => {
-                const target = e.currentTarget.nextElementSibling;
-                if (target) {
-                  target.classList.toggle('hidden');
-                }
-              }}>
-                <span className={cn(
-                  "text-gray-800 hover:text-indigo-600",
-                  isActive("/about") || aboutItems.some(item => isActive(item.path))
+              <Link 
+                to="/about"
+                className={cn(
+                  "block py-2 transition-colors font-semibold",
+                  isActive("/about") 
                     ? "text-indigo-600" 
-                    : ""
-                )}>About</span>
-                <ChevronDown size={18} className="text-indigo-600" />
-              </div>
-              <ul className="pl-4 space-y-2 mt-2 hidden">
-                {aboutItems.map((item) => (
-                  <li key={item.name}>
-                    <Link 
-                      to={item.path}
-                      className={cn(
-                        "block py-1 text-sm transition-colors",
-                        isActive(item.path) 
-                          ? "text-indigo-600 font-semibold" 
-                          : "text-gray-600 hover:text-indigo-600"
-                      )}
-                    >
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+                    : "text-gray-800 hover:text-indigo-600"
+                )}
+              >
+                About
+              </Link>
             </li>
             
             <li>

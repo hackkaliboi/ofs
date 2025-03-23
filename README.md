@@ -1,69 +1,96 @@
-# Welcome to your Lovable project
+# OFSLEDGER - Next Generation Oracle Finance System
 
-## Project info
+## Overview
 
-**URL**: https://lovable.dev/projects/df47f8e4-4d1c-41bb-96c0-af934b31d332
+OFSLEDGER is a cutting-edge financial platform that transforms global finance through blockchain technology and oracle systems. Our platform provides enterprise-grade security, lightning-fast transactions, and complete sovereignty over digital assets.
 
-## How can I edit this code?
+## Key Features
 
-There are several ways of editing your application.
+- **Real-Time Market Data**: Live streaming of global market prices, crypto assets, and forex pairs
+- **Secure Asset Management**: Enterprise-grade security protocols for digital asset protection
+- **Oracle Integration**: Advanced oracle system for reliable and accurate financial data
+- **Smart Trading**: Automated trading features with advanced market analysis
+- **Cross-Chain Compatibility**: Seamless integration with multiple blockchain networks
+- **User-Centric Design**: Intuitive interface for both beginners and advanced traders
 
-**Use Lovable**
+## Technology Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/df47f8e4-4d1c-41bb-96c0-af934b31d332) and start prompting.
+- **Frontend**: React.js with TypeScript
+- **UI Framework**: Tailwind CSS
+- **Build Tool**: Vite
+- **State Management**: React Context API
+- **Market Data**: TradingView Integration
+- **Authentication**: Web3 Wallet Integration
 
-Changes made via Lovable will be committed automatically to this repo.
+## Getting Started
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js (v16 or higher)
+- npm or yarn package manager
+- Web3 wallet (MetaMask recommended)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Installation
 
-Follow these steps:
+```bash
+# Clone the repository
+git clone https://github.com/A2DIGIHUB/ofsledger.git
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Navigate to project directory
+cd ofsledger
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Project Structure
 
-**Use GitHub Codespaces**
+```
+ofsledger/
+├── src/
+│   ├── components/     # Reusable UI components
+│   ├── pages/         # Page components
+│   ├── hooks/         # Custom React hooks
+│   ├── context/       # React context providers
+│   ├── utils/         # Utility functions
+│   └── assets/        # Static assets
+├── public/           # Public assets
+└── ...config files
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Contributing
 
-## What technologies are used for this project?
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-This project is built with .
+## Security
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+OFSLEDGER implements multiple layers of security:
+- Enterprise-grade encryption
+- Multi-signature wallet support
+- Regular security audits
+- Real-time transaction monitoring
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/df47f8e4-4d1c-41bb-96c0-af934b31d332) and click on Share -> Publish.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## I want to use a custom domain - is that possible?
+## Contact
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+- Website: [ofsledger.com](https://ofsledger.com)
+- Email: support@ofsledger.com
+- Twitter: [@ofsledger](https://twitter.com/ofsledger)
+
+## Acknowledgments
+
+- TradingView for market data integration
+- The global blockchain community
+- Our dedicated team of developers and contributors

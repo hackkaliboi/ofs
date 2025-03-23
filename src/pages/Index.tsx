@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -9,10 +8,10 @@ import Integration from "@/components/home/Integration";
 import CryptoMarket from "@/components/home/CryptoMarket";
 import HowItWorks from "@/components/home/HowItWorks";
 import Testimonials from "@/components/home/Testimonials";
-import NewsSection from "@/components/home/NewsSection";
 import Partners from "@/components/home/Partners";
 import CallToAction from "@/components/home/CallToAction";
 import GlobalNetwork from "@/components/home/GlobalNetwork";
+import MarketTable from "@/components/home/MarketTable";
 
 const Index = () => {
   useEffect(() => {
@@ -61,6 +60,7 @@ const Index = () => {
       <main className="flex-grow">
         <Hero />
         <CryptoMarket />
+        <MarketTable />
         <HowItWorks />
         <Features />
         <GlobalNetwork />
@@ -68,7 +68,6 @@ const Index = () => {
         <Integration />
         <Partners />
         <Testimonials />
-        <NewsSection />
         <CallToAction />
       </main>
       <Footer />

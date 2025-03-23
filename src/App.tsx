@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +17,7 @@ import Terms from "./pages/Terms";
 import SecurityPolicy from "./pages/SecurityPolicy";
 import Compliance from "./pages/Compliance";
 import Cookies from "./pages/Cookies";
+import Blog from "./pages/Blog";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +36,7 @@ const App = () => (
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/documentation" element={<Documentation />} />
+          <Route path="/blog" element={<Blog />} />
           
           {/* Legal Pages */}
           <Route path="/privacy" element={<Privacy />} />

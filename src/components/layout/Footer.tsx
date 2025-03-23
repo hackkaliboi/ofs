@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Github, Twitter, Linkedin, Facebook, Instagram, ChevronRight } from "lucide-react";
@@ -44,7 +43,6 @@ const Footer = () => {
               {[
                 { name: "Features", path: "/#features" },
                 { name: "Security", path: "/#security" },
-                { name: "Dashboard", path: "/dashboard" },
                 { name: "Validation", path: "/validate" }
               ].map((item) => (
                 <li key={item.name}>
@@ -102,7 +100,7 @@ const Footer = () => {
         
         <div className="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-500 text-sm mb-4 md:mb-0">
-            © {currentYear} OFSLEDGER. All rights reserved.
+            {currentYear} OFSLEDGER. All rights reserved.
           </p>
           <div className="flex space-x-6">
             <a href="#" className="text-gray-500 hover:text-indigo-600 text-sm">
