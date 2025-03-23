@@ -6,7 +6,7 @@ import Globe from "@/components/ui/Globe";
 
 const GlobalNetwork = () => {
   return (
-    <section className="section-padding bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+    <section id="network" className="section-padding bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-radial from-indigo-50/20 to-transparent z-0" />
       <div className="absolute top-20 -right-40 w-96 h-96 bg-purple-300/10 rounded-full blur-3xl" />
@@ -20,11 +20,11 @@ const GlobalNetwork = () => {
               <div className="relative">
                 <Globe size={400} color="#4f46e5" className="float" />
                 
-                {/* Connection dots */}
-                <div className="absolute top-[15%] left-[20%] w-4 h-4 bg-indigo-500 rounded-full pulse-slow"></div>
+                {/* Connection dots with pulse animation */}
+                <div className="absolute top-[15%] left-[20%] w-3 h-3 bg-indigo-500 rounded-full pulse-slow"></div>
                 <div className="absolute top-[30%] right-[25%] w-3 h-3 bg-purple-500 rounded-full pulse-slow" style={{animationDelay: '1s'}}></div>
                 <div className="absolute bottom-[25%] left-[30%] w-3 h-3 bg-blue-500 rounded-full pulse-slow" style={{animationDelay: '0.5s'}}></div>
-                <div className="absolute bottom-[20%] right-[20%] w-4 h-4 bg-violet-500 rounded-full pulse-slow" style={{animationDelay: '1.5s'}}></div>
+                <div className="absolute bottom-[20%] right-[20%] w-3 h-3 bg-violet-500 rounded-full pulse-slow" style={{animationDelay: '1.5s'}}></div>
                 
                 {/* Connection lines */}
                 <svg className="absolute inset-0 w-full h-full" style={{zIndex: -1}}>
@@ -33,6 +33,9 @@ const GlobalNetwork = () => {
                   <line x1="20%" y1="15%" x2="75%" y2="30%" stroke="rgba(79, 70, 229, 0.15)" strokeWidth="1" />
                   <line x1="30%" y1="75%" x2="80%" y2="85%" stroke="rgba(79, 70, 229, 0.15)" strokeWidth="1" />
                 </svg>
+                
+                {/* Add subtle glow effect */}
+                <div className="absolute inset-0 bg-indigo-500/5 rounded-full blur-3xl"></div>
               </div>
             </div>
           </AnimatedSection>

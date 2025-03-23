@@ -2,23 +2,34 @@
 import React from "react";
 import { ArrowRight, Sparkles } from "lucide-react";
 import AnimatedSection from "@/components/ui/AnimatedSection";
-import ButtonEffect from "@/components/ui/ButtonEffect";
 import { Link } from "react-router-dom";
 
 const CallToAction = () => {
   return (
-    <section className="section-padding relative overflow-hidden">
+    <section id="call-to-action" className="section-padding relative overflow-hidden">
       {/* Gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 z-0" />
       
-      {/* Animated background elements */}
-      <div className="absolute top-0 left-0 w-full h-full z-0 opacity-20">
-        <div className="absolute top-10 left-[10%] w-20 h-20 bg-white rounded-full blur-xl animate-pulse" />
-        <div className="absolute top-[30%] left-[50%] w-12 h-12 bg-white rounded-full blur-lg animate-ping" style={{animationDuration: '3s'}} />
-        <div className="absolute bottom-[20%] left-[20%] w-16 h-16 bg-white rounded-full blur-xl animate-pulse" style={{animationDuration: '4s'}} />
-        <div className="absolute bottom-[30%] right-[15%] w-14 h-14 bg-white rounded-full blur-lg animate-ping" style={{animationDuration: '5s'}} />
+      {/* Animated background particles */}
+      <div className="absolute top-0 left-0 w-full h-full z-0 opacity-30">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div 
+            key={i}
+            className="absolute rounded-full blur-xl animate-pulse"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              width: `${Math.random() * 20 + 10}px`,
+              height: `${Math.random() * 20 + 10}px`,
+              backgroundColor: 'white',
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${Math.random() * 5 + 3}s`
+            }}
+          />
+        ))}
       </div>
       
+      {/* Content */}
       <div className="container-custom relative z-10">
         <AnimatedSection>
           <div className="max-w-4xl mx-auto text-center">
@@ -35,12 +46,17 @@ const CallToAction = () => {
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <Link to="/sign-up">
                 <button className="gradient-btn group text-base sm:text-lg hover:shadow-lg">
-                  Create Your Account <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  <span className="flex items-center">
+                    Create Your Account 
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  </span>
                 </button>
               </Link>
               <Link to="/contact">
                 <button className="gradient-btn-secondary group text-base sm:text-lg hover:shadow-lg">
-                  Contact Our Team
+                  <span className="flex items-center">
+                    Contact Our Team
+                  </span>
                 </button>
               </Link>
             </div>

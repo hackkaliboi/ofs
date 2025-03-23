@@ -59,7 +59,7 @@
 
 @layer components {
   .glass {
-    @apply bg-white/60 backdrop-blur-lg border border-white/20 shadow-sm;
+    @apply bg-white/70 backdrop-blur-lg border border-white/50 shadow-sm;
   }
   
   .custodia-btn {
@@ -128,6 +128,7 @@
   }
   
   .gradient-btn-secondary {
+    @apply relative overflow-hidden transition-all duration-300 px-6 py-3 rounded-full font-medium inline-flex items-center justify-center;
     background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(246,246,252,0.9) 100%);
     color: #1e293b;
     border: 1px solid rgba(226,232,240,0.9);
@@ -224,4 +225,3 @@
 .spin-slow {
   animation: spin-slow 30s linear infinite;
 }
-

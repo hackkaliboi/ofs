@@ -21,7 +21,7 @@ const ButtonEffect = ({
       className={cn(baseClass, className)}
       {...props}
     >
-      <span className="relative z-10">{children}</span>
+      {children}
       <div className="absolute inset-0 w-full h-full bg-white/10 scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
     </button>
   );

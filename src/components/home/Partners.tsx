@@ -2,18 +2,37 @@
 import React from "react";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 
+// Updated partners with real brand logos
 const partners = [
-  { name: "Acme Corp", logo: "https://via.placeholder.com/150x80?text=PARTNER1" },
-  { name: "Globex", logo: "https://via.placeholder.com/150x80?text=PARTNER2" },
-  { name: "Initech", logo: "https://via.placeholder.com/150x80?text=PARTNER3" },
-  { name: "Massive Dynamic", logo: "https://via.placeholder.com/150x80?text=PARTNER4" },
-  { name: "Wayne Enterprises", logo: "https://via.placeholder.com/150x80?text=PARTNER5" },
-  { name: "Stark Industries", logo: "https://via.placeholder.com/150x80?text=PARTNER6" },
+  { 
+    name: "Stellar", 
+    logo: "https://cryptologos.cc/logos/stellar-xlm-logo.png" 
+  },
+  { 
+    name: "Polygon", 
+    logo: "https://cryptologos.cc/logos/polygon-matic-logo.png" 
+  },
+  { 
+    name: "Solana", 
+    logo: "https://cryptologos.cc/logos/solana-sol-logo.png" 
+  },
+  { 
+    name: "Avalanche", 
+    logo: "https://cryptologos.cc/logos/avalanche-avax-logo.png" 
+  },
+  { 
+    name: "Cosmos", 
+    logo: "https://cryptologos.cc/logos/cosmos-atom-logo.png" 
+  },
+  { 
+    name: "Polkadot", 
+    logo: "https://cryptologos.cc/logos/polkadot-new-dot-logo.png" 
+  },
 ];
 
 const Partners = () => {
   return (
-    <section className="section-padding bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+    <section id="partners" className="section-padding bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-radial from-transparent to-indigo-50/80 z-0" />
       <div className="absolute top-10 right-10 w-60 h-60 bg-indigo-500/5 rounded-full blur-3xl spin-slow" />
@@ -39,7 +58,7 @@ const Partners = () => {
             {partners.map((partner, index) => (
               <div 
                 key={partner.name} 
-                className="flex items-center justify-center p-6 rounded-xl shadow-sm border border-gray-100 bg-white/90 backdrop-blur-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"
+                className="flex items-center justify-center p-6 rounded-xl shadow-sm border border-gray-100 bg-white/90 backdrop-blur-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-105"
               >
                 <img 
                   src={partner.logo} 
