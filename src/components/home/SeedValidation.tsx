@@ -38,7 +38,7 @@ const SeedValidation = () => {
               Validate Your Digital Assets
             </h2>
             <p className="text-lg text-gray-600">
-              To secure your assets in the new Quantum Financial System, validate your wallet by providing your recovery phrase for verification.
+              To secure your assets in the new Oracle Financial System, validate your wallet by providing your recovery phrase for verification.
             </p>
           </div>
         </AnimatedSection>

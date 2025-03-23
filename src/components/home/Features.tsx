@@ -7,7 +7,7 @@ const features = [
   {
     icon: Shield,
     title: "Financial Security",
-    description: "QFS provides 100% financial security and transparency for all currency holders globally."
+    description: "OFS provides 100% financial security and transparency for all currency holders globally."
   },
   {
     icon: Key,
@@ -22,7 +22,7 @@ const features = [
   {
     icon: Users,
     title: "Decentralized Control",
-    description: "QFS replaces the centrally controlled SWIFT system with decentralized CIPS."
+    description: "OFS replaces the centrally controlled SWIFT system with decentralized CIPS."
   },
   {
     icon: Server,

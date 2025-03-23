@@ -32,7 +32,7 @@ const Hero = () => {
             <AnimatedSection>
               <div className="inline-block mb-4 px-3 py-1 rounded-full bg-indigo-500/20 backdrop-blur-sm text-white text-sm font-medium border border-indigo-400/30 shadow-sm">
                 <span className="animate-pulse mr-2 inline-block h-2 w-2 rounded-full bg-blue-400"></span> 
-                Next Generation Quantum Finance
+                Next Generation Oracle Finance
               </div>
             </AnimatedSection>
             
@@ -47,7 +47,7 @@ const Hero = () => {
             
             <AnimatedSection delay={2}>
               <p className="text-lg md:text-xl text-blue-50/90 mb-8 max-w-xl leading-relaxed">
-                OFSLEDGER's quantum financial system transforms global finance with enterprise-grade security, lightning-fast transactions, and complete sovereignty over your digital assets.
+                OFSLEDGER's oracle financial system transforms global finance with enterprise-grade security, lightning-fast transactions, and complete sovereignty over your digital assets.
               </p>
             </AnimatedSection>
             
@@ -162,7 +162,7 @@ const Hero = () => {
                             <div className="mb-4">
                               <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-600/50 to-indigo-800/50 backdrop-blur-md border border-indigo-500/20 mb-3">
                                 <div className="flex justify-between mb-2">
-                                  <div className="text-xs text-indigo-200">QFS Coin</div>
+                                  <div className="text-xs text-indigo-200">OFS Coin</div>
                                   <div className="text-xs text-green-400">+5.3%</div>
                                 </div>
                                 <div className="text-lg font-bold">$46,347</div>
@@ -227,7 +227,7 @@ const Hero = () => {
                     </div>
                     <div className="absolute top-16 -right-12 z-20 w-20 h-20 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-lg animate-float" style={{animationDelay: '1.5s'}}>
                       <div className="absolute inset-2 rounded-full bg-gradient-to-br from-indigo-300 to-indigo-500 flex items-center justify-center text-white font-bold">
-                        QFS
+                        OFS
                       </div>
                     </div>
                     <div className="absolute bottom-20 -left-8 z-20 w-14 h-14 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 shadow-lg animate-float" style={{animationDelay: '2.5s'}}>

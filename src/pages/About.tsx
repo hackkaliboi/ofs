@@ -15,7 +15,7 @@ const About = () => {
     {
       icon: Zap,
       title: "Fast Implementation",
-      description: "The Quantum Financial System provides nearly instantaneous transaction settlement, unlike traditional banking systems."
+      description: "The Oracle Financial System provides nearly instantaneous transaction settlement, unlike traditional banking systems."
     },
     {
       icon: Globe,
@@ -24,8 +24,8 @@ const About = () => {
     },
     {
       icon: Cpu,
-      title: "Quantum Computing",
-      description: "Leveraging quantum technology to provide unparalleled security and processing capabilities."
+      title: "Oracle Computing",
+      description: "Leveraging oracle technology to provide unparalleled security and processing capabilities."
     },
     {
       icon: Users,
@@ -49,7 +49,7 @@ const About = () => {
               <div className="text-center max-w-3xl mx-auto mb-16">
                 <h1 className="text-4xl md:text-5xl font-bold mb-6">About OFSLEDGER</h1>
                 <p className="text-lg text-gray-600">
-                  Pioneering the transition to the Quantum Financial System
+                  Pioneering the transition to the Oracle Financial System
                 </p>
               </div>
             </AnimatedSection>
@@ -59,10 +59,10 @@ const About = () => {
                 <div className="custodia-card">
                   <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
                   <p className="text-gray-600 mb-6">
-                    The purpose of OFSLEDGER is to facilitate the transition to the Quantum Financial System (QFS), putting an end to corruption, usury, and manipulation within the banking system. The QFS will ensure that banks no longer need to generate significant profits from transaction fees or funds transfers.
+                    The purpose of OFSLEDGER is to facilitate the transition to the Oracle Financial System (OFS), putting an end to corruption, usury, and manipulation within the banking system. The OFS will ensure that banks no longer need to generate significant profits from transaction fees or funds transfers.
                   </p>
                   <p className="text-gray-600 mb-6">
-                    QFS is NOT cryptocurrency. After the reevaluation of currencies (REVAL), all sovereign currencies will be asset-backed, ensuring stable value which makes the need for unbacked cryptocurrencies obsolete. The process simply digests the information on computer memory banks.
+                    OFS is NOT cryptocurrency. After the reevaluation of currencies (REVAL), all sovereign currencies will be asset-backed, ensuring stable value which makes the need for unbacked cryptocurrencies obsolete. The process simply digests the information on computer memory banks.
                   </p>
                   <p className="text-gray-600">
                     OFSLEDGER reigns supreme in the technology it applies and creates, providing 100% financial security and transparency for all currency holders. OFSLEDGER ends corruption that currently exists with regard to Central Banking. It replaces the US-centrally controlled SWIFT system with a Global-Decentralized CIPS (Cross Border Interbank Payment System).
