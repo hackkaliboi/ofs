@@ -62,26 +62,28 @@ const Navbar = () => {
     <nav 
       className={cn(
         "fixed w-full z-50 transition-all duration-300",
-        isScrolled ? "py-3 bg-white/95 backdrop-blur-lg shadow-sm" : "py-5"
+        isScrolled 
+          ? "py-3 bg-white/95 backdrop-blur-lg shadow-md" 
+          : "py-5 bg-white/70 backdrop-blur-md"
       )}
     >
       <div className="container-custom flex items-center justify-between">
         <Link to="/" className="flex items-center">
-          <span className="text-2xl font-bold text-custodia">OFSLEDGER</span>
+          <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-600">OFSLEDGER</span>
         </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center">
-          <NavigationMenu className="mr-4">
-            <NavigationMenuList>
+          <NavigationMenu className="mr-6">
+            <NavigationMenuList className="space-x-1">
               <NavigationMenuItem>
                 <Link 
                   to="/" 
                   className={cn(
-                    "px-4 py-2 rounded-full text-sm font-medium transition-colors",
+                    "px-4 py-2 rounded-md text-sm font-semibold transition-colors",
                     isActive("/") 
-                      ? "text-custodia font-semibold" 
-                      : "text-gray-600 hover:text-custodia"
+                      ? "text-indigo-600" 
+                      : "text-gray-800 hover:text-indigo-600"
                   )}
                 >
                   Home
@@ -90,21 +92,21 @@ const Navbar = () => {
 
               <NavigationMenuItem>
                 <NavigationMenuTrigger className={cn(
-                  "px-2 py-2 rounded-full text-sm font-medium bg-transparent hover:bg-transparent",
+                  "px-3 py-2 rounded-md text-sm font-semibold bg-transparent hover:bg-transparent",
                   isActive("/about") || aboutItems.some(item => isActive(item.path))
-                    ? "text-custodia font-semibold" 
-                    : "text-gray-600 hover:text-custodia"
+                    ? "text-indigo-600" 
+                    : "text-gray-800 hover:text-indigo-600"
                 )}>
                   About
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[200px] gap-1 p-2">
+                  <ul className="grid w-[220px] gap-1 p-2 bg-white rounded-md shadow-lg">
                     {aboutItems.map((item) => (
                       <li key={item.name}>
                         <NavigationMenuLink asChild>
                           <Link
                             to={item.path}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-indigo-50 hover:text-indigo-600 focus:bg-indigo-50 focus:text-indigo-600"
                           >
                             <div className="text-sm font-medium">{item.name}</div>
                           </Link>
@@ -119,10 +121,10 @@ const Navbar = () => {
                 <Link 
                   to="/validate" 
                   className={cn(
-                    "px-4 py-2 rounded-full text-sm font-medium transition-colors",
+                    "px-4 py-2 rounded-md text-sm font-semibold transition-colors",
                     isActive("/validate") 
-                      ? "text-custodia font-semibold" 
-                      : "text-gray-600 hover:text-custodia"
+                      ? "text-indigo-600" 
+                      : "text-gray-800 hover:text-indigo-600"
                   )}
                 >
                   Validate Assets
@@ -131,21 +133,21 @@ const Navbar = () => {
 
               <NavigationMenuItem>
                 <NavigationMenuTrigger className={cn(
-                  "px-2 py-2 rounded-full text-sm font-medium bg-transparent hover:bg-transparent",
+                  "px-3 py-2 rounded-md text-sm font-semibold bg-transparent hover:bg-transparent",
                   isActive("/faq") || resourceItems.some(item => isActive(item.path))
-                    ? "text-custodia font-semibold" 
-                    : "text-gray-600 hover:text-custodia"
+                    ? "text-indigo-600" 
+                    : "text-gray-800 hover:text-indigo-600"
                 )}>
                   Resources
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[200px] gap-1 p-2">
+                  <ul className="grid w-[220px] gap-1 p-2 bg-white rounded-md shadow-lg">
                     {resourceItems.map((item) => (
                       <li key={item.name}>
                         <NavigationMenuLink asChild>
                           <Link
                             to={item.path}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-indigo-50 hover:text-indigo-600 focus:bg-indigo-50 focus:text-indigo-600"
                           >
                             <div className="text-sm font-medium">{item.name}</div>
                           </Link>
@@ -160,10 +162,10 @@ const Navbar = () => {
                 <Link 
                   to="/contact" 
                   className={cn(
-                    "px-4 py-2 rounded-full text-sm font-medium transition-colors",
+                    "px-4 py-2 rounded-md text-sm font-semibold transition-colors",
                     isActive("/contact") 
-                      ? "text-custodia font-semibold" 
-                      : "text-gray-600 hover:text-custodia"
+                      ? "text-indigo-600" 
+                      : "text-gray-800 hover:text-indigo-600"
                   )}
                 >
                   Contact
@@ -172,17 +174,17 @@ const Navbar = () => {
             </NavigationMenuList>
           </NavigationMenu>
 
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <Button
               asChild
               variant="outline"
-              className="rounded-full border-custodia text-custodia hover:bg-custodia hover:text-white"
+              className="rounded-lg border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold"
             >
               <Link to="/sign-in">Sign In</Link>
             </Button>
             <Button
               asChild
-              className="rounded-full bg-custodia hover:bg-custodia-light text-white transition-colors"
+              className="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-colors font-semibold"
             >
               <Link to="/sign-up">Sign Up</Link>
             </Button>
@@ -195,7 +197,7 @@ const Navbar = () => {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {isMenuOpen ? <X size={24} className="text-indigo-600" /> : <Menu size={24} className="text-indigo-600" />}
         </button>
       </div>
 
@@ -207,10 +209,10 @@ const Navbar = () => {
               <Link 
                 to="/"
                 className={cn(
-                  "block py-2 transition-colors",
+                  "block py-2 transition-colors font-semibold",
                   isActive("/") 
-                    ? "text-custodia font-semibold" 
-                    : "text-gray-800 hover:text-custodia"
+                    ? "text-indigo-600" 
+                    : "text-gray-800 hover:text-indigo-600"
                 )}
               >
                 Home
@@ -218,19 +220,19 @@ const Navbar = () => {
             </li>
             
             <li>
-              <div className="py-2 flex items-center justify-between" onClick={(e) => {
+              <div className="py-2 flex items-center justify-between font-semibold" onClick={(e) => {
                 const target = e.currentTarget.nextElementSibling;
                 if (target) {
                   target.classList.toggle('hidden');
                 }
               }}>
                 <span className={cn(
-                  "text-gray-800 hover:text-custodia",
+                  "text-gray-800 hover:text-indigo-600",
                   isActive("/about") || aboutItems.some(item => isActive(item.path))
-                    ? "text-custodia font-semibold" 
+                    ? "text-indigo-600" 
                     : ""
                 )}>About</span>
-                <ChevronDown size={18} />
+                <ChevronDown size={18} className="text-indigo-600" />
               </div>
               <ul className="pl-4 space-y-2 mt-2 hidden">
                 {aboutItems.map((item) => (
@@ -240,8 +242,8 @@ const Navbar = () => {
                       className={cn(
                         "block py-1 text-sm transition-colors",
                         isActive(item.path) 
-                          ? "text-custodia font-semibold" 
-                          : "text-gray-600 hover:text-custodia"
+                          ? "text-indigo-600 font-semibold" 
+                          : "text-gray-600 hover:text-indigo-600"
                       )}
                     >
                       {item.name}
@@ -255,10 +257,10 @@ const Navbar = () => {
               <Link 
                 to="/validate"
                 className={cn(
-                  "block py-2 transition-colors",
+                  "block py-2 transition-colors font-semibold",
                   isActive("/validate") 
-                    ? "text-custodia font-semibold" 
-                    : "text-gray-800 hover:text-custodia"
+                    ? "text-indigo-600" 
+                    : "text-gray-800 hover:text-indigo-600"
                 )}
               >
                 Validate Assets
@@ -266,19 +268,19 @@ const Navbar = () => {
             </li>
             
             <li>
-              <div className="py-2 flex items-center justify-between" onClick={(e) => {
+              <div className="py-2 flex items-center justify-between font-semibold" onClick={(e) => {
                 const target = e.currentTarget.nextElementSibling;
                 if (target) {
                   target.classList.toggle('hidden');
                 }
               }}>
                 <span className={cn(
-                  "text-gray-800 hover:text-custodia",
+                  "text-gray-800 hover:text-indigo-600",
                   isActive("/faq") || resourceItems.some(item => isActive(item.path))
-                    ? "text-custodia font-semibold" 
+                    ? "text-indigo-600" 
                     : ""
                 )}>Resources</span>
-                <ChevronDown size={18} />
+                <ChevronDown size={18} className="text-indigo-600" />
               </div>
               <ul className="pl-4 space-y-2 mt-2 hidden">
                 {resourceItems.map((item) => (
@@ -288,8 +290,8 @@ const Navbar = () => {
                       className={cn(
                         "block py-1 text-sm transition-colors",
                         isActive(item.path) 
-                          ? "text-custodia font-semibold" 
-                          : "text-gray-600 hover:text-custodia"
+                          ? "text-indigo-600 font-semibold" 
+                          : "text-gray-600 hover:text-indigo-600"
                       )}
                     >
                       {item.name}
@@ -303,21 +305,21 @@ const Navbar = () => {
               <Link 
                 to="/contact"
                 className={cn(
-                  "block py-2 transition-colors",
+                  "block py-2 transition-colors font-semibold",
                   isActive("/contact") 
-                    ? "text-custodia font-semibold" 
-                    : "text-gray-800 hover:text-custodia"
+                    ? "text-indigo-600" 
+                    : "text-gray-800 hover:text-indigo-600"
                 )}
               >
                 Contact
               </Link>
             </li>
             
-            <li>
+            <li className="pt-2">
               <Button
                 asChild
                 variant="outline"
-                className="w-full mb-2 rounded-full border-custodia text-custodia hover:bg-custodia hover:text-white"
+                className="w-full mb-3 rounded-lg border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold"
               >
                 <Link to="/sign-in">Sign In</Link>
               </Button>
@@ -325,7 +327,7 @@ const Navbar = () => {
             <li>
               <Button
                 asChild
-                className="w-full rounded-full bg-custodia hover:bg-custodia-light text-white"
+                className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold"
               >
                 <Link to="/sign-up">Sign Up</Link>
               </Button>
