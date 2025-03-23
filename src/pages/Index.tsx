@@ -7,6 +7,11 @@ import Features from "@/components/home/Features";
 import Security from "@/components/home/Security";
 import Integration from "@/components/home/Integration";
 import CryptoMarket from "@/components/home/CryptoMarket";
+import HowItWorks from "@/components/home/HowItWorks";
+import Testimonials from "@/components/home/Testimonials";
+import NewsSection from "@/components/home/NewsSection";
+import Partners from "@/components/home/Partners";
+import CallToAction from "@/components/home/CallToAction";
 
 const Index = () => {
   useEffect(() => {
@@ -54,9 +59,14 @@ const Index = () => {
       <main className="flex-grow">
         <Hero />
         <CryptoMarket />
+        <HowItWorks />
         <Features />
+        <Testimonials />
         <Security />
+        <NewsSection />
         <Integration />
+        <Partners />
+        <CallToAction />
       </main>
       <Footer />
     </div>
