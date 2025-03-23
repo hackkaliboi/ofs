@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -46,6 +47,7 @@ const Index = () => {
       }
     }
 
+    // Clean up event listeners
     return () => {
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.removeEventListener('click', function() {});
@@ -64,8 +66,8 @@ const Index = () => {
         <GlobalNetwork />
         <Security />
         <Integration />
-        <Testimonials />
         <Partners />
+        <Testimonials />
         <NewsSection />
         <CallToAction />
       </main>

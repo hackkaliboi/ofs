@@ -1,8 +1,9 @@
 
 import React from "react";
-import { Globe as GlobeIcon, Network, Zap, Shield } from "lucide-react";
+import { Globe as GlobeIcon, Network, Zap, Shield, ArrowRight } from "lucide-react";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 import Globe from "@/components/ui/Globe";
+import { Link } from "react-router-dom";
 
 const GlobalNetwork = () => {
   return (
@@ -18,24 +19,25 @@ const GlobalNetwork = () => {
           <AnimatedSection>
             <div className="relative flex justify-center lg:justify-end">
               <div className="relative">
-                <Globe size={400} color="#4f46e5" className="float" />
+                <Globe size={450} color="#4f46e5" className="float" dotSize={1.5} dotDensity={1.2} />
                 
-                {/* Connection dots with pulse animation */}
-                <div className="absolute top-[15%] left-[20%] w-3 h-3 bg-indigo-500 rounded-full pulse-slow"></div>
-                <div className="absolute top-[30%] right-[25%] w-3 h-3 bg-purple-500 rounded-full pulse-slow" style={{animationDelay: '1s'}}></div>
-                <div className="absolute bottom-[25%] left-[30%] w-3 h-3 bg-blue-500 rounded-full pulse-slow" style={{animationDelay: '0.5s'}}></div>
-                <div className="absolute bottom-[20%] right-[20%] w-3 h-3 bg-violet-500 rounded-full pulse-slow" style={{animationDelay: '1.5s'}}></div>
+                {/* Add subtle glow effect to enhance the Globe presentation */}
+                <div className="absolute inset-0 bg-gradient-radial from-indigo-500/5 to-transparent rounded-full blur-xl"></div>
                 
-                {/* Connection lines */}
-                <svg className="absolute inset-0 w-full h-full" style={{zIndex: -1}}>
-                  <line x1="20%" y1="15%" x2="80%" y2="85%" stroke="rgba(79, 70, 229, 0.15)" strokeWidth="1" />
-                  <line x1="75%" y1="30%" x2="25%" y2="75%" stroke="rgba(79, 70, 229, 0.15)" strokeWidth="1" />
-                  <line x1="20%" y1="15%" x2="75%" y2="30%" stroke="rgba(79, 70, 229, 0.15)" strokeWidth="1" />
-                  <line x1="30%" y1="75%" x2="80%" y2="85%" stroke="rgba(79, 70, 229, 0.15)" strokeWidth="1" />
-                </svg>
+                {/* Decorative elements around the Globe */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] border-2 border-dashed border-indigo-200/20 rounded-full animate-spin-slow"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[75%] h-[75%] border border-indigo-300/10 rounded-full"></div>
                 
-                {/* Add subtle glow effect */}
-                <div className="absolute inset-0 bg-indigo-500/5 rounded-full blur-3xl"></div>
+                {/* Status indicators around the Globe */}
+                <div className="absolute top-10 right-10 flex items-center bg-white/70 backdrop-blur-sm rounded-full px-3 py-1 shadow-sm border border-gray-100">
+                  <span className="h-2 w-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+                  <span className="text-xs font-medium text-gray-700">Network Active</span>
+                </div>
+                
+                <div className="absolute bottom-10 left-10 flex items-center bg-white/70 backdrop-blur-sm rounded-full px-3 py-1 shadow-sm border border-gray-100">
+                  <span className="text-xs font-medium text-gray-700 mr-2">Nodes: 13,482</span>
+                  <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                </div>
               </div>
             </div>
           </AnimatedSection>
@@ -53,7 +55,7 @@ const GlobalNetwork = () => {
                 security, redundancy, and lightning-fast transactions anywhere in the world.
               </p>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
                 <div className="gradient-card gradient-card-purple hover-3d">
                   <div className="flex items-center mb-3">
                     <div className="p-2 rounded-lg bg-indigo-500/10 mr-3">
@@ -92,6 +94,22 @@ const GlobalNetwork = () => {
                     <h3 className="font-semibold text-lg">Enhanced Security</h3>
                   </div>
                   <p className="text-gray-600">Quantum-resistant encryption at every network node</p>
+                </div>
+              </div>
+              
+              <div className="border-t border-gray-200 pt-6">
+                <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+                  <p className="text-gray-600 font-medium">
+                    Explore our global infrastructure in detail:
+                  </p>
+                  <Link to="/about">
+                    <button className="gradient-btn group px-5 py-2 text-sm">
+                      <span className="flex items-center">
+                        View Network Status
+                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </span>
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
