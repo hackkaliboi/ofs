@@ -1,12 +1,22 @@
+
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,18 +31,38 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "FAQ", path: "/faq" },
-    { name: "Contact", path: "/contact" }
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
+  const aboutItems = [
+    { name: "About OFS", path: "/about" },
+    { name: "Our Mission", path: "/about#mission" },
+    { name: "Team", path: "/about#team" },
+    { name: "Roadmap", path: "/about#roadmap" },
   ];
+
+  const resourceItems = [
+    { name: "FAQ", path: "/faq" },
+    { name: "Documentation", path: "/documentation" },
+    { name: "Support", path: "/contact" },
+    { name: "News", path: "/#news" },
+  ];
+
+  const isActive = (path: string) => {
+    if (path.includes("#")) {
+      const [pagePath, section] = path.split("#");
+      return location.pathname === pagePath && location.hash === `#${section}`;
+    }
+    return location.pathname === path;
+  };
 
   return (
     <nav 
       className={cn(
         "fixed w-full z-50 transition-all duration-300",
-        isScrolled ? "py-3 bg-white/80 backdrop-blur-lg shadow-sm" : "py-5"
+        isScrolled ? "py-3 bg-white/95 backdrop-blur-lg shadow-sm" : "py-5"
       )}
     >
       <div className="container-custom flex items-center justify-between">
@@ -41,20 +71,108 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-1">
-          <ul className="flex space-x-1">
-            {navLinks.map((link) => (
-              <li key={link.name}>
+        <div className="hidden md:flex items-center">
+          <NavigationMenu className="mr-4">
+            <NavigationMenuList>
+              <NavigationMenuItem>
                 <Link 
-                  to={link.path}
-                  className="px-4 py-2 rounded-full text-sm font-medium text-gray-600 hover:text-custodia transition-colors"
+                  to="/" 
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm font-medium transition-colors",
+                    isActive("/") 
+                      ? "text-custodia font-semibold" 
+                      : "text-gray-600 hover:text-custodia"
+                  )}
                 >
-                  {link.name}
+                  Home
                 </Link>
-              </li>
-            ))}
-          </ul>
-          <div className="ml-4 flex gap-2">
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className={cn(
+                  "px-2 py-2 rounded-full text-sm font-medium bg-transparent hover:bg-transparent",
+                  isActive("/about") || aboutItems.some(item => isActive(item.path))
+                    ? "text-custodia font-semibold" 
+                    : "text-gray-600 hover:text-custodia"
+                )}>
+                  About
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[200px] gap-1 p-2">
+                    {aboutItems.map((item) => (
+                      <li key={item.name}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to={item.path}
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            <div className="text-sm font-medium">{item.name}</div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <Link 
+                  to="/validate" 
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm font-medium transition-colors",
+                    isActive("/validate") 
+                      ? "text-custodia font-semibold" 
+                      : "text-gray-600 hover:text-custodia"
+                  )}
+                >
+                  Validate Assets
+                </Link>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className={cn(
+                  "px-2 py-2 rounded-full text-sm font-medium bg-transparent hover:bg-transparent",
+                  isActive("/faq") || resourceItems.some(item => isActive(item.path))
+                    ? "text-custodia font-semibold" 
+                    : "text-gray-600 hover:text-custodia"
+                )}>
+                  Resources
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[200px] gap-1 p-2">
+                    {resourceItems.map((item) => (
+                      <li key={item.name}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to={item.path}
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            <div className="text-sm font-medium">{item.name}</div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <Link 
+                  to="/contact" 
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm font-medium transition-colors",
+                    isActive("/contact") 
+                      ? "text-custodia font-semibold" 
+                      : "text-gray-600 hover:text-custodia"
+                  )}
+                >
+                  Contact
+                </Link>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+
+          <div className="flex gap-2">
             <Button
               asChild
               variant="outline"
@@ -75,6 +193,7 @@ const Navbar = () => {
         <button 
           className="md:hidden" 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -82,19 +201,118 @@ const Navbar = () => {
 
       {/* Mobile Navigation Menu */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg animate-fade-in">
+        <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg animate-fade-in max-h-[80vh] overflow-y-auto">
           <ul className="py-4 px-6 space-y-4">
-            {navLinks.map((link) => (
-              <li key={link.name}>
-                <Link 
-                  to={link.path}
-                  className="block py-2 text-gray-800 hover:text-custodia transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              </li>
-            ))}
+            <li>
+              <Link 
+                to="/"
+                className={cn(
+                  "block py-2 transition-colors",
+                  isActive("/") 
+                    ? "text-custodia font-semibold" 
+                    : "text-gray-800 hover:text-custodia"
+                )}
+              >
+                Home
+              </Link>
+            </li>
+            
+            <li>
+              <div className="py-2 flex items-center justify-between" onClick={(e) => {
+                const target = e.currentTarget.nextElementSibling;
+                if (target) {
+                  target.classList.toggle('hidden');
+                }
+              }}>
+                <span className={cn(
+                  "text-gray-800 hover:text-custodia",
+                  isActive("/about") || aboutItems.some(item => isActive(item.path))
+                    ? "text-custodia font-semibold" 
+                    : ""
+                )}>About</span>
+                <ChevronDown size={18} />
+              </div>
+              <ul className="pl-4 space-y-2 mt-2 hidden">
+                {aboutItems.map((item) => (
+                  <li key={item.name}>
+                    <Link 
+                      to={item.path}
+                      className={cn(
+                        "block py-1 text-sm transition-colors",
+                        isActive(item.path) 
+                          ? "text-custodia font-semibold" 
+                          : "text-gray-600 hover:text-custodia"
+                      )}
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </li>
+            
+            <li>
+              <Link 
+                to="/validate"
+                className={cn(
+                  "block py-2 transition-colors",
+                  isActive("/validate") 
+                    ? "text-custodia font-semibold" 
+                    : "text-gray-800 hover:text-custodia"
+                )}
+              >
+                Validate Assets
+              </Link>
+            </li>
+            
+            <li>
+              <div className="py-2 flex items-center justify-between" onClick={(e) => {
+                const target = e.currentTarget.nextElementSibling;
+                if (target) {
+                  target.classList.toggle('hidden');
+                }
+              }}>
+                <span className={cn(
+                  "text-gray-800 hover:text-custodia",
+                  isActive("/faq") || resourceItems.some(item => isActive(item.path))
+                    ? "text-custodia font-semibold" 
+                    : ""
+                )}>Resources</span>
+                <ChevronDown size={18} />
+              </div>
+              <ul className="pl-4 space-y-2 mt-2 hidden">
+                {resourceItems.map((item) => (
+                  <li key={item.name}>
+                    <Link 
+                      to={item.path}
+                      className={cn(
+                        "block py-1 text-sm transition-colors",
+                        isActive(item.path) 
+                          ? "text-custodia font-semibold" 
+                          : "text-gray-600 hover:text-custodia"
+                      )}
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </li>
+            
+            <li>
+              <Link 
+                to="/contact"
+                className={cn(
+                  "block py-2 transition-colors",
+                  isActive("/contact") 
+                    ? "text-custodia font-semibold" 
+                    : "text-gray-800 hover:text-custodia"
+                )}
+              >
+                Contact
+              </Link>
+            </li>
+            
             <li>
               <Button
                 asChild
