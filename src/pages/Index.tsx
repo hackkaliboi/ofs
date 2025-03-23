@@ -12,6 +12,7 @@ import Testimonials from "@/components/home/Testimonials";
 import NewsSection from "@/components/home/NewsSection";
 import Partners from "@/components/home/Partners";
 import CallToAction from "@/components/home/CallToAction";
+import GlobalNetwork from "@/components/home/GlobalNetwork";
 
 const Index = () => {
   useEffect(() => {
@@ -61,6 +62,7 @@ const Index = () => {
         <CryptoMarket />
         <HowItWorks />
         <Features />
+        <GlobalNetwork />
         <Testimonials />
         <Security />
         <NewsSection />
