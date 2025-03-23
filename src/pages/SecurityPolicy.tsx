@@ -2,171 +2,163 @@
 import React from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Lock, Shield, Server, Eye, Key } from "lucide-react";
 import AnimatedSection from "@/components/ui/AnimatedSection";
+import { Shield, Lock, Database, AlertTriangle } from "lucide-react";
 
 const SecurityPolicy = () => {
+  const securityMeasures = [
+    {
+      title: "End-to-End Encryption",
+      description: "All data transmitted through our platform is encrypted using industry-standard encryption protocols, ensuring that your sensitive information cannot be intercepted."
+    },
+    {
+      title: "Multi-Factor Authentication",
+      description: "We implement multi-factor authentication to add an extra layer of security beyond your password, preventing unauthorized access to your account."
+    },
+    {
+      title: "Regular Security Audits",
+      description: "Our systems undergo regular security audits by independent third-party security experts to identify and address potential vulnerabilities."
+    },
+    {
+      title: "Cold Storage for Digital Assets",
+      description: "The majority of digital assets are stored in offline, cold storage facilities, protected from online threats and unauthorized access."
+    }
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow pt-32 pb-20">
+      
+      <main className="flex-grow pt-28 pb-16">
         <div className="container-custom">
-          <Breadcrumb className="mb-6">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/security-policy" className="font-medium">Security Policy</BreadcrumbLink>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          
-          <div className="max-w-4xl mx-auto">
-            <AnimatedSection>
-              <div className="mb-10">
-                <h1 className="text-4xl md:text-5xl font-bold mb-6">Security Policy</h1>
-                <p className="text-lg text-gray-600">
-                  Our comprehensive approach to protecting your assets and data on the Oracle Financial System
-                </p>
-              </div>
-            </AnimatedSection>
-            
-            <AnimatedSection delay={1}>
-              <div className="bg-indigo-50 p-6 rounded-lg border border-indigo-100 mb-10">
-                <div className="flex items-center gap-3 mb-4 text-indigo-600">
-                  <Shield className="h-6 w-6" />
-                  <span className="font-semibold text-xl">Security Commitment</span>
-                </div>
-                <p className="text-gray-700">
-                  At OFSLEDGER, security is our top priority. We employ state-of-the-art security measures and follow industry 
-                  best practices to ensure that your digital assets and personal information remain safe and protected at all times.
-                </p>
-              </div>
-            </AnimatedSection>
-            
-            <div className="prose prose-lg max-w-none">
-              <AnimatedSection delay={2}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <div className="flex items-center gap-3 mb-4 text-indigo-600">
-                      <Lock className="h-6 w-6" />
-                      <h3 className="font-semibold text-xl m-0">Data Encryption</h3>
-                    </div>
-                    <p className="m-0">
-                      We use advanced encryption protocols to protect all data in transit and at rest. All 
-                      communications between your device and our servers are encrypted using TLS 1.3, and sensitive 
-                      information is stored using AES-256 encryption.
-                    </p>
-                  </div>
-                  
-                  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <div className="flex items-center gap-3 mb-4 text-indigo-600">
-                      <Server className="h-6 w-6" />
-                      <h3 className="font-semibold text-xl m-0">Infrastructure Security</h3>
-                    </div>
-                    <p className="m-0">
-                      Our infrastructure is hosted in secure, ISO 27001 certified data centers with 24/7 monitoring, 
-                      intrusion detection systems, and comprehensive disaster recovery protocols to ensure service continuity.
-                    </p>
-                  </div>
-                </div>
-              </AnimatedSection>
-              
-              <AnimatedSection delay={3}>
-                <h2>Access Controls</h2>
-                <p>
-                  We implement strict access controls to ensure that only authorized personnel can access sensitive 
-                  systems and data. These controls include:
-                </p>
-                <ul>
-                  <li>Multi-factor authentication for all staff accessing internal systems</li>
-                  <li>Role-based access control with the principle of least privilege</li>
-                  <li>Regular access reviews and prompt deprovisioning of access</li>
-                  <li>Detailed audit logging of all access to sensitive systems</li>
-                </ul>
-                
-                <h2>User Account Security</h2>
-                <p>
-                  We provide multiple security features for user accounts, including:
-                </p>
-                <ul>
-                  <li>Multi-factor authentication options</li>
-                  <li>Biometric authentication support where available</li>
-                  <li>Secure password policies and storage</li>
-                  <li>Account activity monitoring and suspicious activity alerts</li>
-                  <li>Session timeout and device verification</li>
-                </ul>
-              </AnimatedSection>
-              
-              <AnimatedSection delay={4}>
-                <h2>Security Testing</h2>
-                <p>
-                  Our security team conducts regular security assessments to identify and address potential vulnerabilities:
-                </p>
-                <ul>
-                  <li>Regular penetration testing by independent security experts</li>
-                  <li>Vulnerability scanning and remediation</li>
-                  <li>Code security reviews before deployment</li>
-                  <li>Bug bounty program to encourage responsible disclosure</li>
-                </ul>
-                
-                <h2>Incident Response</h2>
-                <p>
-                  We maintain a comprehensive incident response plan that includes:
-                </p>
-                <ul>
-                  <li>24/7 security monitoring and alerting</li>
-                  <li>Defined incident response procedures and escalation paths</li>
-                  <li>Regular incident response drills and tabletop exercises</li>
-                  <li>Transparent communication with affected users in the event of a security incident</li>
-                </ul>
-                
-                <h2>Compliance</h2>
-                <p>
-                  OFSLEDGER maintains compliance with relevant industry standards and regulations, including:
-                </p>
-                <ul>
-                  <li>ISO 27001 certification for information security management</li>
-                  <li>SOC 2 Type II attestation</li>
-                  <li>GDPR compliance for protection of personal data</li>
-                  <li>Regular independent security audits</li>
-                </ul>
-              </AnimatedSection>
-              
-              <AnimatedSection delay={5}>
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 my-10">
-                  <div className="flex items-center gap-3 mb-4 text-indigo-600">
-                    <Key className="h-6 w-6" />
-                    <h3 className="font-semibold text-xl m-0">Your Role in Security</h3>
-                  </div>
-                  <p className="mb-4">
-                    While we implement comprehensive security measures, your participation in security is essential. We recommend:
-                  </p>
-                  <ul className="mb-0">
-                    <li>Using a strong, unique password for your OFSLEDGER account</li>
-                    <li>Enabling multi-factor authentication</li>
-                    <li>Being vigilant about phishing attempts and only accessing OFSLEDGER through official channels</li>
-                    <li>Keeping your devices and software updated with the latest security patches</li>
-                    <li>Contacting our security team immediately if you notice any suspicious activity</li>
-                  </ul>
-                </div>
-                
-                <h2>Contact Security Team</h2>
-                <p>
-                  If you discover a security vulnerability or have security concerns, please contact our security team at:
-                </p>
-                <p>
-                  Email: security@ofsledger.com<br />
-                  For sensitive security issues: PGP Key available on our security page
-                </p>
-              </AnimatedSection>
+          <AnimatedSection>
+            <div className="max-w-3xl mx-auto text-center mb-12">
+              <h1 className="text-3xl md:text-4xl font-bold mb-4">Security Policy</h1>
+              <p className="text-lg text-gray-600">
+                At OFSLEDGER, we prioritize the security of your assets and personal information above all else. Our comprehensive security measures are designed to provide maximum protection.
+              </p>
             </div>
-          </div>
+          </AnimatedSection>
+
+          <AnimatedSection delay={1}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mb-12">
+              <div className="flex items-center gap-3 mb-6">
+                <Shield className="h-7 w-7 text-indigo-600" />
+                <h2 className="text-2xl font-semibold">Our Security Commitment</h2>
+              </div>
+              
+              <p className="text-gray-700 mb-6">
+                OFSLEDGER employs state-of-the-art security protocols to safeguard your assets and personal information. Our security infrastructure is built on the principles of confidentiality, integrity, and availability, ensuring that your data is protected at all times.
+              </p>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                {securityMeasures.map((measure, index) => (
+                  <div key={index} className="flex gap-3">
+                    <Lock className="h-6 w-6 text-indigo-600 shrink-0 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2">{measure.title}</h3>
+                      <p className="text-gray-600">{measure.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection delay={2}>
+            <div className="bg-indigo-50 rounded-xl p-8 mb-12">
+              <div className="flex items-center gap-3 mb-6">
+                <Database className="h-7 w-7 text-indigo-600" />
+                <h2 className="text-2xl font-semibold">Data Protection</h2>
+              </div>
+              
+              <p className="text-gray-700 mb-6">
+                Protecting your data is fundamental to our security strategy. We implement the following measures to ensure your data remains secure:
+              </p>
+              
+              <ul className="space-y-4">
+                <li className="flex gap-3">
+                  <div className="bg-white rounded-full p-1 h-6 w-6 flex items-center justify-center shrink-0 mt-1">
+                    <span className="text-indigo-600 font-semibold">1</span>
+                  </div>
+                  <p className="text-gray-700">
+                    <span className="font-semibold">Data Encryption:</span> All sensitive data is encrypted both at rest and in transit.
+                  </p>
+                </li>
+                <li className="flex gap-3">
+                  <div className="bg-white rounded-full p-1 h-6 w-6 flex items-center justify-center shrink-0 mt-1">
+                    <span className="text-indigo-600 font-semibold">2</span>
+                  </div>
+                  <p className="text-gray-700">
+                    <span className="font-semibold">Secure Storage:</span> User data is stored on secure servers with restricted access.
+                  </p>
+                </li>
+                <li className="flex gap-3">
+                  <div className="bg-white rounded-full p-1 h-6 w-6 flex items-center justify-center shrink-0 mt-1">
+                    <span className="text-indigo-600 font-semibold">3</span>
+                  </div>
+                  <p className="text-gray-700">
+                    <span className="font-semibold">Access Controls:</span> Strict access controls and authentication mechanisms are in place.
+                  </p>
+                </li>
+                <li className="flex gap-3">
+                  <div className="bg-white rounded-full p-1 h-6 w-6 flex items-center justify-center shrink-0 mt-1">
+                    <span className="text-indigo-600 font-semibold">4</span>
+                  </div>
+                  <p className="text-gray-700">
+                    <span className="font-semibold">Regular Backups:</span> Data is regularly backed up to prevent loss in case of system failures.
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection delay={3}>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mb-12">
+              <div className="flex items-center gap-3 mb-6">
+                <AlertTriangle className="h-7 w-7 text-amber-500" />
+                <h2 className="text-2xl font-semibold">Security Incident Response</h2>
+              </div>
+              
+              <p className="text-gray-700 mb-6">
+                Despite our robust security measures, we have a comprehensive incident response plan in place to address any potential security breaches promptly and effectively.
+              </p>
+              
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Detection & Monitoring</h3>
+                  <p className="text-gray-600">
+                    Our systems are continuously monitored for suspicious activities. We employ advanced threat detection tools to identify potential security incidents in real-time.
+                  </p>
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Incident Response Team</h3>
+                  <p className="text-gray-600">
+                    Our dedicated incident response team is available 24/7 to investigate and address any security concerns promptly.
+                  </p>
+                </div>
+                
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Communication Protocol</h3>
+                  <p className="text-gray-600">
+                    In the event of a security incident that may affect you, we will notify you promptly with information about the incident and steps you should take to protect your account.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection delay={4}>
+            <div className="text-center">
+              <p className="text-gray-600">
+                For more information about our security practices or to report a security concern, please contact our security team at <a href="mailto:security@ofsledger.com" className="text-indigo-600 hover:underline">security@ofsledger.com</a>
+              </p>
+            </div>
+          </AnimatedSection>
         </div>
       </main>
+      
       <Footer />
     </div>
   );
