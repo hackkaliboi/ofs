@@ -9,7 +9,7 @@ interface GlobeProps {
 
 const Globe: React.FC<GlobeProps> = ({ 
   size = 300, 
-  color = "#3b82f6",
+  color = "#4f46e5",
   className = ""
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -33,21 +33,21 @@ const Globe: React.FC<GlobeProps> = ({
     let animationFrameId: number;
     
     // Create a gradient
-    const gradient = ctx.createLinearGradient(0, 0, 0, size);
+    const gradient = ctx.createLinearGradient(0, 0, size, size);
     gradient.addColorStop(0, color);
-    gradient.addColorStop(1, '#1e40af');
+    gradient.addColorStop(1, '#7E69AB'); // Secondary color
     
     // Draw function
     const draw = () => {
       ctx.clearRect(0, 0, size, size);
       
-      // Draw the globe background
+      // Draw the globe background with more opacity for a more professional look
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
       ctx.fill();
       
-      // Draw horizontal latitude lines
+      // Draw horizontal latitude lines with more subtle appearance
       for (let i = -80; i <= 80; i += 20) {
         drawLatitude(i);
       }
@@ -57,8 +57,8 @@ const Globe: React.FC<GlobeProps> = ({
         drawLongitude(i + rotation);
       }
       
-      // Increment rotation for animation
-      rotation += 0.2;
+      // Increment rotation for animation - slower for more elegance
+      rotation += 0.1;
       if (rotation >= 360) rotation = 0;
       
       // Request next frame

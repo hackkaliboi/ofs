@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -63,11 +62,11 @@ const Index = () => {
         <HowItWorks />
         <Features />
         <GlobalNetwork />
-        <Testimonials />
         <Security />
-        <NewsSection />
         <Integration />
+        <Testimonials />
         <Partners />
+        <NewsSection />
         <CallToAction />
       </main>
       <Footer />

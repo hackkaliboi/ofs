@@ -16,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11.2%;
 
-    --primary: 216 100% 50%;
+    --primary: 246 80% 60%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -25,7 +25,7 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 216 100% 50%;
+    --accent: 246 80% 60%;
     --accent-foreground: 222 47% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -33,17 +33,19 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 216 100% 50%;
+    --ring: 246 80% 60%;
 
     --radius: 0.75rem;
     
-    /* New color variables */
-    --purple-light: 265 100% 70%;
-    --purple-dark: 265 100% 50%;
-    --teal-light: 180 100% 70%;
-    --teal-dark: 180 100% 50%;
-    --orange-light: 30 100% 70%;
-    --orange-dark: 30 100% 50%;
+    /* Enhanced color variables for a more vibrant and mature look */
+    --indigo-light: 246 80% 70%;
+    --indigo-dark: 246 80% 50%;
+    --purple-light: 265 80% 70%;
+    --purple-dark: 265 80% 50%;
+    --blue-light: 225 80% 70%;
+    --blue-dark: 225 80% 50%;
+    --violet-light: 275 80% 70%;
+    --violet-dark: 275 80% 50%;
   }
 
   * {
@@ -65,7 +67,7 @@
   }
   
   .custodia-btn-primary {
-    @apply custodia-btn bg-blue-600 text-white hover:bg-blue-500;
+    @apply custodia-btn bg-indigo-600 text-white hover:bg-indigo-500;
   }
   
   .custodia-btn-secondary {
@@ -84,99 +86,75 @@
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
   
-  .reveal {
-    @apply opacity-0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  }
+  /* ... keep existing code (reveal animation classes) */
   
-  .reveal.active {
-    @apply opacity-100;
-    transform: translateY(0);
-  }
-  
-  .reveal-delay-1 {
-    transition-delay: 0.1s;
-  }
-  
-  .reveal-delay-2 {
-    transition-delay: 0.2s;
-  }
-  
-  .reveal-delay-3 {
-    transition-delay: 0.3s;
-  }
-  
-  .reveal-delay-4 {
-    transition-delay: 0.4s;
-  }
-  
-  /* Enhanced card styles */
+  /* Enhanced card styles with more professional gradients */
   .gradient-card {
     @apply rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,240,250,0.9) 100%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(246,246,252,0.95) 100%);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.5);
+    border: 1px solid rgba(240,240,250,0.5);
   }
   
   .gradient-card-purple {
-    background: linear-gradient(135deg, rgba(136,58,234,0.1) 0%, rgba(178,131,238,0.1) 100%);
-    border: 1px solid rgba(136,58,234,0.2);
+    background: linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(168,139,244,0.08) 100%);
+    border: 1px solid rgba(139,92,246,0.15);
   }
   
   .gradient-card-blue {
-    background: linear-gradient(135deg, rgba(33,107,243,0.1) 0%, rgba(103,172,241,0.1) 100%);
-    border: 1px solid rgba(33,107,243,0.2);
+    background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(120,171,247,0.08) 100%);
+    border: 1px solid rgba(59,130,246,0.15);
   }
   
-  .gradient-card-teal {
-    background: linear-gradient(135deg, rgba(20,184,166,0.1) 0%, rgba(94,234,212,0.1) 100%);
-    border: 1px solid rgba(20,184,166,0.2);
+  .gradient-card-indigo {
+    background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(148,151,244,0.08) 100%);
+    border: 1px solid rgba(99,102,241,0.15);
   }
   
-  .gradient-card-orange {
-    background: linear-gradient(135deg, rgba(249,115,22,0.1) 0%, rgba(253,186,116,0.1) 100%);
-    border: 1px solid rgba(249,115,22,0.2);
+  .gradient-card-violet {
+    background: linear-gradient(135deg, rgba(167,94,255,0.08) 0%, rgba(196,147,255,0.08) 100%);
+    border: 1px solid rgba(167,94,255,0.15);
   }
   
   /* Enhanced button styles */
   .gradient-btn {
     @apply relative overflow-hidden transition-all duration-300 px-6 py-3 rounded-full font-medium inline-flex items-center justify-center;
-    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
     color: white;
   }
   
   .gradient-btn:hover {
-    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
   }
   
   .gradient-btn-secondary {
-    background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(240,240,250,0.8) 100%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(246,246,252,0.9) 100%);
     color: #1e293b;
-    border: 1px solid rgba(226,232,240,0.8);
+    border: 1px solid rgba(226,232,240,0.9);
   }
   
   .gradient-btn-secondary:hover {
-    background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(240,240,250,1) 100%);
+    background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(246,246,252,1) 100%);
   }
 
   /* 3D hover effect */
   .hover-3d {
-    transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
   }
   
   .hover-3d:hover {
-    transform: translateY(-5px) rotateX(5deg);
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
   }
   
   /* Floating animation */
   .float {
-    animation: floating 3s ease-in-out infinite;
+    animation: floating 4s ease-in-out infinite;
   }
   
   /* Pulse effect */
   .pulse-slow {
-    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 }
 
@@ -186,19 +164,19 @@
   }
   
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-400;
   }
   
   .text-gradient-purple {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-400;
   }
   
-  .text-gradient-teal {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-emerald-400;
+  .text-gradient-blue {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-400;
   }
   
-  .text-gradient-orange {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-amber-400;
+  .text-gradient-violet {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-purple-400;
   }
   
   .bg-gradient-radial {
@@ -210,25 +188,27 @@
   }
 }
 
-/* Animations */
+/* Enhanced animations */
 @keyframes floating {
   0% {
-    transform: translateY(0px);
+    transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-10px) rotate(1deg);
   }
   100% {
-    transform: translateY(0px);
+    transform: translateY(0px) rotate(0deg);
   }
 }
 
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
+    transform: scale(1);
   }
   50% {
-    opacity: 0.7;
+    opacity: 0.8;
+    transform: scale(0.95);
   }
 }
 
@@ -242,6 +222,6 @@
 }
 
 .spin-slow {
-  animation: spin-slow 20s linear infinite;
+  animation: spin-slow 30s linear infinite;
 }
 

@@ -8,9 +8,10 @@ const GlobalNetwork = () => {
   return (
     <section className="section-padding bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
       {/* Background elements */}
-      <div className="absolute inset-0 bg-gradient-radial from-blue-50/20 to-transparent z-0" />
-      <div className="absolute top-20 right-0 w-80 h-80 bg-blue-300/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-300/10 rounded-full blur-3xl" />
+      <div className="absolute inset-0 bg-gradient-radial from-indigo-50/20 to-transparent z-0" />
+      <div className="absolute top-20 -right-40 w-96 h-96 bg-purple-300/10 rounded-full blur-3xl" />
+      <div className="absolute top-20 -left-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-10 right-10 w-72 h-72 bg-indigo-400/5 rounded-full blur-2xl" />
       
       <div className="container-custom relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -20,17 +21,17 @@ const GlobalNetwork = () => {
                 <Globe size={400} color="#4f46e5" className="float" />
                 
                 {/* Connection dots */}
-                <div className="absolute top-[15%] left-[20%] w-4 h-4 bg-blue-500 rounded-full pulse-slow"></div>
+                <div className="absolute top-[15%] left-[20%] w-4 h-4 bg-indigo-500 rounded-full pulse-slow"></div>
                 <div className="absolute top-[30%] right-[25%] w-3 h-3 bg-purple-500 rounded-full pulse-slow" style={{animationDelay: '1s'}}></div>
-                <div className="absolute bottom-[25%] left-[30%] w-3 h-3 bg-teal-500 rounded-full pulse-slow" style={{animationDelay: '0.5s'}}></div>
-                <div className="absolute bottom-[20%] right-[20%] w-4 h-4 bg-orange-500 rounded-full pulse-slow" style={{animationDelay: '1.5s'}}></div>
+                <div className="absolute bottom-[25%] left-[30%] w-3 h-3 bg-blue-500 rounded-full pulse-slow" style={{animationDelay: '0.5s'}}></div>
+                <div className="absolute bottom-[20%] right-[20%] w-4 h-4 bg-violet-500 rounded-full pulse-slow" style={{animationDelay: '1.5s'}}></div>
                 
                 {/* Connection lines */}
                 <svg className="absolute inset-0 w-full h-full" style={{zIndex: -1}}>
-                  <line x1="20%" y1="15%" x2="80%" y2="85%" stroke="rgba(79, 70, 229, 0.2)" strokeWidth="1" />
-                  <line x1="75%" y1="30%" x2="25%" y2="75%" stroke="rgba(79, 70, 229, 0.2)" strokeWidth="1" />
-                  <line x1="20%" y1="15%" x2="75%" y2="30%" stroke="rgba(79, 70, 229, 0.2)" strokeWidth="1" />
-                  <line x1="30%" y1="75%" x2="80%" y2="85%" stroke="rgba(79, 70, 229, 0.2)" strokeWidth="1" />
+                  <line x1="20%" y1="15%" x2="80%" y2="85%" stroke="rgba(79, 70, 229, 0.15)" strokeWidth="1" />
+                  <line x1="75%" y1="30%" x2="25%" y2="75%" stroke="rgba(79, 70, 229, 0.15)" strokeWidth="1" />
+                  <line x1="20%" y1="15%" x2="75%" y2="30%" stroke="rgba(79, 70, 229, 0.15)" strokeWidth="1" />
+                  <line x1="30%" y1="75%" x2="80%" y2="85%" stroke="rgba(79, 70, 229, 0.15)" strokeWidth="1" />
                 </svg>
               </div>
             </div>
@@ -70,20 +71,20 @@ const GlobalNetwork = () => {
                   <p className="text-gray-600">Sub-second transaction times across continents</p>
                 </div>
                 
-                <div className="gradient-card gradient-card-teal hover-3d">
+                <div className="gradient-card gradient-card-indigo hover-3d">
                   <div className="flex items-center mb-3">
-                    <div className="p-2 rounded-lg bg-teal-500/10 mr-3">
-                      <GlobeIcon className="h-6 w-6 text-teal-600" />
+                    <div className="p-2 rounded-lg bg-indigo-500/10 mr-3">
+                      <GlobeIcon className="h-6 w-6 text-indigo-600" />
                     </div>
                     <h3 className="font-semibold text-lg">Global Reach</h3>
                   </div>
                   <p className="text-gray-600">Accessible from 200+ countries and territories</p>
                 </div>
                 
-                <div className="gradient-card gradient-card-orange hover-3d">
+                <div className="gradient-card gradient-card-purple hover-3d">
                   <div className="flex items-center mb-3">
-                    <div className="p-2 rounded-lg bg-orange-500/10 mr-3">
-                      <Shield className="h-6 w-6 text-orange-600" />
+                    <div className="p-2 rounded-lg bg-purple-500/10 mr-3">
+                      <Shield className="h-6 w-6 text-purple-600" />
                     </div>
                     <h3 className="font-semibold text-lg">Enhanced Security</h3>
                   </div>
