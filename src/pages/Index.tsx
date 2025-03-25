@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
@@ -19,55 +18,29 @@ const Index = () => {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(e) {
         e.preventDefault();
-        const targetId = this.getAttribute('href')?.substring(1);
-        if (targetId) {
-          const targetElement = document.getElementById(targetId);
-          if (targetElement) {
-            window.scrollTo({
-              top: targetElement.offsetTop - 80, // Offset for fixed header
-              behavior: 'smooth'
-            });
-          }
+        const target = document.querySelector(this.getAttribute('href') || "");
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth'
+          });
         }
       });
     });
-
-    // Scroll to specific section if URL contains hash
-    if (window.location.hash) {
-      const targetId = window.location.hash.substring(1);
-      const targetElement = document.getElementById(targetId);
-      if (targetElement) {
-        setTimeout(() => {
-          window.scrollTo({
-            top: targetElement.offsetTop - 80,
-            behavior: 'smooth'
-          });
-        }, 300);
-      }
-    }
-
-    // Clean up event listeners
-    return () => {
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.removeEventListener('click', function() {});
-      });
-    };
   }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
       <main className="flex-grow">
         <Hero />
-        <CryptoMarket />
-        <MarketTable />
-        <HowItWorks />
         <Features />
-        <GlobalNetwork />
         <Security />
         <Integration />
-        <Partners />
+        <CryptoMarket />
+        <HowItWorks />
         <Testimonials />
+        <Partners />
+        <GlobalNetwork />
+        <MarketTable />
         <CallToAction />
       </main>
       <Footer />

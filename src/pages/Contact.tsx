@@ -1,170 +1,120 @@
-
-import React, { useState } from "react";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import React from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import AnimatedSection from "@/components/ui/AnimatedSection";
-import Navbar from "@/components/layout/Navbar";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { Mail, Phone, MapPin } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 
 const Contact = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Here we would normally send the form data to an API endpoint
-    // For demonstration purposes, we'll just show a success message
-    toast.success("Message sent successfully", { 
-      description: "We'll get back to you as soon as possible."
+    toast({
+      title: "Message sent!",
+      description: "We'll get back to you as soon as possible.",
+      variant: "default"
     });
-    
-    // Reset form
-    setName("");
-    setEmail("");
-    setSubject("");
-    setMessage("");
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow pt-28 pb-20 bg-gradient-to-b from-custodia-surface/30 to-white">
-        <div className="container-custom">
-          <AnimatedSection>
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Contact Us</h1>
-              <p className="text-lg text-gray-600">
-                Have questions about OFSLEDGER or need assistance with validation? Our team is here to help.
-              </p>
-            </div>
-          </AnimatedSection>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <AnimatedSection delay={2}>
-              <div className="custodia-card h-full">
-                <h2 className="text-2xl font-bold mb-6">Get in Touch</h2>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-2">
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                      Full Name
-                    </label>
-                    <Input
-                      id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Enter your full name"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                      Email Address
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email address"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700">
-                      Subject
-                    </label>
-                    <Input
-                      id="subject"
-                      value={subject}
-                      onChange={(e) => setSubject(e.target.value)}
-                      placeholder="What is your message about?"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700">
-                      Message
-                    </label>
-                    <Textarea
-                      id="message"
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Tell us about your inquiry or concerns"
-                      className="min-h-[150px]"
-                      required
-                    />
-                  </div>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-custodia hover:bg-custodia-light flex items-center justify-center gap-2"
-                  >
-                    <Send className="h-5 w-5" />
-                    Send Message
-                  </Button>
-                </form>
-              </div>
-            </AnimatedSection>
-            
-            <AnimatedSection delay={3}>
-              <div className="custodia-card h-full">
-                <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
-                <div className="space-y-8">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-custodia/10 p-3 rounded-full flex items-center justify-center">
-                      <Mail className="h-6 w-6 text-custodia" />
+      <div className="flex-grow bg-gradient-to-b from-indigo-50/50 to-white">
+        <div className="container mx-auto px-4 py-24">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                <h1 className="text-4xl font-bold mb-8">Contact Us</h1>
+                <div className="prose prose-indigo max-w-none mb-8">
+                  <p className="text-lg text-gray-600">
+                    Have questions about OFSLEDGER? We're here to help. Reach out to us through any of the channels below or fill out the contact form.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-indigo-100 p-3 rounded-lg">
+                      <Mail className="h-6 w-6 text-indigo-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold mb-1">Email</h3>
+                      <h3 className="font-semibold mb-1">Email</h3>
                       <p className="text-gray-600">support@ofsledger.com</p>
-                      <p className="text-gray-600">info@ofsledger.com</p>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start gap-4">
-                    <div className="bg-custodia/10 p-3 rounded-full flex items-center justify-center">
-                      <Phone className="h-6 w-6 text-custodia" />
+
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-indigo-100 p-3 rounded-lg">
+                      <Phone className="h-6 w-6 text-indigo-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold mb-1">Phone</h3>
-                      <p className="text-gray-600">+1 (888) QFS-HELP</p>
-                      <p className="text-gray-600">International: +1 (555) 123-4567</p>
+                      <h3 className="font-semibold mb-1">Phone</h3>
+                      <p className="text-gray-600">+1 (888) OFS-HELP</p>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start gap-4">
-                    <div className="bg-custodia/10 p-3 rounded-full flex items-center justify-center">
-                      <MapPin className="h-6 w-6 text-custodia" />
+
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-indigo-100 p-3 rounded-lg">
+                      <MapPin className="h-6 w-6 text-indigo-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold mb-1">Headquarters</h3>
-                      <p className="text-gray-600">OFSLEDGER Global Operations</p>
-                      <p className="text-gray-600">123 Financial District</p>
-                      <p className="text-gray-600">Zurich, Switzerland 8001</p>
+                      <h3 className="font-semibold mb-1">Office</h3>
+                      <p className="text-gray-600">
+                        123 Financial District<br />
+                        San Francisco, CA 94111<br />
+                        United States
+                      </p>
                     </div>
                   </div>
-                </div>
-                
-                <div className="mt-12 pt-8 border-t border-gray-200">
-                  <h3 className="text-lg font-semibold mb-4">Support Hours</h3>
-                  <p className="text-gray-600 mb-2">Monday - Friday: 24/7</p>
-                  <p className="text-gray-600 mb-2">Saturday: 9:00 AM - 5:00 PM</p>
-                  <p className="text-gray-600">Sunday: 10:00 AM - 2:00 PM</p>
                 </div>
               </div>
-            </AnimatedSection>
+
+              <div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Send us a message</CardTitle>
+                    <CardDescription>
+                      Fill out the form below and we'll get back to you as soon as possible.
+                    </CardDescription>
+                  </CardHeader>
+                  <form onSubmit={handleSubmit}>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Name</Label>
+                        <Input id="name" placeholder="Your name" required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input id="email" type="email" placeholder="your@email.com" required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="subject">Subject</Label>
+                        <Input id="subject" placeholder="How can we help?" required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="message">Message</Label>
+                        <Textarea
+                          id="message"
+                          placeholder="Tell us more about your inquiry..."
+                          className="min-h-[150px]"
+                          required
+                        />
+                      </div>
+                    </CardContent>
+                    <CardFooter>
+                      <Button type="submit" className="w-full">
+                        Send Message
+                      </Button>
+                    </CardFooter>
+                  </form>
+                </Card>
+              </div>
+            </div>
           </div>
         </div>
-      </main>
+      </div>
       <Footer />
     </div>
   );

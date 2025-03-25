@@ -48,6 +48,39 @@ npm run dev
 
 The application will be available at `http://localhost:8080`
 
+## Admin Setup
+
+### Creating the First Admin User
+
+For security reasons, admin users can only be created through the Supabase Management Console or using the service role key. Follow these steps:
+
+1. Go to your [Supabase Project Dashboard](https://app.supabase.com)
+2. Navigate to SQL Editor
+3. Run the following SQL commands:
+   ```sql
+   -- Create admin user in auth.users
+   INSERT INTO auth.users (email, encrypted_password, email_confirmed_at)
+   VALUES ('admin@yourdomain.com', crypt('secure_password', gen_salt('bf')), now());
+
+   -- Get the user's ID
+   WITH user_id AS (
+     SELECT id FROM auth.users WHERE email = 'admin@yourdomain.com'
+   )
+   -- Create admin profile
+   INSERT INTO public.profiles (id, email, full_name, role)
+   SELECT id, 'admin@yourdomain.com', 'Admin User', 'admin'
+   FROM user_id;
+   ```
+
+4. The admin can now log in at `/admin/login` with the specified credentials
+
+### Security Notes
+
+- Always use strong passwords for admin accounts
+- Regularly audit admin access
+- Enable two-factor authentication when possible
+- Monitor admin activities through the security logs
+
 ## Project Structure
 
 ```

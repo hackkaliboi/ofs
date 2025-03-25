@@ -1,142 +1,158 @@
-
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff, KeyRound, LogIn, Mail } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import React, { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Checkbox } from "@/components/ui/checkbox";
-import AnimatedSection from "@/components/ui/AnimatedSection";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { Link } from "react-router-dom";
 
-const SignIn = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+export default function SignIn() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user, signIn, loading: authLoading } = useAuth();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+  
+  // Get the intended destination from location state or default to dashboard
+  const from = location.state?.from?.pathname || "/dashboard";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Check if user is already logged in
+  useEffect(() => {
+    if (user && !isLoading) {
+      // If user is already authenticated, redirect to dashboard or intended destination
+      const redirectTimer = setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 100);
+      
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [user, isLoading, navigate, from]);
+
+  // If auth is still loading, show loading state
+  if (authLoading) {
+    return (
+      <div className="container flex h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <p className="text-sm text-muted-foreground">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    // Here we would normally validate and authenticate the user
-    // For now, just show a success message and redirect
-    
-    toast.success("Signed in successfully", { 
-      description: "Welcome back to OFSLEDGER"
-    });
-    
-    // Redirect to home since Dashboard is removed
-    setTimeout(() => navigate("/"), 1000);
+    setIsLoading(true);
+    setError("");
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const { data: authData, error } = await signIn(email, password);
+      if (error) throw error;
+
+      toast({
+        title: "Welcome back!",
+        description: "Successfully signed in to your account.",
+      });
+
+      // Redirect to dashboard or intended destination with a slight delay
+      // to ensure auth state is properly updated
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 500);
+      
+    } catch (error: any) {
+      setError(error.message || "Failed to sign in");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to sign in",
+      });
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      
-      <main className="flex-grow bg-gradient-to-b from-custodia-surface/50 to-white flex flex-col justify-center py-16">
-        <div className="container-custom max-w-md mx-auto">
-          <AnimatedSection>
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-custodia">Sign In</h1>
-              <p className="mt-4 text-gray-600">Sign in to access your quantum financial interface</p>
-            </div>
-            
-            <div className="bg-white rounded-2xl shadow-md p-8 border border-gray-100">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <KeyRound className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter your password"
-                      className="pl-10 pr-10"
-                      required
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5 text-gray-400" />
-                      ) : (
-                        <Eye className="h-5 w-5 text-gray-400" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="remember" 
-                      checked={rememberMe} 
-                      onCheckedChange={(checked) => setRememberMe(checked as boolean)} 
-                    />
-                    <label htmlFor="remember" className="text-sm text-gray-600">
-                      Remember me
-                    </label>
-                  </div>
-                  <Link to="/forgot-password" className="text-sm text-custodia hover:underline">
-                    Forgot password?
-                  </Link>
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full bg-custodia hover:bg-custodia-light flex items-center justify-center gap-2"
-                >
-                  <LogIn className="h-5 w-5" />
-                  Sign In
-                </Button>
-                
-                <div className="text-center mt-4">
-                  <p className="text-sm text-gray-600">
-                    Don't have an account?{" "}
-                    <Link to="/sign-up" className="text-custodia hover:underline">
-                      Sign up
-                    </Link>
-                  </p>
-                </div>
-              </form>
-            </div>
-          </AnimatedSection>
+    <div className="container relative h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+      <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
+        <div className="absolute inset-0 bg-primary" />
+        <div className="relative z-20 flex items-center text-lg font-medium">
+          <Link to="/" className="flex items-center">
+            <span className="text-2xl font-bold">OFS</span>
+            <span className="text-2xl font-bold text-white/70">LEDGER</span>
+          </Link>
         </div>
-      </main>
-      
-      <Footer />
+        <div className="relative z-20 mt-auto">
+          <blockquote className="space-y-2">
+            <p className="text-lg">
+              "OFS Ledger has revolutionized how we manage and validate our digital assets. 
+              The transparency and security it provides are unmatched."
+            </p>
+            <footer className="text-sm">Sofia Davis, Digital Asset Manager</footer>
+          </blockquote>
+        </div>
+      </div>
+      <div className="lg:p-8">
+        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+          <div className="flex flex-col space-y-2 text-center">
+            <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+            <p className="text-sm text-muted-foreground">
+              Enter your email and password to sign in to your account
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+                {error}
+              </div>
+            )}
+            <div className="space-y-2">
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="name@example.com"
+                required
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                required
+                disabled={isLoading}
+              />
+            </div>
+            <Button className="w-full" type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  <span>Signing in...</span>
+                </div>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </form>
+
+          <div className="flex flex-col space-y-2 text-center text-sm text-muted-foreground">
+            <Link to="/sign-up" className="underline hover:text-primary">
+              Don't have an account? Sign up
+            </Link>
+            <Link to="/forgot-password" className="underline hover:text-primary">
+              Forgot your password?
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default SignIn;
+}

@@ -3,19 +3,13 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, profile, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,272 +24,152 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu when route changes
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
-  const aboutItems = [
-    { name: "About OFS", path: "/about" }
-  ];
+  const isActive = (path: string) => location.pathname === path;
 
-  const resourceItems = [
+  const menuItems = [
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Validate Assets", path: "/validate-assets" },
     { name: "FAQ", path: "/faq" },
     { name: "Documentation", path: "/documentation" },
-    { name: "Support", path: "/contact" },
-    { name: "Blog", path: "/blog" }
+    { name: "Contact", path: "/contact" },
   ];
-
-  const isActive = (path: string) => {
-    if (path.includes("#")) {
-      const [pagePath, section] = path.split("#");
-      return location.pathname === pagePath && location.hash === `#${section}`;
-    }
-    return location.pathname === path;
-  };
 
   return (
     <nav 
       className={cn(
-        "fixed w-full z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled 
-          ? "py-3 bg-white/95 backdrop-blur-lg shadow-md" 
-          : "py-5 bg-white/70 backdrop-blur-md"
+          ? "bg-white/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/60"
+          : "bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60"
       )}
     >
-      <div className="container-custom flex items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-600">OFSLEDGER</span>
-        </Link>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link to="/" className="flex-shrink-0 flex items-center">
+            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-600">
+              OFSLEDGER
+            </span>
+          </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center">
-          <NavigationMenu className="mr-6">
-            <NavigationMenuList className="space-x-1">
-              <NavigationMenuItem>
-                <Link 
-                  to="/" 
-                  className={cn(
-                    "px-4 py-2 rounded-md text-sm font-semibold transition-colors",
-                    isActive("/") 
-                      ? "text-indigo-600" 
-                      : "text-gray-800 hover:text-indigo-600"
-                  )}
-                >
-                  Home
+          {/* Desktop Menu */}
+          <div className="hidden md:flex md:items-center md:space-x-8">
+            {menuItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={cn(
+                  "px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                  isActive(item.path)
+                    ? "text-indigo-600 bg-indigo-50"
+                    : "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                )}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Auth Buttons */}
+          <div className="hidden md:flex md:items-center md:space-x-4">
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <Link to={profile?.role === 'admin' ? "/admin/dashboard" : "/dashboard"}>
+                  <Button variant="ghost" size="sm">Dashboard</Button>
                 </Link>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <Link 
-                  to="/about" 
-                  className={cn(
-                    "px-4 py-2 rounded-md text-sm font-semibold transition-colors",
-                    isActive("/about") 
-                      ? "text-indigo-600" 
-                      : "text-gray-800 hover:text-indigo-600"
-                  )}
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => signOut()}
                 >
-                  About
+                  Sign out
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Link to="/sign-in">
+                  <Button variant="ghost" size="sm">Sign in</Button>
                 </Link>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <Link 
-                  to="/validate" 
-                  className={cn(
-                    "px-4 py-2 rounded-md text-sm font-semibold transition-colors",
-                    isActive("/validate") 
-                      ? "text-indigo-600" 
-                      : "text-gray-800 hover:text-indigo-600"
-                  )}
-                >
-                  Validate Assets
+                <Link to="/sign-up">
+                  <Button variant="default" size="sm">Sign up</Button>
                 </Link>
-              </NavigationMenuItem>
+              </>
+            )}
+          </div>
 
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className={cn(
-                  "px-3 py-2 rounded-md text-sm font-semibold bg-transparent hover:bg-transparent",
-                  isActive("/faq") || resourceItems.some(item => isActive(item.path))
-                    ? "text-indigo-600" 
-                    : "text-gray-800 hover:text-indigo-600"
-                )}>
-                  Resources
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[220px] gap-1 p-2 bg-white rounded-md shadow-lg">
-                    {resourceItems.map((item) => (
-                      <li key={item.name}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            to={item.path}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-indigo-50 hover:text-indigo-600 focus:bg-indigo-50 focus:text-indigo-600"
-                          >
-                            <div className="text-sm font-medium">{item.name}</div>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <Link 
-                  to="/contact" 
-                  className={cn(
-                    "px-4 py-2 rounded-md text-sm font-semibold transition-colors",
-                    isActive("/contact") 
-                      ? "text-indigo-600" 
-                      : "text-gray-800 hover:text-indigo-600"
-                  )}
-                >
-                  Contact
-                </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-
-          <div className="flex gap-3">
-            <Button
-              asChild
-              variant="outline"
-              className="rounded-lg border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold"
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 focus:outline-none"
             >
-              <Link to="/sign-in">Sign In</Link>
-            </Button>
-            <Button
-              asChild
-              className="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-colors font-semibold"
-            >
-              <Link to="/sign-up">Sign Up</Link>
-            </Button>
+              {isMenuOpen ? (
+                <X className="block h-6 w-6" />
+              ) : (
+                <Menu className="block h-6 w-6" />
+              )}
+            </button>
           </div>
         </div>
-
-        {/* Mobile Navigation Toggle */}
-        <button 
-          className="md:hidden" 
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-        >
-          {isMenuOpen ? <X size={24} className="text-indigo-600" /> : <Menu size={24} className="text-indigo-600" />}
-        </button>
       </div>
 
-      {/* Mobile Navigation Menu */}
+      {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg animate-fade-in max-h-[80vh] overflow-y-auto">
-          <ul className="py-4 px-6 space-y-4">
-            <li>
-              <Link 
-                to="/"
+        <div className="md:hidden bg-white border-t">
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            {menuItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
                 className={cn(
-                  "block py-2 transition-colors font-semibold",
-                  isActive("/") 
-                    ? "text-indigo-600" 
-                    : "text-gray-800 hover:text-indigo-600"
+                  "block px-3 py-2 rounded-md text-base font-medium",
+                  isActive(item.path)
+                    ? "text-indigo-600 bg-indigo-50"
+                    : "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
                 )}
               >
-                Home
+                {item.name}
               </Link>
-            </li>
-            
-            <li>
-              <Link 
-                to="/about"
-                className={cn(
-                  "block py-2 transition-colors font-semibold",
-                  isActive("/about") 
-                    ? "text-indigo-600" 
-                    : "text-gray-800 hover:text-indigo-600"
-                )}
-              >
-                About
-              </Link>
-            </li>
-            
-            <li>
-              <Link 
-                to="/validate"
-                className={cn(
-                  "block py-2 transition-colors font-semibold",
-                  isActive("/validate") 
-                    ? "text-indigo-600" 
-                    : "text-gray-800 hover:text-indigo-600"
-                )}
-              >
-                Validate Assets
-              </Link>
-            </li>
-            
-            <li>
-              <div className="py-2 flex items-center justify-between font-semibold" onClick={(e) => {
-                const target = e.currentTarget.nextElementSibling;
-                if (target) {
-                  target.classList.toggle('hidden');
-                }
-              }}>
-                <span className={cn(
-                  "text-gray-800 hover:text-indigo-600",
-                  isActive("/faq") || resourceItems.some(item => isActive(item.path))
-                    ? "text-indigo-600" 
-                    : ""
-                )}>Resources</span>
-                <ChevronDown size={18} className="text-indigo-600" />
-              </div>
-              <ul className="pl-4 space-y-2 mt-2 hidden">
-                {resourceItems.map((item) => (
-                  <li key={item.name}>
-                    <Link 
-                      to={item.path}
-                      className={cn(
-                        "block py-1 text-sm transition-colors",
-                        isActive(item.path) 
-                          ? "text-indigo-600 font-semibold" 
-                          : "text-gray-600 hover:text-indigo-600"
-                      )}
-                    >
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </li>
-            
-            <li>
-              <Link 
-                to="/contact"
-                className={cn(
-                  "block py-2 transition-colors font-semibold",
-                  isActive("/contact") 
-                    ? "text-indigo-600" 
-                    : "text-gray-800 hover:text-indigo-600"
-                )}
-              >
-                Contact
-              </Link>
-            </li>
-            
-            <li className="pt-2">
-              <Button
-                asChild
-                variant="outline"
-                className="w-full mb-3 rounded-lg border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold"
-              >
-                <Link to="/sign-in">Sign In</Link>
-              </Button>
-            </li>
-            <li>
-              <Button
-                asChild
-                className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold"
-              >
-                <Link to="/sign-up">Sign Up</Link>
-              </Button>
-            </li>
-          </ul>
+            ))}
+
+            {/* Mobile Auth Buttons */}
+            {user ? (
+              <>
+                <Link
+                  to={profile?.role === 'admin' ? "/admin/dashboard" : "/dashboard"}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => signOut()}
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                >
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/sign-in"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  to="/sign-up"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       )}
     </nav>

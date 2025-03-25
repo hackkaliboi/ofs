@@ -1,103 +1,106 @@
-
 import React from "react";
-import Navbar from "@/components/layout/Navbar";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import Footer from "@/components/layout/Footer";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Shield } from "lucide-react";
 
 const Privacy = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow pt-32 pb-20">
-        <div className="container-custom">
-          <Breadcrumb className="mb-6">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/privacy" className="font-medium">Privacy Policy</BreadcrumbLink>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          
+      <div className="flex-grow bg-gradient-to-b from-indigo-50/50 to-white">
+        <div className="container mx-auto px-4 py-24">
           <div className="max-w-4xl mx-auto">
-            <div className="mb-10">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Privacy Policy</h1>
-              <p className="text-lg text-gray-600">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-            </div>
+            <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
             
-            <div className="prose prose-lg max-w-none">
-              <div className="flex items-center gap-3 mb-6 text-indigo-600">
-                <Shield className="h-6 w-6" />
-                <span className="font-medium text-xl">Your Privacy Matters</span>
+            <div className="prose prose-indigo max-w-none">
+              <p className="text-lg text-gray-600 mb-8">
+                At OFSLEDGER, we take your privacy seriously. This Privacy Policy explains how we collect, use, 
+                disclose, and safeguard your information when you use our platform.
+              </p>
+
+              <section className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4">Information We Collect</h2>
+                <p className="text-gray-600 mb-4">
+                  We collect information that you provide directly to us, including:
+                </p>
+                <ul className="list-disc pl-6 space-y-2 text-gray-600">
+                  <li>Personal identification information (name, email address, phone number)</li>
+                  <li>Account credentials</li>
+                  <li>Transaction data</li>
+                  <li>Communication preferences</li>
+                  <li>Device and usage information</li>
+                </ul>
+              </section>
+
+              <section className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4">How We Use Your Information</h2>
+                <p className="text-gray-600 mb-4">
+                  We use the information we collect to:
+                </p>
+                <ul className="list-disc pl-6 space-y-2 text-gray-600">
+                  <li>Provide and maintain our services</li>
+                  <li>Process your transactions</li>
+                  <li>Send you technical notices and support messages</li>
+                  <li>Communicate with you about products, services, and events</li>
+                  <li>Protect against fraudulent or illegal activity</li>
+                </ul>
+              </section>
+
+              <section className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4">Information Security</h2>
+                <p className="text-gray-600 mb-4">
+                  We implement appropriate technical and organizational security measures to protect your information, including:
+                </p>
+                <ul className="list-disc pl-6 space-y-2 text-gray-600">
+                  <li>End-to-end encryption for sensitive data</li>
+                  <li>Regular security assessments and audits</li>
+                  <li>Strict access controls and authentication</li>
+                  <li>Continuous monitoring for suspicious activity</li>
+                  <li>Regular backups and disaster recovery procedures</li>
+                </ul>
+              </section>
+
+              <section className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4">Your Rights</h2>
+                <p className="text-gray-600 mb-4">
+                  You have the right to:
+                </p>
+                <ul className="list-disc pl-6 space-y-2 text-gray-600">
+                  <li>Access your personal information</li>
+                  <li>Correct inaccurate or incomplete information</li>
+                  <li>Request deletion of your information</li>
+                  <li>Object to processing of your information</li>
+                  <li>Receive a copy of your information</li>
+                </ul>
+              </section>
+
+              <section className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4">Contact Us</h2>
+                <p className="text-gray-600 mb-4">
+                  If you have any questions about this Privacy Policy or our practices, please contact us at:
+                </p>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-gray-600">Email: privacy@ofsledger.com</p>
+                  <p className="text-gray-600">Phone: +1 (888) OFS-HELP</p>
+                  <p className="text-gray-600">
+                    Address: 123 Financial District<br />
+                    San Francisco, CA 94111<br />
+                    United States
+                  </p>
+                </div>
+              </section>
+
+              <div className="flex flex-col sm:flex-row gap-4 mt-12">
+                <Link to="/terms">
+                  <Button variant="outline">Terms of Service</Button>
+                </Link>
+                <Link to="/contact">
+                  <Button variant="outline">Contact Us</Button>
+                </Link>
               </div>
-              
-              <p>
-                At OFSLEDGER, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, 
-                and safeguard your information when you visit our website or use our Oracle Financial System.
-              </p>
-              
-              <h2>Information We Collect</h2>
-              <p>
-                We may collect information about you in various ways. The information we may collect via the Service includes:
-              </p>
-              <ul>
-                <li>
-                  <strong>Personal Data:</strong> Personally identifiable information, such as your name, email address, 
-                  and telephone number, that you voluntarily give to us when you register with the Service or when you 
-                  choose to participate in various activities related to the Service.
-                </li>
-                <li>
-                  <strong>Derivative Data:</strong> Information our servers automatically collect when you access the 
-                  Service, such as your IP address, browser type, operating system, access times, and the pages you have viewed.
-                </li>
-                <li>
-                  <strong>Financial Data:</strong> Financial information, such as data related to your wallet address and 
-                  transaction history, that we may collect when you use our services.
-                </li>
-              </ul>
-              
-              <h2>Use of Your Information</h2>
-              <p>
-                Having accurate information about you permits us to provide you with a smooth, efficient, and customized experience. 
-                Specifically, we may use information collected about you via the Service to:
-              </p>
-              <ul>
-                <li>Create and manage your account.</li>
-                <li>Process transactions and send validation updates.</li>
-                <li>Fulfill and manage asset validations.</li>
-                <li>Offer new products, services, mobile applications, and/or recommendations to you.</li>
-                <li>Increase the efficiency and operation of the Service.</li>
-                <li>Monitor and analyze usage and trends to improve your experience with the Service.</li>
-                <li>Notify you of updates to the Service.</li>
-                <li>Resolve disputes and troubleshoot problems.</li>
-                <li>Prevent fraudulent transactions, monitor against theft, and protect against criminal activity.</li>
-              </ul>
-              
-              <h2>Security of Your Information</h2>
-              <p>
-                We use administrative, technical, and physical security measures to help protect your personal information. 
-                While we have taken reasonable steps to secure the personal information you provide to us, please be aware 
-                that despite our efforts, no security measures are perfect or impenetrable, and no method of data transmission 
-                can be guaranteed against any interception or other type of misuse.
-              </p>
-              
-              <h2>Contact Us</h2>
-              <p>
-                If you have questions or comments about this Privacy Policy, please contact us at:
-              </p>
-              <p>
-                OFSLEDGER<br />
-                Email: privacy@ofsledger.com<br />
-                Phone: +1 (888) OFS-LEDG
-              </p>
             </div>
           </div>
         </div>
-      </main>
+      </div>
       <Footer />
     </div>
   );

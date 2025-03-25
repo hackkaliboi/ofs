@@ -1,111 +1,155 @@
-
 import React from "react";
-import Navbar from "@/components/layout/Navbar";
+import { Link } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FileText, Code, Shield, Wallet, Cog, Book } from "lucide-react";
 import Footer from "@/components/layout/Footer";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { FileText, Code, ShieldCheck, Database, ChevronRight } from "lucide-react";
 
 const Documentation = () => {
+  const sections = [
+    {
+      id: "getting-started",
+      title: "Getting Started",
+      icon: Book,
+      content: [
+        {
+          title: "Introduction",
+          description: "Learn about OFSLEDGER and its core features",
+          link: "/docs/intro"
+        },
+        {
+          title: "Quick Start Guide",
+          description: "Get up and running with OFSLEDGER in minutes",
+          link: "/docs/quickstart"
+        },
+        {
+          title: "Platform Overview",
+          description: "Understand the OFSLEDGER platform architecture",
+          link: "/docs/overview"
+        }
+      ]
+    },
+    {
+      id: "asset-management",
+      title: "Asset Management",
+      icon: Wallet,
+      content: [
+        {
+          title: "Digital Asset Types",
+          description: "Overview of supported digital assets",
+          link: "/docs/assets"
+        },
+        {
+          title: "Wallet Integration",
+          description: "Connect and manage your Web3 wallets",
+          link: "/docs/wallets"
+        },
+        {
+          title: "Asset Validation",
+          description: "Learn about the asset validation process",
+          link: "/docs/validation"
+        }
+      ]
+    },
+    {
+      id: "security",
+      title: "Security",
+      icon: Shield,
+      content: [
+        {
+          title: "Security Features",
+          description: "Understand our security measures",
+          link: "/docs/security"
+        },
+        {
+          title: "Best Practices",
+          description: "Security recommendations for users",
+          link: "/docs/security/best-practices"
+        },
+        {
+          title: "Multi-Signature Support",
+          description: "Set up multi-signature protection",
+          link: "/docs/security/multisig"
+        }
+      ]
+    },
+    {
+      id: "api",
+      title: "API Reference",
+      icon: Code,
+      content: [
+        {
+          title: "REST API",
+          description: "Complete REST API documentation",
+          link: "/docs/api/rest"
+        },
+        {
+          title: "WebSocket API",
+          description: "Real-time data streaming API",
+          link: "/docs/api/websocket"
+        },
+        {
+          title: "Authentication",
+          description: "API authentication and security",
+          link: "/docs/api/auth"
+        }
+      ]
+    }
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow pt-32 pb-20">
-        <div className="container-custom">
-          <Breadcrumb className="mb-6">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/documentation" className="font-medium">Documentation</BreadcrumbLink>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gradient-purple">OFS Documentation</h1>
-            <p className="text-lg text-gray-600 mb-10">
-              Comprehensive guides and documentation for the Oracle Financial System
-            </p>
-            
-            <div className="space-y-12">
-              <section>
-                <h2 className="text-2xl font-semibold mb-4 flex items-center">
-                  <span className="gradient-card-purple inline-block p-2 rounded-lg mr-3">
-                    <FileText className="h-5 w-5" />
-                  </span>
-                  Getting Started
-                </h2>
-                <div className="p-6 gradient-card hover-3d">
-                  <p className="mb-4">
-                    The Oracle Financial System (OFS) represents a paradigm shift in global finance. 
-                    This documentation will guide you through the fundamentals of the OFS and how to 
-                    interact with the OFSLEDGER platform.
-                  </p>
-                  <p>
-                    Use the navigation on the left to explore specific topics or follow the 
-                    getting started guide for a comprehensive introduction.
-                  </p>
-                </div>
-              </section>
-              
-              <section>
-                <h2 className="text-2xl font-semibold mb-4 flex items-center">
-                  <span className="gradient-card-blue inline-block p-2 rounded-lg mr-3">
-                    <Database className="h-5 w-5" />
-                  </span>
-                  Key Documentation Sections
-                </h2>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="gradient-card-blue p-6 rounded-xl hover-3d">
-                    <h3 className="text-xl font-medium mb-3 flex items-center">
-                      <ChevronRight className="h-5 w-5 mr-1 text-blue-500" />
-                      User Guides
-                    </h3>
-                    <p>Step-by-step instructions for using the OFSLEDGER platform features</p>
+      <div className="flex-grow bg-gradient-to-b from-indigo-50/50 to-white">
+        <div className="container mx-auto px-4 py-24">
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-12">
+              <h1 className="text-4xl font-bold mb-4">Documentation</h1>
+              <p className="text-lg text-gray-600">
+                Everything you need to know about using OFSLEDGER's platform and services.
+              </p>
+            </div>
+
+            <div className="grid gap-8">
+              {sections.map((section) => {
+                const Icon = section.icon;
+                return (
+                  <div key={section.id}>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-indigo-100 p-2 rounded-lg">
+                        <Icon className="h-5 w-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-semibold">{section.title}</h2>
+                        <p>Explore {section.title.toLowerCase()} documentation</p>
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {section.content.map((item) => (
+                        <Link key={item.link} to={item.link}>
+                          <div className="group p-4 rounded-lg border border-gray-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all">
+                            <h3 className="font-semibold mb-1 group-hover:text-indigo-600">{item.title}</h3>
+                            <p className="text-sm text-gray-600">{item.description}</p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                  <div className="gradient-card-purple p-6 rounded-xl hover-3d">
-                    <h3 className="text-xl font-medium mb-3 flex items-center">
-                      <ChevronRight className="h-5 w-5 mr-1 text-purple-500" />
-                      Technical Documentation
-                    </h3>
-                    <p>Detailed technical specifications and architecture information</p>
-                  </div>
-                  <div className="gradient-card-indigo p-6 rounded-xl hover-3d">
-                    <h3 className="text-xl font-medium mb-3 flex items-center">
-                      <ChevronRight className="h-5 w-5 mr-1 text-indigo-500" />
-                      <Code className="h-5 w-5 mr-1" />
-                      API References
-                    </h3>
-                    <p>Complete API documentation for developers integrating with OFS</p>
-                  </div>
-                  <div className="gradient-card-violet p-6 rounded-xl hover-3d">
-                    <h3 className="text-xl font-medium mb-3 flex items-center">
-                      <ChevronRight className="h-5 w-5 mr-1 text-violet-500" />
-                      <ShieldCheck className="h-5 w-5 mr-1" />
-                      Security Features
-                    </h3>
-                    <p>Understanding the security protocols protecting the OFS ecosystem</p>
-                  </div>
-                </div>
-              </section>
-              
-              <div className="p-8 bg-indigo-50 rounded-xl border border-indigo-100 hover-3d">
-                <h3 className="text-xl font-medium mb-4 flex items-center">
-                  <span className="h-3 w-3 rounded-full bg-indigo-500 mr-2 pulse-slow"></span>
-                  Documentation Under Development
-                </h3>
-                <p className="text-gray-700">
-                  Our comprehensive documentation is currently being expanded. 
-                  Check back frequently for updates or subscribe to our newsletter 
-                  to be notified when new documentation sections are published.
-                </p>
+                );
+              })}
+            </div>
+
+            <div className="mt-12 flex justify-center">
+              <div className="text-center">
+                <p className="text-gray-600 mb-4">Can't find what you're looking for?</p>
+                <Link to="/contact">
+                  <Button variant="outline">Contact Support</Button>
+                </Link>
               </div>
             </div>
           </div>
         </div>
-      </main>
+      </div>
       <Footer />
     </div>
   );

@@ -1,185 +1,162 @@
 import React from "react";
-import { Shield, Zap, Globe, Users, Award, Cpu, Target, ChartBar, Network } from "lucide-react";
-import AnimatedSection from "@/components/ui/AnimatedSection";
-import Navbar from "@/components/layout/Navbar";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Shield, Zap, Users, Globe, Code, ChevronRight } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 
 const About = () => {
-  const highlights = [
+  const features = [
     {
       icon: Shield,
       title: "Secure Asset Validation",
-      description: "Our platform uses advanced encryption to ensure your digital assets remain secure throughout the validation process."
+      description: "Industry-leading security protocols to validate and verify digital assets with confidence."
     },
     {
       icon: Zap,
-      title: "Fast Implementation",
-      description: "The Oracle Financial System provides nearly instantaneous transaction settlement, unlike traditional banking systems."
-    },
-    {
-      icon: Globe,
-      title: "Global Infrastructure",
-      description: "Built on a decentralized network spanning the globe, ensuring reliability and accessibility worldwide."
-    },
-    {
-      icon: Cpu,
-      title: "Oracle Computing",
-      description: "Leveraging oracle technology to provide unparalleled security and processing capabilities."
+      title: "Real-Time Processing",
+      description: "Lightning-fast transaction processing and instant validation results."
     },
     {
       icon: Users,
-      title: "Community Driven",
-      description: "Developed with input from financial experts and the global community to ensure it meets everyone's needs."
+      title: "Enterprise Solutions",
+      description: "Tailored solutions for businesses of all sizes, from startups to large corporations."
     },
     {
-      icon: Award,
-      title: "Asset-Backed Currency",
-      description: "Supporting the transition to asset-backed currencies, ending the era of fiat currencies."
+      icon: Globe,
+      title: "Global Accessibility",
+      description: "Access your assets and perform validations from anywhere in the world."
+    },
+    {
+      icon: Code,
+      title: "Developer-Friendly",
+      description: "Comprehensive API documentation and SDKs for seamless integration."
     }
   ];
 
-  const missionPoints = [
-    {
-      icon: Target,
-      title: "Our Vision",
-      description: "To facilitate the global transition to the Oracle Financial System (OFS), creating a transparent and corruption-free banking ecosystem."
-    },
-    {
-      icon: ChartBar,
-      title: "Our Impact",
-      description: "Eliminating transaction fees and funds transfer costs, making banking services accessible and affordable for everyone."
-    },
-    {
-      icon: Network,
-      title: "Our Technology",
-      description: "Replacing SWIFT with a Global-Decentralized CIPS, ensuring secure and transparent cross-border transactions."
-    }
+  const stats = [
+    { label: "Active Users", value: "100K+" },
+    { label: "Transactions Validated", value: "10M+" },
+    { label: "Countries Served", value: "150+" },
+    { label: "Enterprise Clients", value: "500+" }
   ];
 
-  const teamMembers = [
+  const team = [
     {
-      role: "Technology",
-      description: "Expert developers and engineers specializing in blockchain, oracle systems, and secure financial infrastructure.",
-      count: 15
+      name: "Sarah Chen",
+      role: "CEO & Founder",
+      bio: "Former fintech executive with 15+ years of experience in blockchain and digital assets."
     },
     {
-      role: "Security",
-      description: "Dedicated security specialists ensuring the highest level of protection for all transactions and user data.",
-      count: 8
+      name: "Marcus Rodriguez",
+      role: "CTO",
+      bio: "Blockchain architect and security expert with multiple patents in digital asset validation."
     },
     {
-      role: "Financial Experts",
-      description: "Experienced professionals from traditional banking and fintech sectors guiding our strategic decisions.",
-      count: 12
-    },
-    {
-      role: "Operations",
-      description: "24/7 global operations team maintaining system performance and providing customer support.",
-      count: 20
+      name: "Dr. Emily Watson",
+      role: "Head of Research",
+      bio: "PhD in Cryptography, leading research in advanced validation algorithms."
     }
   ];
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow pt-28 pb-20">
-        {/* Hero Section */}
-        <section className="py-16 bg-gradient-to-b from-indigo-900 via-purple-900 to-blue-900 text-white">
-          <div className="container-custom">
-            <AnimatedSection>
-              <div className="text-center max-w-3xl mx-auto mb-16">
-                <h1 className="text-4xl md:text-5xl font-bold mb-6">About OFSLEDGER</h1>
-                <p className="text-xl text-blue-100/90">
-                  Pioneering the transition to the Oracle Financial System
-                </p>
-              </div>
-            </AnimatedSection>
+      <div className="flex-grow bg-gradient-to-b from-indigo-50/50 to-white">
+        <div className="container mx-auto px-4 py-24">
+          {/* Hero Section */}
+          <div className="max-w-4xl mx-auto text-center mb-20">
+            <h1 className="text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600">
+              Revolutionizing Digital Asset Validation
+            </h1>
+            <p className="text-xl text-gray-600 mb-8">
+              OFSLEDGER is leading the future of financial technology with our innovative 
+              Oracle Financial System, making digital asset validation secure, efficient, and accessible.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Link to="/contact">
+                <Button className="gap-2">
+                  Get Started <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link to="/documentation">
+                <Button variant="outline" className="gap-2">
+                  Learn More <ChevronRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           </div>
-        </section>
 
-        {/* Mission Section */}
-        <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
-          <div className="container-custom">
-            <AnimatedSection delay={2}>
-              <div className="text-center mb-16">
-                <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
-                <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                  OFSLEDGER is revolutionizing the financial system by providing a secure, transparent, and efficient platform for the future of banking.
-                </p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                {missionPoints.map((point, index) => (
-                  <div key={point.title} className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                    <div className="bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full w-14 h-14 flex items-center justify-center mb-6">
-                      <point.icon className="h-7 w-7 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-4">{point.title}</h3>
-                    <p className="text-gray-600">{point.description}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8">
-                <p className="text-gray-600 mb-6">
-                  OFS is NOT cryptocurrency. After the reevaluation of currencies (REVAL), all sovereign currencies will be asset-backed, ensuring stable value which makes the need for unbacked cryptocurrencies obsolete.
-                </p>
-                <p className="text-gray-600">
-                  OFSLEDGER reigns supreme in the technology it applies and creates, providing 100% financial security and transparency for all currency holders. It ends corruption in Central Banking and replaces the US-centrally controlled SWIFT system with a Global-Decentralized CIPS.
-                </p>
-              </div>
-            </AnimatedSection>
+          {/* Stats Section */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20">
+            {stats.map((stat, index) => (
+              <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow">
+                <CardContent className="pt-6">
+                  <div className="text-3xl font-bold text-indigo-600 mb-2">{stat.value}</div>
+                  <div className="text-gray-600">{stat.label}</div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        </section>
 
-        {/* Features Section */}
-        <section className="py-20 bg-white">
-          <div className="container-custom">
-            <AnimatedSection delay={3}>
-              <h2 className="text-3xl font-bold mb-8 text-center">Why Choose OFSLEDGER?</h2>
-            </AnimatedSection>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {highlights.map((item, index) => (
-                <AnimatedSection key={item.title} delay={(index % 3 + 1) as 1 | 2 | 3 | 4}>
-                  <div className="bg-white rounded-xl p-8 shadow hover:shadow-lg transition-shadow border border-gray-100">
-                    <div className="bg-indigo-50 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                      <item.icon className="h-6 w-6 text-indigo-600" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
-                    <p className="text-gray-600">{item.description}</p>
-                  </div>
-                </AnimatedSection>
+          {/* Features Section */}
+          <div className="mb-20">
+            <h2 className="text-3xl font-bold text-center mb-12">Why Choose OFSLEDGER?</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {features.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <Card key={index} className="hover:shadow-lg transition-all">
+                    <CardContent className="pt-6">
+                      <div className="flex items-start gap-4">
+                        <div className="bg-indigo-100 p-3 rounded-lg">
+                          <Icon className="h-6 w-6 text-indigo-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
+                          <p className="text-gray-600">{feature.description}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Team Section */}
+          <div className="mb-20">
+            <h2 className="text-3xl font-bold text-center mb-12">Our Leadership Team</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {team.map((member, index) => (
+                <Card key={index} className="hover:shadow-lg transition-all">
+                  <CardContent className="pt-6">
+                    <h3 className="font-semibold text-xl mb-1">{member.name}</h3>
+                    <Badge variant="secondary" className="mb-3">{member.role}</Badge>
+                    <p className="text-gray-600">{member.bio}</p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
-        </section>
 
-        {/* Team Section */}
-        <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
-          <div className="container-custom">
-            <AnimatedSection delay={2}>
-              <div className="text-center mb-16">
-                <h2 className="text-3xl font-bold mb-4">Our Team</h2>
-                <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                  OFSLEDGER is backed by a dedicated team of experts working globally to build a better financial future.
-                </p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {teamMembers.map((member, index) => (
-                  <div key={member.role} className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-bold">{member.role}</h3>
-                      <span className="text-sm font-semibold px-4 py-1 bg-indigo-50 text-indigo-600 rounded-full">
-                        Team of {member.count}
-                      </span>
-                    </div>
-                    <p className="text-gray-600">{member.description}</p>
-                  </div>
-                ))}
-              </div>
-            </AnimatedSection>
+          {/* CTA Section */}
+          <div className="text-center">
+            <h2 className="text-3xl font-bold mb-6">Ready to Get Started?</h2>
+            <p className="text-lg text-gray-600 mb-8">
+              Join thousands of businesses and individuals who trust OFSLEDGER for their digital asset validation needs.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Link to="/signup">
+                <Button size="lg">Create Account</Button>
+              </Link>
+              <Link to="/contact">
+                <Button variant="outline" size="lg">Contact Sales</Button>
+              </Link>
+            </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </div>
       <Footer />
     </div>
   );

