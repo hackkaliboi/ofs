@@ -15,6 +15,8 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Area,
+  AreaChart,
 } from "recharts";
 import {
   ArrowUpRight,
@@ -28,6 +30,12 @@ import {
   BarChart3,
   RefreshCcw,
   AlertCircle,
+  TrendingUp,
+  Landmark,
+  Clock,
+  DollarSign,
+  Plus,
+  ArrowLeftRight,
 } from "lucide-react";
 
 // Types for dashboard data
@@ -89,6 +97,7 @@ const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData>(defaultData);
   const [wallets, setWallets] = useState<any[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | 'all'>('24h');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -143,7 +152,7 @@ const Dashboard = () => {
         }));
         
         // Generate chart data (simplified for now)
-        const chartData = generateChartData(totalBalance);
+        const chartData = generateChartData(totalBalance, timeRange);
         
         // Format assets data
         const assetsData = walletsData?.map((wallet: any) => ({
@@ -177,20 +186,38 @@ const Dashboard = () => {
     };
     
     fetchDashboardData();
-  }, [user, navigate]);
+  }, [user, navigate, timeRange]);
 
-  // Generate sample chart data based on balance
-  const generateChartData = (balance: number) => {
+  // Generate sample chart data based on balance and time range
+  const generateChartData = (balance: number, range: string) => {
     const baseValue = balance * 0.95;
-    return [
-      { time: "00:00", value: baseValue + Math.random() * balance * 0.05 },
-      { time: "04:00", value: baseValue + Math.random() * balance * 0.05 },
-      { time: "08:00", value: baseValue + Math.random() * balance * 0.06 },
-      { time: "12:00", value: baseValue + Math.random() * balance * 0.07 },
-      { time: "16:00", value: baseValue + Math.random() * balance * 0.08 },
-      { time: "20:00", value: baseValue + Math.random() * balance * 0.09 },
-      { time: "24:00", value: balance },
-    ];
+    
+    if (range === '24h') {
+      return [
+        { time: "00:00", value: baseValue + Math.random() * balance * 0.05 },
+        { time: "04:00", value: baseValue + Math.random() * balance * 0.05 },
+        { time: "08:00", value: baseValue + Math.random() * balance * 0.06 },
+        { time: "12:00", value: baseValue + Math.random() * balance * 0.07 },
+        { time: "16:00", value: baseValue + Math.random() * balance * 0.08 },
+        { time: "20:00", value: baseValue + Math.random() * balance * 0.09 },
+        { time: "24:00", value: balance },
+      ];
+    } else if (range === '7d') {
+      return Array.from({ length: 7 }, (_, i) => ({
+        time: `Day ${i + 1}`,
+        value: baseValue + Math.random() * balance * (0.05 + i * 0.01),
+      }));
+    } else if (range === '30d') {
+      return Array.from({ length: 10 }, (_, i) => ({
+        time: `Week ${Math.floor(i / 2) + 1}${i % 2 === 0 ? 'a' : 'b'}`,
+        value: baseValue + Math.random() * balance * (0.05 + i * 0.01),
+      }));
+    } else {
+      return Array.from({ length: 12 }, (_, i) => ({
+        time: `Month ${i + 1}`,
+        value: baseValue + Math.random() * balance * (0.05 + i * 0.02),
+      }));
+    }
   };
 
   // Calculate total change percentage
@@ -242,93 +269,138 @@ const Dashboard = () => {
     );
   }
 
+  // Format currency for display
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value);
+  };
+
   return (
     <div className="container mx-auto p-6 space-y-8">
-      {/* Header */}
-      <div className="flex flex-col space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight">
-          Welcome back, {profile?.full_name || user?.email?.split('@')[0] || 'User'}
-        </h1>
-        <p className="text-muted-foreground">
-          Here's an overview of your portfolio and recent activity
-        </p>
-      </div>
-
-      {/* Quick Stats */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="transition-all hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-bold">${dashboardData.balance.total.toLocaleString()}</div>
-              <div className={`flex items-center ${dashboardData.balance.positive ? 'text-green-500' : 'text-red-500'}`}>
-                {dashboardData.balance.positive ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
-                <span className="text-sm ml-1">{dashboardData.balance.change}%</span>
-              </div>
+      {/* Header with greeting and summary */}
+      <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-xl p-6 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight">
+              Welcome back, {profile?.full_name || user?.email?.split('@')[0] || 'User'}
+            </h1>
+            <p className="text-muted-foreground">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+          </div>
+          <div className="flex flex-col md:items-end">
+            <div className="text-3xl font-bold">{formatCurrency(dashboardData.balance.total)}</div>
+            <div className="flex items-center">
+              <Badge variant={dashboardData.balance.positive ? "success" : "destructive"} className="mr-2">
+                <span className="flex items-center">
+                  {dashboardData.balance.positive ? <ArrowUpRight className="h-3 w-3 mr-1" /> : <ArrowDownRight className="h-3 w-3 mr-1" />}
+                  {Math.abs(dashboardData.balance.change)}%
+                </span>
+              </Badge>
+              <span className="text-sm text-muted-foreground">Total Balance</span>
             </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="transition-all hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Wallets</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{wallets.length}</div>
-          </CardContent>
-        </Card>
-        
-        <Card className="transition-all hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Transactions</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{transactions.length}</div>
-          </CardContent>
-        </Card>
-        
-        <Card className="transition-all hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Portfolio Performance</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${dashboardData.balance.positive ? 'text-green-500' : 'text-red-500'}`}>
-              {dashboardData.balance.positive ? '+' : ''}{dashboardData.balance.change}%
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Chart */}
-      <Card className="transition-all hover:shadow-md">
-        <CardHeader>
-          <CardTitle>Portfolio Value</CardTitle>
-          <CardDescription>24-hour performance</CardDescription>
+      <Card className="overflow-hidden border-none shadow-md">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Portfolio Value</CardTitle>
+            <CardDescription>Performance over time</CardDescription>
+          </div>
+          <div className="flex space-x-2">
+            <Button 
+              variant={timeRange === '24h' ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setTimeRange('24h')}
+            >
+              24h
+            </Button>
+            <Button 
+              variant={timeRange === '7d' ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setTimeRange('7d')}
+            >
+              7d
+            </Button>
+            <Button 
+              variant={timeRange === '30d' ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setTimeRange('30d')}
+            >
+              30d
+            </Button>
+            <Button 
+              variant={timeRange === 'all' ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setTimeRange('all')}
+            >
+              All
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={dashboardData.chart}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#8884d8"
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                  activeDot={{ r: 6 }}
+              <AreaChart data={dashboardData.chart}>
+                <defs>
+                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="time" 
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={{ stroke: '#e0e0e0' }}
                 />
-              </LineChart>
+                <YAxis 
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={{ stroke: '#e0e0e0' }}
+                  tickFormatter={(value) => `$${value.toLocaleString()}`}
+                />
+                <Tooltip 
+                  formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Value']}
+                  labelFormatter={(label) => `Time: ${label}`}
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                    border: 'none',
+                    padding: '8px 12px'
+                  }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke="#8884d8" 
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorValue)"
+                  activeDot={{ r: 6, strokeWidth: 2, stroke: '#fff' }}
+                />
+              </AreaChart>
             </ResponsiveContainer>
+          </div>
+          <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
+            <div>
+              Min: {formatCurrency(Math.min(...dashboardData.chart.map(item => item.value)))}
+            </div>
+            <div>
+              Max: {formatCurrency(Math.max(...dashboardData.chart.map(item => item.value)))}
+            </div>
+            <div>
+              Avg: {formatCurrency(dashboardData.chart.reduce((sum, item) => sum + item.value, 0) / dashboardData.chart.length)}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -336,29 +408,47 @@ const Dashboard = () => {
       {/* Assets and Transactions */}
       <div className="grid gap-4 md:grid-cols-2">
         {/* Assets */}
-        <Card className="transition-all hover:shadow-md">
-          <CardHeader>
-            <CardTitle>Your Assets</CardTitle>
-            <CardDescription>Current holdings</CardDescription>
+        <Card className="overflow-hidden border-none shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Your Assets</CardTitle>
+              <CardDescription>Current holdings</CardDescription>
+            </div>
+            <Button variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Asset
+            </Button>
           </CardHeader>
           <CardContent>
             {dashboardData.assets.length > 0 ? (
-              <ScrollArea className="h-[300px]">
-                <div className="space-y-4">
+              <ScrollArea className="h-[300px] pr-4">
+                <div className="space-y-3">
                   {dashboardData.assets.map((asset) => (
-                    <div key={asset.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted">
+                    <div 
+                      key={asset.id} 
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors border border-gray-100 hover:border-gray-200"
+                    >
                       <div className="flex items-center space-x-4">
-                        <div className="bg-primary/10 p-2 rounded-full">
+                        <div className="bg-gradient-to-br from-primary/20 to-primary/10 p-2.5 rounded-full">
                           <Wallet className="h-5 w-5 text-primary" />
                         </div>
                         <div>
                           <div className="font-medium">{asset.name}</div>
-                          <div className="text-sm text-muted-foreground">{asset.amount} {asset.symbol}</div>
+                          <div className="text-sm text-muted-foreground flex items-center">
+                            <span className="mr-2">{asset.amount} {asset.symbol}</span>
+                            <Badge variant="outline" className="text-xs">
+                              {asset.symbol}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-medium">${asset.value.toLocaleString()}</div>
-                        <div className={`text-sm ${asset.positive ? 'text-green-500' : 'text-red-500'}`}>
+                        <div className="font-medium">{formatCurrency(asset.value)}</div>
+                        <div className={`text-sm flex items-center justify-end ${asset.positive ? 'text-green-500' : 'text-red-500'}`}>
+                          {asset.positive ? 
+                            <ArrowUpRight className="h-3 w-3 mr-1" /> : 
+                            <ArrowDownRight className="h-3 w-3 mr-1" />
+                          }
                           {asset.positive ? '+' : ''}{asset.change}%
                         </div>
                       </div>
@@ -368,44 +458,82 @@ const Dashboard = () => {
               </ScrollArea>
             ) : (
               <div className="flex flex-col items-center justify-center h-[300px] text-center">
-                <Wallet className="h-12 w-12 text-muted-foreground mb-4" />
+                <div className="bg-muted rounded-full p-4 mb-4">
+                  <Wallet className="h-8 w-8 text-muted-foreground" />
+                </div>
                 <h3 className="text-lg font-medium mb-2">No assets found</h3>
-                <p className="text-sm text-muted-foreground mb-4">You don't have any assets in your portfolio yet.</p>
-                <Button>Add Asset</Button>
+                <p className="text-sm text-muted-foreground mb-4 max-w-sm">
+                  You don't have any assets in your portfolio yet. Add your first asset to get started.
+                </p>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Asset
+                </Button>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Recent Transactions */}
-        <Card className="transition-all hover:shadow-md">
-          <CardHeader>
-            <CardTitle>Recent Transactions</CardTitle>
-            <CardDescription>Your recent activity</CardDescription>
+        <Card className="overflow-hidden border-none shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Recent Transactions</CardTitle>
+              <CardDescription>Your recent activity</CardDescription>
+            </div>
+            <Button variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              New Transaction
+            </Button>
           </CardHeader>
           <CardContent>
             {dashboardData.recentTransactions.length > 0 ? (
-              <ScrollArea className="h-[300px]">
-                <div className="space-y-4">
+              <ScrollArea className="h-[300px] pr-4">
+                <div className="space-y-3">
                   {dashboardData.recentTransactions.map((tx) => (
-                    <div key={tx.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted">
+                    <div 
+                      key={tx.id} 
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors border border-gray-100 hover:border-gray-200"
+                    >
                       <div className="flex items-center space-x-4">
-                        <div className={`p-2 rounded-full ${tx.type === 'buy' ? 'bg-green-100' : 'bg-red-100'}`}>
+                        <div className={`p-2.5 rounded-full ${
+                          tx.type === 'buy' ? 'bg-green-100' : 
+                          tx.type === 'sell' ? 'bg-red-100' : 
+                          'bg-blue-100'
+                        }`}>
                           {tx.type === 'buy' ? (
-                            <Download className={`h-5 w-5 ${tx.type === 'buy' ? 'text-green-500' : 'text-red-500'}`} />
+                            <Download className={`h-5 w-5 text-green-600`} />
+                          ) : tx.type === 'sell' ? (
+                            <Send className={`h-5 w-5 text-red-600`} />
                           ) : (
-                            <Send className={`h-5 w-5 ${tx.type === 'buy' ? 'text-green-500' : 'text-red-500'}`} />
+                            <ArrowLeftRight className={`h-5 w-5 text-blue-600`} />
                           )}
                         </div>
                         <div>
                           <div className="font-medium">
-                            {tx.type === 'buy' ? 'Bought' : 'Sold'} {tx.asset}
+                            {tx.type === 'buy' ? 'Bought' : 
+                             tx.type === 'sell' ? 'Sold' : 
+                             'Transferred'} {tx.asset}
                           </div>
-                          <div className="text-sm text-muted-foreground">{tx.time}</div>
+                          <div className="text-sm text-muted-foreground flex items-center">
+                            <span>{tx.time}</span>
+                            {tx.status && (
+                              <Badge 
+                                variant="outline" 
+                                className={`ml-2 text-xs ${
+                                  tx.status === 'completed' ? 'bg-green-50 text-green-700 border-green-200' : 
+                                  tx.status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 
+                                  'bg-red-50 text-red-700 border-red-200'
+                                }`}
+                              >
+                                {tx.status}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-medium">${tx.value.toLocaleString()}</div>
+                        <div className="font-medium">{formatCurrency(tx.value)}</div>
                         <div className="text-sm text-muted-foreground">{tx.amount} {tx.asset}</div>
                       </div>
                     </div>
@@ -414,10 +542,17 @@ const Dashboard = () => {
               </ScrollArea>
             ) : (
               <div className="flex flex-col items-center justify-center h-[300px] text-center">
-                <History className="h-12 w-12 text-muted-foreground mb-4" />
+                <div className="bg-muted rounded-full p-4 mb-4">
+                  <History className="h-8 w-8 text-muted-foreground" />
+                </div>
                 <h3 className="text-lg font-medium mb-2">No transactions yet</h3>
-                <p className="text-sm text-muted-foreground mb-4">Your recent transactions will appear here.</p>
-                <Button>Make Transaction</Button>
+                <p className="text-sm text-muted-foreground mb-4 max-w-sm">
+                  Your recent transactions will appear here once you start making them.
+                </p>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Make Transaction
+                </Button>
               </div>
             )}
           </CardContent>
@@ -426,19 +561,31 @@ const Dashboard = () => {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Button className="flex flex-col items-center justify-center h-24 space-y-2">
+        <Button 
+          className="flex flex-col items-center justify-center h-24 space-y-2 bg-gradient-to-br from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
+        >
           <Send className="h-6 w-6" />
           <span>Send</span>
         </Button>
-        <Button className="flex flex-col items-center justify-center h-24 space-y-2">
+        <Button 
+          className="flex flex-col items-center justify-center h-24 space-y-2 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all shadow-md hover:shadow-lg"
+        >
           <Download className="h-6 w-6" />
           <span>Receive</span>
         </Button>
-        <Button variant="outline" className="flex flex-col items-center justify-center h-24 space-y-2">
+        <Button 
+          variant="outline" 
+          className="flex flex-col items-center justify-center h-24 space-y-2 border-2 hover:bg-muted/50 transition-all"
+          onClick={() => navigate('/dashboard/connect-wallet')}
+        >
           <CreditCard className="h-6 w-6" />
           <span>Wallets</span>
         </Button>
-        <Button variant="outline" className="flex flex-col items-center justify-center h-24 space-y-2">
+        <Button 
+          variant="outline" 
+          className="flex flex-col items-center justify-center h-24 space-y-2 border-2 hover:bg-muted/50 transition-all"
+          onClick={() => navigate('/dashboard/history')}
+        >
           <History className="h-6 w-6" />
           <span>History</span>
         </Button>

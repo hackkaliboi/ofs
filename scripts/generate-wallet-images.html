@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Wallet Images</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .wallet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .wallet-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .wallet-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    .wallet-logo img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+    .wallet-name {
+      font-size: 12px;
+      font-weight: 500;
+    }
+    button {
+      background-color: #4F46E5;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      margin-top: 20px;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .success {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+    .error {
+      background-color: #fee2e2;
+      color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+  <h1>Wallet Image Generator</h1>
+  <p>This tool will generate placeholder images for all wallets in the OFS Ledger application.</p>
+  
+  <button id="generateBtn">Generate Wallet Images</button>
+  <div id="status" class="status" style="display: none;"></div>
+  
+  <div class="wallet-grid" id="walletGrid"></div>
+
+  <script>
+    // List of wallets that need placeholder images
+    const wallets = [
+      { id: 'metamask', name: 'Metamask', color: '#F6851B' },
+      { id: 'trustwallet', name: 'Trust Wallet', color: '#3375BB' },
+      { id: 'ledger', name: 'Ledger', color: '#000000' },
+      { id: 'blockchain', name: 'Blockchain', color: '#1D72B8' },
+      { id: 'rainbow', name: 'Rainbow', color: '#001E59' },
+      { id: 'viawallet', name: 'ViaWallet', color: '#1F6EEB' },
+      { id: 'ownbit', name: 'Ownbit', color: '#1E88F7' },
+      { id: 'zelcore', name: 'Zelcore', color: '#1E88F7' },
+      { id: 'xdc', name: 'XDC Wallet', color: '#2352A6' },
+      { id: 'vision', name: 'Vision', color: '#000000' },
+      { id: 'atomic', name: 'Atomic', color: '#2E3148' },
+      { id: 'crypto-com', name: 'Crypto.com DeFi Wallet', color: '#002D74' },
+      { id: 'mathwallet', name: 'MathWallet', color: '#0099FF' },
+      { id: 'morix', name: 'MoriX Wallet', color: '#FF9900' },
+      { id: 'safepal', name: 'SafePal', color: '#0078FF' },
+      { id: 'sparkpoint', name: 'SparkPoint', color: '#E02020' },
+      { id: 'unstoppable', name: 'Unstoppable', color: '#FDB933' },
+      { id: 'peakdefi', name: 'PeakDeFi Wallet', color: '#3FB68B' },
+      { id: 'infinity', name: 'Infinity Wallet', color: '#0078FF' },
+      { id: 'exodus', name: 'Exodus Wallet', color: '#1E1F25' },
+      { id: 'lobstr', name: 'Lobstr Wallet', color: '#2C76FE' }
+    ];
+
+    // Generate the wallet grid
+    const walletGrid = document.getElementById('walletGrid');
+    wallets.forEach(wallet => {
+      const walletItem = document.createElement('div');
+      walletItem.className = 'wallet-item';
+      
+      const walletLogo = document.createElement('div');
+      walletLogo.className = 'wallet-logo';
+      walletLogo.style.backgroundColor = wallet.color;
+      
+      const img = document.createElement('img');
+      img.id = `img-${wallet.id}`;
+      img.src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><text x="50%" y="50%" font-family="Arial" font-size="30" fill="white" text-anchor="middle" dominant-baseline="middle">${wallet.name.charAt(0)}</text></svg>`;
+      img.alt = `${wallet.name} logo`;
+      
+      walletLogo.appendChild(img);
+      
+      const walletName = document.createElement('div');
+      walletName.className = 'wallet-name';
+      walletName.textContent = wallet.name;
+      
+      walletItem.appendChild(walletLogo);
+      walletItem.appendChild(walletName);
+      
+      walletGrid.appendChild(walletItem);
+    });
+
+    // Generate button functionality
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+      const statusEl = document.getElementById('status');
+      statusEl.className = 'status';
+      statusEl.style.display = 'block';
+      statusEl.textContent = 'Generating wallet images...';
+
+      try {
+        for (const wallet of wallets) {
+          // Create a canvas to generate the image
+          const canvas = document.createElement('canvas');
+          canvas.width = 200;
+          canvas.height = 200;
+          const ctx = canvas.getContext('2d');
+          
+          // Fill background
+          ctx.fillStyle = wallet.color;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Add text
+          ctx.fillStyle = 'white';
+          ctx.font = 'bold 80px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(wallet.name.charAt(0).toUpperCase(), canvas.width / 2, canvas.height / 2);
+          
+          // Convert to blob
+          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+          
+          // Create download link
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `${wallet.id}.png`;
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          
+          // Update the image in the grid
+          document.getElementById(`img-${wallet.id}`).src = a.href;
+          
+          // Wait a bit between downloads to avoid overwhelming the browser
+          await new Promise(resolve => setTimeout(resolve, 300));
+        }
+        
+        statusEl.className = 'status success';
+        statusEl.textContent = 'All wallet images generated successfully! Save these files to your public/wallets directory.';
+      } catch (error) {
+        statusEl.className = 'status error';
+        statusEl.textContent = `Error generating images: ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,113 +1,248 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/context/AuthContext";
-import {
-  LayoutDashboard,
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { 
+  Home,
   Wallet,
-  ArrowLeftRight,
+  CreditCard,
+  BarChart3,
   History,
   Settings,
   LogOut,
-  Home,
-  Link as LinkIcon,
+  Menu,
+  X,
+  ChevronRight,
+  HelpCircle,
+  Bell,
+  Layers,
+  Users,
+  Shield
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const sidebarItems = [
-  {
-    title: "Dashboard",
-    icon: <LayoutDashboard className="h-5 w-5" />,
-    href: "/dashboard",
-  },
-  {
-    title: "Assets",
-    icon: <Wallet className="h-5 w-5" />,
-    href: "/dashboard/assets",
-  },
-  {
-    title: "Transactions",
-    icon: <ArrowLeftRight className="h-5 w-5" />,
-    href: "/dashboard/transactions",
-  },
-  {
-    title: "Connect Wallet",
-    icon: <LinkIcon className="h-5 w-5" />,
-    href: "/dashboard/connect-wallet",
-  },
-  {
-    title: "History",
-    icon: <History className="h-5 w-5" />,
-    href: "/dashboard/history",
-  },
-  {
-    title: "Settings",
-    icon: <Settings className="h-5 w-5" />,
-    href: "/dashboard/settings",
-  },
-];
+interface SidebarProps {
+  className?: string;
+}
 
-export function DashboardSidebar() {
+export function DashboardSidebar({ className }: SidebarProps) {
+  const { user, profile, signOut } = useAuth();
   const location = useLocation();
-  const { signOut } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const handleSignOut = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    try {
-      await signOut();
-      console.log("Signed out successfully from sidebar");
-    } catch (error) {
-      console.error("Error signing out:", error);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const navItems = [
+    {
+      title: "Dashboard",
+      href: "/dashboard",
+      icon: <Home className="h-5 w-5" />,
+      exact: true,
+    },
+    {
+      title: "Assets",
+      href: "/dashboard/assets",
+      icon: <Layers className="h-5 w-5" />,
+      exact: false,
+    },
+    {
+      title: "Transactions",
+      href: "/dashboard/transactions",
+      icon: <BarChart3 className="h-5 w-5" />,
+      exact: false,
+    },
+    {
+      title: "History",
+      href: "/dashboard/history",
+      icon: <History className="h-5 w-5" />,
+      exact: false,
+    },
+    {
+      title: "Wallets",
+      href: "/dashboard/connect-wallet",
+      icon: <Wallet className="h-5 w-5" />,
+      exact: false,
+    },
+  ];
+
+  const secondaryNavItems = [
+    {
+      title: "Settings",
+      href: "/dashboard/settings",
+      icon: <Settings className="h-5 w-5" />,
+      exact: false,
+    },
+    {
+      title: "Help & Support",
+      href: "/dashboard/help",
+      icon: <HelpCircle className="h-5 w-5" />,
+      exact: false,
+    },
+  ];
+
+  const isActive = (path: string, exact: boolean) => {
+    if (exact) {
+      return location.pathname === path;
     }
+    return location.pathname.startsWith(path);
   };
 
   return (
-    <div className="group fixed inset-y-0 left-0 flex h-full w-72 flex-col border-r bg-white/95 shadow-sm">
-      <div className="p-6">
-        <Link to="/" className="flex items-center gap-2 font-semibold">
-          <span className="text-2xl font-bold text-primary">OFS</span>
-          <span className="text-2xl font-bold">LEDGER</span>
-        </Link>
+    <>
+      {/* Mobile Menu Button */}
+      <div className="md:hidden fixed top-4 left-4 z-50">
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full bg-background/80 backdrop-blur-sm border-muted-foreground/20"
+          onClick={toggleMobileMenu}
+        >
+          {isMobileMenuOpen ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
+        </Button>
       </div>
-      <ScrollArea className="flex-1 px-3">
-        <div className="space-y-1 py-2">
-          {sidebarItems.map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:text-indigo-600",
-                location.pathname === item.href
-                  ? "bg-indigo-50 text-indigo-600"
-                  : "text-gray-500 hover:bg-indigo-50"
-              )}
-            >
-              {item.icon}
-              {item.title}
-            </Link>
-          ))}
-        </div>
-      </ScrollArea>
-      <div className="mt-auto p-4 border-t">
-        <div className="flex flex-col gap-2">
-          <Link
-            to="/"
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 transition-all hover:text-indigo-600 hover:bg-indigo-50"
-          >
-            <Home className="h-5 w-5" />
-            Back to Website
+
+      {/* Sidebar Container */}
+      <div
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 flex flex-col w-64 bg-background border-r border-border transition-transform duration-300 ease-in-out",
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+          className
+        )}
+      >
+        {/* Logo and Brand */}
+        <div className="h-16 flex items-center px-4 border-b">
+          <Link to="/dashboard" className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
+              OL
+            </div>
+            <span className="text-xl font-bold">OFS Ledger</span>
           </Link>
+        </div>
+
+        {/* User Profile */}
+        <div className="p-4 border-b">
+          <div className="flex items-center space-x-3">
+            <Avatar className="h-10 w-10 border-2 border-muted">
+              <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || user?.email || "User"} />
+              <AvatarFallback className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 text-foreground">
+                {profile?.full_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">
+                {profile?.full_name || user?.email?.split('@')[0] || 'User'}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {user?.email || ''}
+              </p>
+            </div>
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Bell className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <ScrollArea className="flex-1 py-2">
+          <div className="px-3 py-2">
+            <div className="text-xs font-semibold text-muted-foreground tracking-wider uppercase px-2 mb-2">
+              Main
+            </div>
+            <nav className="space-y-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={cn(
+                    "flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors",
+                    isActive(item.href, item.exact)
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  <div className="flex items-center">
+                    <span className={cn(
+                      "mr-3",
+                      isActive(item.href, item.exact) ? "text-primary" : "text-muted-foreground"
+                    )}>
+                      {item.icon}
+                    </span>
+                    {item.title}
+                  </div>
+                  {isActive(item.href, item.exact) && (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
+                </Link>
+              ))}
+            </nav>
+
+            <Separator className="my-4" />
+            
+            <div className="text-xs font-semibold text-muted-foreground tracking-wider uppercase px-2 mb-2">
+              Account
+            </div>
+            <nav className="space-y-1">
+              {secondaryNavItems.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={cn(
+                    "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
+                    isActive(item.href, item.exact)
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  <span className={cn(
+                    "mr-3",
+                    isActive(item.href, item.exact) ? "text-primary" : "text-muted-foreground"
+                  )}>
+                    {item.icon}
+                  </span>
+                  {item.title}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </ScrollArea>
+
+        {/* Pro Badge */}
+        <div className="p-4">
+          <div className="rounded-lg bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-3 border border-indigo-200/20">
+            <div className="flex items-center space-x-2">
+              <Shield className="h-5 w-5 text-indigo-500" />
+              <div>
+                <p className="text-sm font-medium">OFS Ledger Pro</p>
+                <p className="text-xs text-muted-foreground">Get advanced features</p>
+              </div>
+            </div>
+            <Button size="sm" className="w-full mt-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700">
+              Upgrade
+            </Button>
+          </div>
+        </div>
+
+        {/* Sign Out Button */}
+        <div className="p-4 border-t">
           <Button
-            variant="ghost"
-            className="flex items-center justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 transition-all hover:text-red-600 hover:bg-red-50"
-            onClick={handleSignOut}
+            variant="outline"
+            className="w-full justify-start"
+            onClick={() => signOut()}
           >
-            <LogOut className="h-5 w-5" />
+            <LogOut className="h-4 w-4 mr-2" />
             Sign Out
           </Button>
         </div>
       </div>
-    </div>
+    </>
   );
 }
