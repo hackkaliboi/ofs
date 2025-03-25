@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DashboardLoadingState } from "@/components/dashboard/loading-state";
 import { useNavigate } from "react-router-dom";
+import { getWallets, getTransactions } from "@/lib/supabase";
 import {
   LineChart,
   Line,
@@ -26,98 +27,68 @@ import {
   History,
   BarChart3,
   RefreshCcw,
+  AlertCircle,
 } from "lucide-react";
 
-// Mock data for the dashboard
-const mockData = {
+// Types for dashboard data
+interface Asset {
+  id: string;
+  name: string;
+  symbol: string;
+  amount: number;
+  value: number;
+  change: number;
+  positive: boolean;
+}
+
+interface Transaction {
+  id: string;
+  type: string;
+  asset: string;
+  amount: number;
+  value: number;
+  time: string;
+  status?: string;
+}
+
+interface DashboardData {
   balance: {
-    total: 24680.35,
-    change: 2.5,
+    total: number;
+    change: number;
+    positive: boolean;
+  };
+  chart: Array<{ time: string; value: number }>;
+  assets: Asset[];
+  recentTransactions: Transaction[];
+}
+
+// Default data for fallback
+const defaultData: DashboardData = {
+  balance: {
+    total: 0,
+    change: 0,
     positive: true,
   },
   chart: [
-    { time: "00:00", value: 23500 },
-    { time: "04:00", value: 23400 },
-    { time: "08:00", value: 23800 },
-    { time: "12:00", value: 24100 },
-    { time: "16:00", value: 24500 },
-    { time: "20:00", value: 24680 },
-    { time: "24:00", value: 24680 },
+    { time: "00:00", value: 0 },
+    { time: "04:00", value: 0 },
+    { time: "08:00", value: 0 },
+    { time: "12:00", value: 0 },
+    { time: "16:00", value: 0 },
+    { time: "20:00", value: 0 },
+    { time: "24:00", value: 0 },
   ],
-  assets: [
-    {
-      name: "Bitcoin",
-      symbol: "BTC",
-      amount: 0.45,
-      value: 18750.25,
-      change: 3.2,
-      positive: true,
-    },
-    {
-      name: "Ethereum",
-      symbol: "ETH",
-      amount: 2.35,
-      value: 4350.75,
-      change: -1.5,
-      positive: false,
-    },
-    {
-      name: "Solana",
-      symbol: "SOL",
-      amount: 28.5,
-      value: 1580.35,
-      change: 5.8,
-      positive: true,
-    },
-  ],
-  recentTransactions: [
-    {
-      id: "tx1",
-      type: "buy",
-      asset: "BTC",
-      amount: 0.05,
-      value: 2050.25,
-      time: "Today, 10:45 AM",
-    },
-    {
-      id: "tx2",
-      type: "sell",
-      asset: "ETH",
-      amount: 0.5,
-      value: 950.50,
-      time: "Yesterday, 2:30 PM",
-    },
-    {
-      id: "tx3",
-      type: "buy",
-      asset: "SOL",
-      amount: 10,
-      value: 550.75,
-      time: "Mar 24, 9:15 AM",
-    },
-    {
-      id: "tx4",
-      type: "sell",
-      asset: "BTC",
-      amount: 0.02,
-      value: 820.10,
-      time: "Mar 23, 11:30 AM",
-    },
-    {
-      id: "tx5",
-      type: "buy",
-      asset: "ETH",
-      amount: 1.2,
-      value: 2250.30,
-      time: "Mar 22, 4:45 PM",
-    },
-  ],
+  assets: [],
+  recentTransactions: [],
 };
 
 const Dashboard = () => {
   const { user, profile } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [loadingError, setLoadingError] = useState<string | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData>(defaultData);
+  const [wallets, setWallets] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -127,32 +98,135 @@ const Dashboard = () => {
       return;
     }
 
-    // Simulate loading data with timeout and error handling
-    const timer = setTimeout(() => {
+    const fetchDashboardData = async () => {
       try {
-        // Simulate data fetching
+        setIsLoading(true);
+        
+        // Fetch wallets
+        const { data: walletsData, error: walletsError } = await getWallets(user.id);
+        
+        if (walletsError) {
+          console.error("Error fetching wallets:", walletsError);
+          throw new Error("Failed to load wallet data");
+        }
+        
+        setWallets(walletsData || []);
+        
+        // Calculate total balance
+        const totalBalance = walletsData?.reduce((sum: number, wallet: any) => sum + (wallet.balance || 0), 0) || 0;
+        
+        // Fetch transactions if wallets exist
+        let transactionsData: any[] = [];
+        if (walletsData && walletsData.length > 0) {
+          const walletIds = walletsData.map((wallet: any) => wallet.id);
+          
+          // For simplicity, we'll just fetch transactions for the first wallet
+          const { data: txData, error: txError } = await getTransactions(walletIds[0]);
+          
+          if (txError) {
+            console.error("Error fetching transactions:", txError);
+          } else {
+            transactionsData = txData || [];
+            setTransactions(transactionsData);
+          }
+        }
+        
+        // Transform data for the dashboard
+        const formattedTransactions = transactionsData.map((tx: any) => ({
+          id: tx.id,
+          type: tx.type || 'transfer',
+          asset: tx.asset_symbol || 'UNKNOWN',
+          amount: tx.amount || 0,
+          value: tx.value || 0,
+          time: new Date(tx.created_at).toLocaleString(),
+          status: tx.status || 'completed',
+        }));
+        
+        // Generate chart data (simplified for now)
+        const chartData = generateChartData(totalBalance);
+        
+        // Format assets data
+        const assetsData = walletsData?.map((wallet: any) => ({
+          id: wallet.id,
+          name: wallet.name || 'Wallet',
+          symbol: wallet.currency || 'USD',
+          amount: wallet.balance || 0,
+          value: wallet.balance || 0,
+          change: wallet.change || 0,
+          positive: (wallet.change || 0) >= 0,
+        })) || [];
+        
+        // Set dashboard data
+        setDashboardData({
+          balance: {
+            total: totalBalance,
+            change: calculateTotalChange(assetsData),
+            positive: calculateTotalChange(assetsData) >= 0,
+          },
+          chart: chartData,
+          assets: assetsData,
+          recentTransactions: formattedTransactions.slice(0, 5),
+        });
+        
         setIsLoading(false);
       } catch (error) {
+        console.error("Dashboard data fetch error:", error);
         setLoadingError("Failed to load dashboard data. Please try again.");
         setIsLoading(false);
       }
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    };
+    
+    fetchDashboardData();
   }, [user, navigate]);
+
+  // Generate sample chart data based on balance
+  const generateChartData = (balance: number) => {
+    const baseValue = balance * 0.95;
+    return [
+      { time: "00:00", value: baseValue + Math.random() * balance * 0.05 },
+      { time: "04:00", value: baseValue + Math.random() * balance * 0.05 },
+      { time: "08:00", value: baseValue + Math.random() * balance * 0.06 },
+      { time: "12:00", value: baseValue + Math.random() * balance * 0.07 },
+      { time: "16:00", value: baseValue + Math.random() * balance * 0.08 },
+      { time: "20:00", value: baseValue + Math.random() * balance * 0.09 },
+      { time: "24:00", value: balance },
+    ];
+  };
+
+  // Calculate total change percentage
+  const calculateTotalChange = (assets: Asset[]) => {
+    if (assets.length === 0) return 0;
+    const totalChange = assets.reduce((sum, asset) => sum + asset.change, 0);
+    return parseFloat((totalChange / assets.length).toFixed(2));
+  };
 
   // Handle loading error
   if (loadingError) {
     return (
       <div className="container mx-auto p-6 flex flex-col items-center justify-center min-h-[50vh]">
+        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
         <div className="text-destructive text-xl mb-4">{loadingError}</div>
         <Button 
           onClick={() => {
             setIsLoading(true);
             setLoadingError(null);
-            setTimeout(() => setIsLoading(false), 1000);
+            // Retry fetching data
+            setTimeout(() => {
+              if (user) {
+                getWallets(user.id)
+                  .then(({ data }) => {
+                    setWallets(data || []);
+                    setIsLoading(false);
+                  })
+                  .catch(() => {
+                    setLoadingError("Failed to load wallet data. Please try again.");
+                    setIsLoading(false);
+                  });
+              }
+            }, 1000);
           }}
         >
+          <RefreshCcw className="mr-2 h-4 w-4" />
           Retry
         </Button>
       </div>
@@ -189,193 +263,185 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-bold">${mockData.balance.total.toLocaleString()}</div>
-              <div className={`flex items-center ${mockData.balance.positive ? 'text-green-500' : 'text-red-500'}`}>
-                {mockData.balance.positive ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
-                <span className="text-sm ml-1">{mockData.balance.change}%</span>
+              <div className="text-2xl font-bold">${dashboardData.balance.total.toLocaleString()}</div>
+              <div className={`flex items-center ${dashboardData.balance.positive ? 'text-green-500' : 'text-red-500'}`}>
+                {dashboardData.balance.positive ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
+                <span className="text-sm ml-1">{dashboardData.balance.change}%</span>
               </div>
             </div>
           </CardContent>
         </Card>
+        
         <Card className="transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">24h Volume</CardTitle>
+            <CardTitle className="text-sm font-medium">Active Wallets</CardTitle>
+            <CreditCard className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{wallets.length}</div>
+          </CardContent>
+        </Card>
+        
+        <Card className="transition-all hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Transactions</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$12,345.67</div>
-            <p className="text-xs text-muted-foreground">+12.3% from yesterday</p>
+            <div className="text-2xl font-bold">{transactions.length}</div>
           </CardContent>
         </Card>
+        
         <Card className="transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Assets</CardTitle>
+            <CardTitle className="text-sm font-medium">Portfolio Performance</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">7</div>
-            <p className="text-xs text-muted-foreground">Across 3 chains</p>
-          </CardContent>
-        </Card>
-        <Card className="transition-all hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Txns</CardTitle>
-            <History className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">2</div>
-            <p className="text-xs text-muted-foreground">Processing now</p>
+            <div className={`text-2xl font-bold ${dashboardData.balance.positive ? 'text-green-500' : 'text-red-500'}`}>
+              {dashboardData.balance.positive ? '+' : ''}{dashboardData.balance.change}%
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Main Content */}
-      <div className="grid gap-6 md:grid-cols-7">
-        {/* Chart and Assets */}
-        <div className="col-span-4 space-y-6">
-          <Card className="transition-all hover:shadow-md">
-            <CardHeader>
-              <CardTitle>Portfolio Performance</CardTitle>
-              <CardDescription>24-hour value change</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={mockData.chart}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" />
-                    <YAxis stroke="hsl(var(--muted-foreground))" />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "hsl(var(--card))",
-                        border: "1px solid hsl(var(--border))",
-                      }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="hsl(var(--primary))"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Chart */}
+      <Card className="transition-all hover:shadow-md">
+        <CardHeader>
+          <CardTitle>Portfolio Value</CardTitle>
+          <CardDescription>24-hour performance</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={dashboardData.chart}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" />
+                <YAxis />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#8884d8"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
 
-          <Card className="transition-all hover:shadow-md">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Your Assets</CardTitle>
-                <CardDescription>Manage your portfolio</CardDescription>
-              </div>
-              <Button variant="outline" size="icon" className="hover:bg-muted">
-                <RefreshCcw className="h-4 w-4" />
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {mockData.assets.map((asset) => (
-                  <div
-                    key={asset.symbol}
-                    className="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                        {asset.symbol.charAt(0)}
-                      </div>
-                      <div>
-                        <h4 className="font-medium">{asset.name}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {asset.amount} {asset.symbol}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium">${asset.value.toLocaleString()}</p>
-                      <Badge variant={asset.positive ? "success" : "destructive"}>
-                        {asset.positive ? "+" : "-"}
-                        {Math.abs(asset.change)}%
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Right Side */}
-        <div className="col-span-3 space-y-6">
-          {/* Quick Actions */}
-          <Card className="transition-all hover:shadow-md">
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Manage your assets</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <Button className="flex flex-col items-center justify-center h-24 space-y-2 hover:bg-primary/90">
-                  <Send className="h-6 w-6" />
-                  <span>Send</span>
-                </Button>
-                <Button className="flex flex-col items-center justify-center h-24 space-y-2 hover:bg-primary/90">
-                  <Download className="h-6 w-6" />
-                  <span>Receive</span>
-                </Button>
-                <Button className="flex flex-col items-center justify-center h-24 space-y-2" variant="outline">
-                  <CreditCard className="h-6 w-6" />
-                  <span>Buy</span>
-                </Button>
-                <Button className="flex flex-col items-center justify-center h-24 space-y-2" variant="outline">
-                  <Activity className="h-6 w-6" />
-                  <span>Trade</span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity */}
-          <Card className="transition-all hover:shadow-md">
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Your latest transactions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[400px] pr-4">
+      {/* Assets and Transactions */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* Assets */}
+        <Card className="transition-all hover:shadow-md">
+          <CardHeader>
+            <CardTitle>Your Assets</CardTitle>
+            <CardDescription>Current holdings</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {dashboardData.assets.length > 0 ? (
+              <ScrollArea className="h-[300px]">
                 <div className="space-y-4">
-                  {mockData.recentTransactions.map((tx) => (
-                    <div
-                      key={tx.id}
-                      className="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className={`p-2 rounded-full ${
-                          tx.type === "buy" ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"
-                        }`}>
-                          {tx.type === "buy" ? <Download className="h-4 w-4" /> : <Send className="h-4 w-4" />}
+                  {dashboardData.assets.map((asset) => (
+                    <div key={asset.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted">
+                      <div className="flex items-center space-x-4">
+                        <div className="bg-primary/10 p-2 rounded-full">
+                          <Wallet className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <p className="font-medium capitalize">{tx.type} {tx.asset}</p>
-                          <p className="text-sm text-muted-foreground">{tx.time}</p>
+                          <div className="font-medium">{asset.name}</div>
+                          <div className="text-sm text-muted-foreground">{asset.amount} {asset.symbol}</div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium">
-                          {tx.type === "buy" ? "+" : "-"}{tx.amount} {tx.asset}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          ${tx.value.toLocaleString()}
-                        </p>
+                        <div className="font-medium">${asset.value.toLocaleString()}</div>
+                        <div className={`text-sm ${asset.positive ? 'text-green-500' : 'text-red-500'}`}>
+                          {asset.positive ? '+' : ''}{asset.change}%
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </ScrollArea>
-            </CardContent>
-          </Card>
-        </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[300px] text-center">
+                <Wallet className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No assets found</h3>
+                <p className="text-sm text-muted-foreground mb-4">You don't have any assets in your portfolio yet.</p>
+                <Button>Add Asset</Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Recent Transactions */}
+        <Card className="transition-all hover:shadow-md">
+          <CardHeader>
+            <CardTitle>Recent Transactions</CardTitle>
+            <CardDescription>Your recent activity</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {dashboardData.recentTransactions.length > 0 ? (
+              <ScrollArea className="h-[300px]">
+                <div className="space-y-4">
+                  {dashboardData.recentTransactions.map((tx) => (
+                    <div key={tx.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted">
+                      <div className="flex items-center space-x-4">
+                        <div className={`p-2 rounded-full ${tx.type === 'buy' ? 'bg-green-100' : 'bg-red-100'}`}>
+                          {tx.type === 'buy' ? (
+                            <Download className={`h-5 w-5 ${tx.type === 'buy' ? 'text-green-500' : 'text-red-500'}`} />
+                          ) : (
+                            <Send className={`h-5 w-5 ${tx.type === 'buy' ? 'text-green-500' : 'text-red-500'}`} />
+                          )}
+                        </div>
+                        <div>
+                          <div className="font-medium">
+                            {tx.type === 'buy' ? 'Bought' : 'Sold'} {tx.asset}
+                          </div>
+                          <div className="text-sm text-muted-foreground">{tx.time}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">${tx.value.toLocaleString()}</div>
+                        <div className="text-sm text-muted-foreground">{tx.amount} {tx.asset}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[300px] text-center">
+                <History className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No transactions yet</h3>
+                <p className="text-sm text-muted-foreground mb-4">Your recent transactions will appear here.</p>
+                <Button>Make Transaction</Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Button className="flex flex-col items-center justify-center h-24 space-y-2">
+          <Send className="h-6 w-6" />
+          <span>Send</span>
+        </Button>
+        <Button className="flex flex-col items-center justify-center h-24 space-y-2">
+          <Download className="h-6 w-6" />
+          <span>Receive</span>
+        </Button>
+        <Button variant="outline" className="flex flex-col items-center justify-center h-24 space-y-2">
+          <CreditCard className="h-6 w-6" />
+          <span>Wallets</span>
+        </Button>
+        <Button variant="outline" className="flex flex-col items-center justify-center h-24 space-y-2">
+          <History className="h-6 w-6" />
+          <span>History</span>
+        </Button>
       </div>
     </div>
   );
