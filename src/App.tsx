@@ -30,6 +30,7 @@ import UserAssets from "./pages/dashboard/Assets";
 import UserTransactions from "./pages/dashboard/Transactions";
 import UserHistory from "./pages/dashboard/History";
 import UserSettings from "./pages/dashboard/Settings";
+import ConnectWallet from "./pages/dashboard/ConnectWallet";
 
 // Admin Dashboard Pages
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -74,6 +75,7 @@ function App() {
               <Route path="/dashboard/transactions" element={<UserTransactions />} />
               <Route path="/dashboard/history" element={<UserHistory />} />
               <Route path="/dashboard/settings" element={<UserSettings />} />
+              <Route path="/dashboard/connect-wallet" element={<ConnectWallet />} />
             </Route>
 
             {/* Admin Dashboard Routes */}

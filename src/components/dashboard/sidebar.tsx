@@ -12,6 +12,7 @@ import {
   Settings,
   LogOut,
   Home,
+  Link as LinkIcon,
 } from "lucide-react";
 
 const sidebarItems = [
@@ -29,6 +30,11 @@ const sidebarItems = [
     title: "Transactions",
     icon: <ArrowLeftRight className="h-5 w-5" />,
     href: "/dashboard/transactions",
+  },
+  {
+    title: "Connect Wallet",
+    icon: <LinkIcon className="h-5 w-5" />,
+    href: "/dashboard/connect-wallet",
   },
   {
     title: "History",
