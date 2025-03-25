@@ -1,61 +1,145 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Plus, ArrowUpDown, BarChart3, PieChart } from "lucide-react";
+import { Search, Filter, ArrowUpDown, Clock, CreditCard, Wallet, Download, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
+import { 
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-interface Asset {
+interface Withdrawal {
   id: string;
-  name: string;
-  type: string;
-  value: number;
+  amount: number;
+  currency: string;
   status: string;
-  last_updated: string;
-  description?: string;
+  created_at: string;
+  destination: string;
+  transaction_id?: string;
+  notes?: string;
 }
 
-const UserAssets = () => {
-  const [assets, setAssets] = useState<Asset[]>([]);
-  const [filteredAssets, setFilteredAssets] = useState<Asset[]>([]);
+const withdrawalSchema = z.object({
+  amount: z.string().min(1, { message: "Amount is required" }),
+  currency: z.string().min(1, { message: "Currency is required" }),
+  destination: z.string().min(1, { message: "Destination address is required" }),
+  notes: z.string().optional(),
+});
+
+const UserWithdrawals = () => {
+  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
+  const [filteredWithdrawals, setFilteredWithdrawals] = useState<Withdrawal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("name");
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortBy, setSortBy] = useState("created_at");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [availableBalance, setAvailableBalance] = useState(10250.75);
+  const [pendingBalance, setPendingBalance] = useState(1500.00);
   const { toast } = useToast();
 
+  const form = useForm<z.infer<typeof withdrawalSchema>>({
+    resolver: zodResolver(withdrawalSchema),
+    defaultValues: {
+      amount: "",
+      currency: "USD",
+      destination: "",
+      notes: "",
+    },
+  });
+
   useEffect(() => {
-    fetchAssets();
+    fetchWithdrawals();
   }, []);
 
   useEffect(() => {
     applyFilters();
-  }, [assets, searchQuery, typeFilter, statusFilter, sortBy, sortOrder]);
+  }, [withdrawals, searchQuery, statusFilter, sortBy, sortOrder]);
 
-  const fetchAssets = async () => {
+  const fetchWithdrawals = async () => {
     setIsLoading(true);
     try {
       // In a real app, you would filter by user_id
       const { data, error } = await supabase
-        .from("assets")
+        .from("withdrawals")
         .select("*");
 
       if (error) {
         throw error;
       }
 
-      setAssets(data || []);
+      // If no data is returned from Supabase, use sample data
+      const sampleWithdrawals: Withdrawal[] = [
+        {
+          id: "w1",
+          amount: 1000,
+          currency: "USD",
+          status: "completed",
+          created_at: "2025-03-20T10:30:00Z",
+          destination: "0x1234...5678",
+          transaction_id: "0xabc...def",
+          notes: "Monthly withdrawal"
+        },
+        {
+          id: "w2",
+          amount: 500,
+          currency: "USD",
+          status: "pending",
+          created_at: "2025-03-24T14:15:00Z",
+          destination: "0x8765...4321",
+          notes: "Emergency funds"
+        },
+        {
+          id: "w3",
+          amount: 2500,
+          currency: "USD",
+          status: "failed",
+          created_at: "2025-03-18T09:45:00Z",
+          destination: "0xabcd...efgh",
+          notes: "Insufficient balance"
+        },
+        {
+          id: "w4",
+          amount: 750,
+          currency: "USD",
+          status: "completed",
+          created_at: "2025-03-15T16:20:00Z",
+          destination: "0xijkl...mnop",
+          transaction_id: "0x123...456",
+        },
+        {
+          id: "w5",
+          amount: 1200,
+          currency: "USD",
+          status: "pending",
+          created_at: "2025-03-23T11:10:00Z",
+          destination: "0xqrst...uvwx",
+          notes: "Investment withdrawal"
+        }
+      ];
+
+      setWithdrawals(data || sampleWithdrawals);
     } catch (error) {
-      console.error("Error fetching assets:", error);
+      console.error("Error fetching withdrawals:", error);
       toast({
         title: "Error",
-        description: "Failed to load assets. Please try again later.",
+        description: "Failed to load withdrawal history. Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -64,42 +148,36 @@ const UserAssets = () => {
   };
 
   const applyFilters = () => {
-    let result = [...assets];
+    let result = [...withdrawals];
 
     // Apply search filter
     if (searchQuery) {
       result = result.filter(
-        (asset) =>
-          asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          asset.description?.toLowerCase().includes(searchQuery.toLowerCase())
+        (withdrawal) =>
+          withdrawal.destination.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (withdrawal.transaction_id && withdrawal.transaction_id.toLowerCase().includes(searchQuery.toLowerCase())) ||
+          (withdrawal.notes && withdrawal.notes.toLowerCase().includes(searchQuery.toLowerCase()))
       );
-    }
-
-    // Apply type filter
-    if (typeFilter !== "all") {
-      result = result.filter((asset) => asset.type === typeFilter);
     }
 
     // Apply status filter
     if (statusFilter !== "all") {
-      result = result.filter((asset) => asset.status === statusFilter);
+      result = result.filter((withdrawal) => withdrawal.status === statusFilter);
     }
 
     // Apply sorting
     result.sort((a, b) => {
       let comparison = 0;
-      if (sortBy === "name") {
-        comparison = a.name.localeCompare(b.name);
-      } else if (sortBy === "value") {
-        comparison = a.value - b.value;
-      } else if (sortBy === "last_updated") {
-        comparison = new Date(a.last_updated).getTime() - new Date(b.last_updated).getTime();
+      if (sortBy === "created_at") {
+        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      } else if (sortBy === "amount") {
+        comparison = a.amount - b.amount;
       }
 
       return sortOrder === "asc" ? comparison : -comparison;
     });
 
-    setFilteredAssets(result);
+    setFilteredWithdrawals(result);
   };
 
   const toggleSortOrder = () => {
@@ -108,16 +186,31 @@ const UserAssets = () => {
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case "active":
+      case "completed":
         return "bg-green-100 text-green-800";
       case "pending":
         return "bg-yellow-100 text-yellow-800";
-      case "inactive":
-        return "bg-gray-100 text-gray-800";
-      case "locked":
+      case "failed":
         return "bg-red-100 text-red-800";
-      default:
+      case "processing":
         return "bg-blue-100 text-blue-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "completed":
+        return <CheckCircle2 className="h-4 w-4 text-green-600" />;
+      case "pending":
+        return <Clock className="h-4 w-4 text-yellow-600" />;
+      case "failed":
+        return <XCircle className="h-4 w-4 text-red-600" />;
+      case "processing":
+        return <Clock className="h-4 w-4 text-blue-600" />;
+      default:
+        return null;
     }
   };
 
@@ -133,239 +226,337 @@ const UserAssets = () => {
       year: "numeric",
       month: "short",
       day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
-  // Calculate total asset value
-  const totalAssetValue = filteredAssets.reduce(
-    (total, asset) => total + asset.value,
-    0
-  );
+  const onSubmit = (values: z.infer<typeof withdrawalSchema>) => {
+    // Convert amount to number
+    const amount = parseFloat(values.amount);
+    
+    // Check if amount is valid
+    if (isNaN(amount) || amount <= 0) {
+      toast({
+        title: "Invalid amount",
+        description: "Please enter a valid withdrawal amount",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Check if amount exceeds available balance
+    if (amount > availableBalance) {
+      toast({
+        title: "Insufficient funds",
+        description: "Your withdrawal amount exceeds your available balance",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Create a new withdrawal
+    const newWithdrawal: Withdrawal = {
+      id: `w${withdrawals.length + 1}`,
+      amount: amount,
+      currency: values.currency,
+      status: "pending",
+      created_at: new Date().toISOString(),
+      destination: values.destination,
+      notes: values.notes,
+    };
+    
+    // In a real app, you would send this to the backend
+    // For now, we'll just update the local state
+    setWithdrawals([newWithdrawal, ...withdrawals]);
+    
+    // Update balances
+    setAvailableBalance(availableBalance - amount);
+    setPendingBalance(pendingBalance + amount);
+    
+    // Reset form
+    form.reset();
+    
+    // Show success toast
+    toast({
+      title: "Withdrawal requested",
+      description: "Your withdrawal request has been submitted and is pending approval",
+    });
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-8">
       <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold">My Assets</h1>
+        <h1 className="text-3xl font-bold">Withdrawals</h1>
         <p className="text-muted-foreground">
-          View and manage your digital assets
+          Request withdrawals and view your withdrawal history
         </p>
       </div>
 
-      <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-        <div className="flex flex-1 items-center space-x-2">
-          <div className="relative flex-1 md:max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search assets..."
-              className="pl-8"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <Button variant="outline" size="icon" className="h-9 w-9">
-            <Filter className="h-4 w-4" />
-            <span className="sr-only">Filter</span>
-          </Button>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Asset Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="cryptocurrency">Cryptocurrency</SelectItem>
-              <SelectItem value="token">Token</SelectItem>
-              <SelectItem value="nft">NFT</SelectItem>
-              <SelectItem value="defi">DeFi</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-              <SelectItem value="locked">Locked</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" size="sm" onClick={toggleSortOrder}>
-            <ArrowUpDown className="mr-2 h-4 w-4" />
-            {sortOrder === "asc" ? "Ascending" : "Descending"}
-          </Button>
-        </div>
-      </div>
-
-      <Tabs defaultValue="list" className="space-y-4">
+      <Tabs defaultValue="request" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="list">List View</TabsTrigger>
-          <TabsTrigger value="grid">Grid View</TabsTrigger>
-          <TabsTrigger value="charts">
-            <BarChart3 className="mr-2 h-4 w-4" />
-            Charts
-          </TabsTrigger>
+          <TabsTrigger value="request">Request Withdrawal</TabsTrigger>
+          <TabsTrigger value="history">Withdrawal History</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="list" className="space-y-4">
+        <TabsContent value="request" className="space-y-4">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>Asset Summary</CardTitle>
+            <CardHeader>
+              <CardTitle>New Withdrawal Request</CardTitle>
               <CardDescription>
-                You have {filteredAssets.length} assets with a total value of{" "}
-                {formatCurrency(totalAssetValue)}
+                Fill in the details to request a withdrawal
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border">
-                <div className="grid grid-cols-6 border-b bg-muted/50 px-4 py-3 text-sm font-medium">
-                  <div className="col-span-2">Asset Name</div>
-                  <div>Type</div>
-                  <div>Status</div>
-                  <div>Value</div>
-                  <div>Last Updated</div>
-                </div>
-                <div className="divide-y">
-                  {isLoading ? (
-                    <div className="px-4 py-3 text-sm">Loading assets...</div>
-                  ) : filteredAssets.length === 0 ? (
-                    <div className="px-4 py-3 text-sm text-muted-foreground">
-                      No assets found. Try adjusting your filters.
-                    </div>
-                  ) : (
-                    filteredAssets.map((asset) => (
-                      <div
-                        key={asset.id}
-                        className="grid grid-cols-6 items-center px-4 py-3 text-sm"
-                      >
-                        <div className="col-span-2 font-medium">{asset.name}</div>
-                        <div className="capitalize">{asset.type}</div>
-                        <div>
-                          <Badge
-                            variant="outline"
-                            className={getStatusColor(asset.status)}
+              <Alert className="mb-6">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Important</AlertTitle>
+                <AlertDescription>
+                  Please double-check your destination address before submitting. Withdrawals cannot be reversed once processed.
+                </AlertDescription>
+              </Alert>
+              
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Amount</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <span className="absolute left-3 top-2.5">$</span>
+                              <Input
+                                placeholder="0.00"
+                                className="pl-7"
+                                {...field}
+                                type="number"
+                                step="0.01"
+                                min="0"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormDescription>
+                            Maximum: {formatCurrency(availableBalance)}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="currency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Currency</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
                           >
-                            {asset.status}
-                          </Badge>
-                        </div>
-                        <div>{formatCurrency(asset.value)}</div>
-                        <div>{formatDate(asset.last_updated)}</div>
-                      </div>
-                    ))
-                  )}
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select currency" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="USD">USD</SelectItem>
+                              <SelectItem value="EUR">EUR</SelectItem>
+                              <SelectItem value="GBP">GBP</SelectItem>
+                              <SelectItem value="BTC">BTC</SelectItem>
+                              <SelectItem value="ETH">ETH</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="destination"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Destination Address</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter wallet address or bank details" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Enter the wallet address or bank account where you want to receive funds
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Notes (Optional)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Add any additional information"
+                            className="resize-none"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="flex justify-end">
+                    <Button type="submit">Request Withdrawal</Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Withdrawal Methods</CardTitle>
+              <CardDescription>
+                Available withdrawal options
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center p-4 border rounded-lg">
+                  <Wallet className="h-10 w-10 text-primary mr-4" />
+                  <div>
+                    <h3 className="font-medium">Crypto Wallet</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Withdraw to any cryptocurrency wallet. Processing time: 1-2 hours.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center p-4 border rounded-lg">
+                  <CreditCard className="h-10 w-10 text-primary mr-4" />
+                  <div>
+                    <h3 className="font-medium">Bank Transfer</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Withdraw directly to your bank account. Processing time: 1-3 business days.
+                    </p>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="grid" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {isLoading ? (
-              <Card className="p-6">Loading assets...</Card>
-            ) : filteredAssets.length === 0 ? (
-              <Card className="p-6">
-                <p className="text-muted-foreground">
-                  No assets found. Try adjusting your filters.
-                </p>
-              </Card>
-            ) : (
-              filteredAssets.map((asset) => (
-                <Card key={asset.id}>
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{asset.name}</CardTitle>
-                      <Badge
-                        variant="outline"
-                        className={getStatusColor(asset.status)}
-                      >
-                        {asset.status}
-                      </Badge>
-                    </div>
-                    <CardDescription className="capitalize">
-                      {asset.type}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Value:</span>
-                        <span className="font-medium">
-                          {formatCurrency(asset.value)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">
-                          Last Updated:
-                        </span>
-                        <span>{formatDate(asset.last_updated)}</span>
-                      </div>
-                      {asset.description && (
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          {asset.description}
-                        </p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
+        <TabsContent value="history" className="space-y-4">
+          <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+            <div className="flex flex-1 items-center space-x-2">
+              <div className="relative flex-1 md:max-w-sm">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search withdrawals..."
+                  className="pl-8"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <Button variant="outline" size="icon" className="h-9 w-9">
+                <Filter className="h-4 w-4" />
+                <span className="sr-only">Filter</span>
+              </Button>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[130px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="processing">Processing</SelectItem>
+                  <SelectItem value="failed">Failed</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button variant="outline" size="sm" onClick={toggleSortOrder}>
+                <ArrowUpDown className="mr-2 h-4 w-4" />
+                {sortOrder === "asc" ? "Oldest First" : "Newest First"}
+              </Button>
+            </div>
           </div>
-        </TabsContent>
 
-        <TabsContent value="charts" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Asset Distribution</CardTitle>
-                <CardDescription>
-                  Distribution of assets by type
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-80">
-                <div className="flex h-full items-center justify-center">
-                  <div className="text-center">
-                    <PieChart className="mx-auto h-16 w-16 text-muted-foreground" />
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      Chart visualization will be implemented here
-                    </p>
-                  </div>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle>Withdrawal History</CardTitle>
+              <CardDescription>
+                You have {filteredWithdrawals.length} withdrawal {filteredWithdrawals.length === 1 ? "record" : "records"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border">
+                <div className="grid grid-cols-6 border-b bg-muted/50 px-4 py-3 text-sm font-medium">
+                  <div className="col-span-2">Details</div>
+                  <div>Amount</div>
+                  <div>Status</div>
+                  <div>Date</div>
+                  <div>Transaction ID</div>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Asset Value History</CardTitle>
-                <CardDescription>
-                  Value changes over the past 30 days
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-80">
-                <div className="flex h-full items-center justify-center">
-                  <div className="text-center">
-                    <BarChart3 className="mx-auto h-16 w-16 text-muted-foreground" />
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      Chart visualization will be implemented here
-                    </p>
-                  </div>
+                <div className="divide-y">
+                  {isLoading ? (
+                    <div className="px-4 py-3 text-sm">Loading withdrawal history...</div>
+                  ) : filteredWithdrawals.length === 0 ? (
+                    <div className="px-4 py-3 text-sm text-muted-foreground">
+                      No withdrawals found. Try adjusting your filters or make a new withdrawal request.
+                    </div>
+                  ) : (
+                    filteredWithdrawals.map((withdrawal) => (
+                      <div
+                        key={withdrawal.id}
+                        className="grid grid-cols-6 items-center px-4 py-3 text-sm"
+                      >
+                        <div className="col-span-2">
+                          <div className="font-medium">To: {withdrawal.destination}</div>
+                          {withdrawal.notes && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {withdrawal.notes}
+                            </div>
+                          )}
+                        </div>
+                        <div className="font-medium">{formatCurrency(withdrawal.amount)}</div>
+                        <div>
+                          <Badge
+                            variant="outline"
+                            className={`flex w-fit items-center gap-1 ${getStatusColor(withdrawal.status)}`}
+                          >
+                            {getStatusIcon(withdrawal.status)}
+                            <span>{withdrawal.status}</span>
+                          </Badge>
+                        </div>
+                        <div>{formatDate(withdrawal.created_at)}</div>
+                        <div className="truncate max-w-[120px]">
+                          {withdrawal.transaction_id || "-"}
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-end">
+              <Button variant="outline" size="sm">
+                <Download className="mr-2 h-4 w-4" />
+                Export History
+              </Button>
+            </CardFooter>
+          </Card>
         </TabsContent>
       </Tabs>
-
-      <div className="flex justify-end">
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add New Asset
-        </Button>
-      </div>
     </div>
   );
 };
 
-export default UserAssets;
+export default UserWithdrawals;
