@@ -26,6 +26,12 @@ import Terms from "./pages/Terms";
 
 // Dashboard Pages
 import Dashboard from "./pages/dashboard/Index";
+import UserAssets from "./pages/dashboard/Assets";
+import UserTransactions from "./pages/dashboard/Transactions";
+import UserHistory from "./pages/dashboard/History";
+import UserSettings from "./pages/dashboard/Settings";
+
+// Admin Dashboard Pages
 import AdminDashboard from "./pages/admin/Dashboard";
 import FirstAdmin from "./pages/admin/setup/FirstAdmin";
 import UserManagement from "./pages/admin/users/Index";
@@ -64,10 +70,10 @@ function App() {
             {/* User Dashboard Routes */}
             <Route element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard/assets" element={<div>Assets Page</div>} />
-              <Route path="/dashboard/transactions" element={<div>Transactions Page</div>} />
-              <Route path="/dashboard/history" element={<div>History Page</div>} />
-              <Route path="/dashboard/settings" element={<div>Settings Page</div>} />
+              <Route path="/dashboard/assets" element={<UserAssets />} />
+              <Route path="/dashboard/transactions" element={<UserTransactions />} />
+              <Route path="/dashboard/history" element={<UserHistory />} />
+              <Route path="/dashboard/settings" element={<UserSettings />} />
             </Route>
 
             {/* Admin Dashboard Routes */}
