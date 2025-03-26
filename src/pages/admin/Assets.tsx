@@ -265,7 +265,7 @@ const AdminAssets = () => {
                           <Badge 
                             variant={
                               asset.status === "active" ? "success" : 
-                              asset.status === "pending" ? "warning" : "destructive"
+                              asset.status === "pending" ? "outline" : "destructive"
                             }
                             className={
                               asset.status === "active" ? "bg-green-100 text-green-800 hover:bg-green-100" : 
@@ -418,7 +418,7 @@ const AdminAssets = () => {
                             <div className="text-sm text-muted-foreground">Supply: {asset.total_supply.toLocaleString()}</div>
                           </div>
                           <Badge 
-                            variant="warning"
+                            variant="outline"
                             className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
                           >
                             <AlertCircle className="mr-1 h-3 w-3" />

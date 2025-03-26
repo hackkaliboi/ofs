@@ -11,7 +11,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ data: any, error: any }>
   signUp: (email: string, password: string) => Promise<{ data: any, error: any }>
   signOut: () => Promise<void>
-  refreshProfile: () => Promise<void>
+  refreshProfile: () => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -20,7 +20,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [fetchAttempted, setFetchAttempted] = useState(false)
   const navigate = useNavigate()
+
+  // Add a safety timeout to prevent infinite loading
+  useEffect(() => {
+    const safetyTimeout = setTimeout(() => {
+      if (loading) {
+        console.log('Auth safety timeout triggered - forcing loading to complete')
+        setLoading(false)
+      }
+    }, 3000) // 3 second timeout
+
+    return () => clearTimeout(safetyTimeout)
+  }, [loading])
 
   useEffect(() => {
     // Check active sessions and sets the user
@@ -33,13 +46,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false)
       }
     })
+    .catch(error => {
+      console.error('Error getting session:', error)
+      setLoading(false)
+    })
 
     // Listen for changes on auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       console.log('Auth state change:', _event, session ? 'Session exists' : 'No session')
       setUser(session?.user ?? null)
       if (session?.user) {
-        await fetchProfile(session.user.id)
+        try {
+          await fetchProfile(session.user.id)
+        } catch (error) {
+          console.error('Error in auth state change:', error)
+          setLoading(false)
+        }
       } else {
         setProfile(null)
         setLoading(false)
@@ -50,6 +72,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const fetchProfile = async (userId: string) => {
+    // Prevent multiple fetch attempts for the same user
+    if (fetchAttempted && profile && profile.id === userId) {
+      console.log('Profile already fetched for this user, skipping')
+      setLoading(false)
+      return
+    }
+    
+    setFetchAttempted(true)
     try {
       console.log('Fetching profile for user:', userId)
       const { data, error } = await supabase
@@ -153,10 +183,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshProfile: async () => {
       if (user?.id) {
         console.log('Refreshing profile for user:', user.id)
-        await fetchProfile(user.id)
+        // Reset fetch attempted flag to allow a fresh fetch
+        setFetchAttempted(false)
+        setLoading(true) // Set loading to true to indicate refresh is happening
+        try {
+          await fetchProfile(user.id)
+          return Promise.resolve(true) // Return success
+        } catch (error) {
+          console.error('Error refreshing profile:', error)
+          return Promise.resolve(false) // Return failure
+        }
       } else {
         console.log('Cannot refresh profile: No user ID')
-        return Promise.resolve()
+        return Promise.resolve(false)
       }
     }
   }

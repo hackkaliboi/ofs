@@ -38,6 +38,7 @@ import FirstAdmin from "./pages/admin/setup/FirstAdmin";
 import UserManagement from "./pages/admin/users/Index";
 import CreateUser from "./pages/admin/users/Create";
 import AdminAssets from "./pages/admin/Assets";
+import AdminBlockchain from "./pages/admin/Blockchain";
 import AdminAnalytics from "./pages/admin/Analytics";
 import AdminSecurity from "./pages/admin/Security";
 import AdminSettings from "./pages/admin/Settings";
@@ -84,6 +85,7 @@ function App() {
               <Route path="/admin/users" element={<UserManagement />} />
               <Route path="/admin/users/create" element={<CreateUser />} />
               <Route path="/admin/assets" element={<AdminAssets />} />
+              <Route path="/admin/blockchain" element={<AdminBlockchain />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/security" element={<AdminSecurity />} />
               <Route path="/admin/settings" element={<AdminSettings />} />

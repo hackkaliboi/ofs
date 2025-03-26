@@ -12,6 +12,7 @@ export interface Profile {
   last_login?: string;
   created_at?: string;
   updated_at?: string;
+  bio?: string;
 }
 
 export interface AuthContextType {
@@ -21,7 +22,7 @@ export interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ data: any, error: any }>;
   signUp: (email: string, password: string) => Promise<{ data: any, error: any }>;
   signOut: () => Promise<void>;
-  refreshProfile: () => Promise<void>;
+  refreshProfile: () => Promise<boolean>;
 }
 
 export interface AdminSession {
