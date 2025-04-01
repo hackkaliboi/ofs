@@ -2,101 +2,111 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./components/theme-provider";
 import Layout from "./components/layout/Layout";
-import { DashboardLayout } from "./components/dashboard/layout";
-import { AdminLayout } from "./components/admin/layout";
 import PrivateRoute from "./components/auth/PrivateRoute";
-import AdminRoute from "./components/auth/AdminRoute";
+import AdminRoute from "@/components/auth/AdminRoute";
+import { DashboardLayout } from "./components/dashboard/layout";
+import AdminAccessProvider from "./components/AdminAccessProvider";
+import { useEffect, lazy, Suspense } from "react";
 import "./styles/globals.css";
 
 // Public Pages
-import Index from "./pages/Index";
-import About from "./pages/About";
-import Team from "./pages/Team";
-import Careers from "./pages/Careers";
-import FAQ from "./pages/FAQ";
-import Documentation from "./pages/Documentation";
-import Contact from "./pages/Contact";
-import Blog from "./pages/Blog";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import AdminLogin from "./pages/admin/Login";
-import Validate from "./pages/Validate";
-import Terms from "./pages/Terms";
+import Index from "./pages/Index.tsx";
+import About from "./pages/About.tsx";
+import Team from "./pages/Team.tsx";
+import Careers from "./pages/Careers.tsx";
+import FAQ from "./pages/FAQ.tsx";
+import Documentation from "./pages/Documentation.tsx";
+import Contact from "./pages/Contact.tsx";
+import Blog from "./pages/Blog.tsx";
+import SignIn from "./pages/SignIn.tsx";
+import SignUp from "./pages/SignUp.tsx";
+import Terms from "./pages/Terms.tsx";
+import AdminSignIn from "./pages/AdminSignIn.tsx";
+import AdminAccess from "./pages/AdminAccess.tsx";
 
-// Dashboard Pages
-import Dashboard from "./pages/dashboard/Index";
-import UserAssets from "./pages/dashboard/Assets";
-import UserTransactions from "./pages/dashboard/Transactions";
-import UserHistory from "./pages/dashboard/History";
-import UserSettings from "./pages/dashboard/Settings";
-import ConnectWallet from "./pages/dashboard/ConnectWallet";
+// User Dashboard Pages
+import Dashboard from "./pages/dashboard/Index.tsx";
+import Withdrawals from "./pages/dashboard/Withdrawals.tsx";
+import KYC from "./pages/dashboard/KYC.tsx";
+import Profile from "./pages/dashboard/Profile.tsx";
+import ConnectWallet from "./pages/dashboard/ConnectWallet.tsx";
 
 // Admin Dashboard Pages
-import AdminDashboard from "./pages/admin/Dashboard";
-import FirstAdmin from "./pages/admin/setup/FirstAdmin";
-import UserManagement from "./pages/admin/users/Index";
-import CreateUser from "./pages/admin/users/Create";
-import AdminAssets from "./pages/admin/Assets";
-import AdminBlockchain from "./pages/admin/Blockchain";
-import AdminAnalytics from "./pages/admin/Analytics";
-import AdminSecurity from "./pages/admin/Security";
-import AdminSettings from "./pages/admin/Settings";
+import AdminDashboard from "./pages/admin/Index.tsx";
+import AdminUsers from "./pages/admin/Users.tsx";
+import WalletManagement from "./pages/admin/Wallets.tsx";
+import WalletsDirect from "./pages/admin/WalletsDirect.tsx";
+import KYCManagement from "./pages/admin/KYC.tsx";
+import WithdrawalManagement from "./pages/admin/Withdrawals.tsx";
+import AdminSettings from "./pages/admin/Settings.tsx";
+// Import the direct admin access page
+import DirectAdminAccess from "./pages/DirectAdminAccess.tsx";
 
+// Create a new query client instance
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            {/* Public Routes */}
-            <Route element={<Layout />}>
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/team" element={<Team />} />
-              <Route path="/careers" element={<Careers />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/documentation" element={<Documentation />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/sign-in" element={<SignIn />} />
-              <Route path="/sign-up" element={<SignUp />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/validate" element={<Validate />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/admin/setup" element={<FirstAdmin />} />
-            </Route>
+      <ThemeProvider defaultTheme="light">
+        <BrowserRouter>
+          <AuthProvider>
+            <AdminAccessProvider>
+              <Routes>
+                {/* Public Routes */}
+                <Route element={<Layout />}>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/team" element={<Team />} />
+                  <Route path="/careers" element={<Careers />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/documentation" element={<Documentation />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/sign-in" element={<SignIn />} />
+                  <Route path="/sign-up" element={<SignUp />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/admin/login" element={<AdminSignIn />} />
+                  <Route path="/admin-access" element={<AdminAccess />} />
+                </Route>
 
-            {/* User Dashboard Routes */}
-            <Route element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard/assets" element={<UserAssets />} />
-              <Route path="/dashboard/transactions" element={<UserTransactions />} />
-              <Route path="/dashboard/history" element={<UserHistory />} />
-              <Route path="/dashboard/settings" element={<UserSettings />} />
-              <Route path="/dashboard/connect-wallet" element={<ConnectWallet />} />
-            </Route>
+                {/* User Dashboard Routes */}
+                <Route element={<PrivateRoute />}>
+                  <Route element={<DashboardLayout />}>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/dashboard/connect-wallet" element={<ConnectWallet />} />
+                    <Route path="/dashboard/withdrawals" element={<Withdrawals />} />
+                    <Route path="/dashboard/kyc" element={<KYC />} />
+                    <Route path="/dashboard/profile" element={<Profile />} />
+                  </Route>
+                </Route>
 
-            {/* Admin Dashboard Routes */}
-            <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/users" element={<UserManagement />} />
-              <Route path="/admin/users/create" element={<CreateUser />} />
-              <Route path="/admin/assets" element={<AdminAssets />} />
-              <Route path="/admin/blockchain" element={<AdminBlockchain />} />
-              <Route path="/admin/analytics" element={<AdminAnalytics />} />
-              <Route path="/admin/security" element={<AdminSecurity />} />
-              <Route path="/admin/settings" element={<AdminSettings />} />
-            </Route>
+                {/* Admin Access Routes */}
+                <Route path="/admin-access" element={<DirectAdminAccess />} />
+                <Route path="/admin-wallets" element={<WalletsDirect />} />
 
-            {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-          <Toaster />
-        </AuthProvider>
-      </BrowserRouter>
+                {/* Admin Dashboard Routes */}
+                <Route element={<AdminRoute />}>
+                  <Route element={<DashboardLayout />}>
+                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/admin/users" element={<AdminUsers />} />
+                    <Route path="/admin/wallets" element={<WalletManagement />} />
+                    <Route path="/admin/kyc" element={<KYCManagement />} />
+                    <Route path="/admin/withdrawals" element={<WithdrawalManagement />} />
+                    <Route path="/admin/settings" element={<AdminSettings />} />
+                  </Route>
+                </Route>
+
+                {/* Catch all route */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+              <Toaster />
+            </AdminAccessProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

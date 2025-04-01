@@ -8,6 +8,7 @@ interface AuthContextType {
   user: User | null
   profile: Profile | null
   loading: boolean
+  isAdmin: boolean
   signIn: (email: string, password: string) => Promise<{ data: any, error: any }>
   signUp: (email: string, password: string) => Promise<{ data: any, error: any }>
   signOut: () => Promise<void>
@@ -30,30 +31,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log('Auth safety timeout triggered - forcing loading to complete')
         setLoading(false)
       }
-    }, 3000) // 3 second timeout
+    }, 2000) // Reduced from 3 seconds to 2 seconds
 
     return () => clearTimeout(safetyTimeout)
   }, [loading])
 
   useEffect(() => {
     // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Auth session check:', session ? 'Session found' : 'No session')
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id)
-      } else {
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        setUser(session?.user ?? null)
+        if (session?.user) {
+          fetchProfile(session.user.id)
+        } else {
+          setLoading(false)
+        }
+      } catch (error) {
+        console.error('Error getting session:', error)
         setLoading(false)
       }
-    })
-    .catch(error => {
-      console.error('Error getting session:', error)
-      setLoading(false)
-    })
+    }
+    
+    checkSession()
 
     // Listen for changes on auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log('Auth state change:', _event, session ? 'Session exists' : 'No session')
       setUser(session?.user ?? null)
       if (session?.user) {
         try {
@@ -74,14 +77,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const fetchProfile = async (userId: string) => {
     // Prevent multiple fetch attempts for the same user
     if (fetchAttempted && profile && profile.id === userId) {
-      console.log('Profile already fetched for this user, skipping')
       setLoading(false)
       return
     }
     
     setFetchAttempted(true)
     try {
-      console.log('Fetching profile for user:', userId)
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -89,16 +90,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single();
 
       if (error) {
-        console.error('Error fetching profile:', error)
-        
         // If the profile doesn't exist, create a default one
         if (error.code === 'PGRST116') {
-          console.log('Profile not found, creating default profile')
           const newProfile = {
             id: userId,
             full_name: user?.email?.split('@')[0] || 'User',
             avatar_url: null,
-            role: 'user',
+            role: user?.email === 'pastendro@gmail.com' ? 'admin' : 'user', // Grant admin access to pastendro@gmail.com
           }
           
           const { error: insertError } = await supabase
@@ -107,16 +105,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           
           if (insertError) {
             console.error('Error creating profile:', insertError)
+            
+            // If we can't create the profile in the database, still set it locally
+            // This ensures the user can access admin features
+            if (user?.email === 'pastendro@gmail.com') {
+              console.log('Setting admin role for pastendro@gmail.com')
+              setProfile({
+                ...newProfile,
+                role: 'admin'
+              } as Profile)
+            } else {
+              setProfile(newProfile as Profile)
+            }
           } else {
             setProfile(newProfile as Profile)
           }
         }
       } else {
-        console.log('Profile fetched successfully:', data)
-        setProfile(data)
+        // If this is pastendro@gmail.com, ensure they have admin role
+        if (user?.email === 'pastendro@gmail.com' && data.role !== 'admin') {
+          console.log('Setting admin role for pastendro@gmail.com')
+          const updatedProfile = {
+            ...data,
+            role: 'admin'
+          }
+          setProfile(updatedProfile)
+          
+          // Try to update in database too
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ role: 'admin' })
+            .eq('id', userId)
+          
+          if (updateError) {
+            console.error('Error updating profile to admin:', updateError)
+          }
+        } else {
+          setProfile(data)
+        }
       }
     } catch (error) {
       console.error('Unexpected error fetching profile:', error)
+      
+      // Ensure pastendro@gmail.com gets admin access even if there are errors
+      if (user?.email === 'pastendro@gmail.com') {
+        console.log('Setting admin role for pastendro@gmail.com despite errors')
+        setProfile({
+          id: userId,
+          full_name: user.email.split('@')[0] || 'Admin User',
+          avatar_url: null,
+          role: 'admin',
+          email: user.email
+        } as Profile)
+      }
     } finally {
       setLoading(false)
     }
@@ -126,11 +167,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     profile,
     loading,
+    isAdmin: profile?.role === 'admin',
     signIn: async (email: string, password: string) => {
-      console.log('Signing in with email:', email)
       try {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-        console.log('Sign in result:', error ? 'Error' : 'Success')
         
         if (data.session?.user) {
           await fetchProfile(data.session.user.id)
@@ -142,10 +182,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     },
     signUp: async (email: string, password: string) => {
-      console.log('Signing up with email:', email)
       try {
         const { data, error } = await supabase.auth.signUp({ email, password })
-        console.log('Sign up result:', error ? 'Error' : 'Success')
         
         if (data.session?.user) {
           // Create a default profile for new users
@@ -153,7 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             id: data.session.user.id,
             full_name: email.split('@')[0] || 'User',
             avatar_url: null,
-            role: 'user',
+            role: email === 'pastendro@gmail.com' ? 'admin' : 'user', // Grant admin access to pastendro@gmail.com
           }
           
           await supabase
@@ -169,20 +207,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     },
     signOut: async () => {
-      console.log('Signing out user')
       try {
         await supabase.auth.signOut()
         setUser(null)
         setProfile(null)
         navigate('/')
-        console.log('User signed out successfully')
       } catch (error) {
         console.error('Error signing out:', error)
       }
     },
     refreshProfile: async () => {
       if (user?.id) {
-        console.log('Refreshing profile for user:', user.id)
         // Reset fetch attempted flag to allow a fresh fetch
         setFetchAttempted(false)
         setLoading(true) // Set loading to true to indicate refresh is happening
@@ -194,7 +229,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return Promise.resolve(false) // Return failure
         }
       } else {
-        console.log('Cannot refresh profile: No user ID')
         return Promise.resolve(false)
       }
     }

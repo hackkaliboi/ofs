@@ -1,31 +1,44 @@
-import React from "react";
-import { Outlet, Navigate } from "react-router-dom";
-import { DashboardSidebar as Sidebar } from "./sidebar";
+import React, { useState, useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import Sidebar from "./sidebar";
+import Header from "./header";
 
 export function DashboardLayout() {
-  const { user, loading } = useAuth();
+  const { user, profile } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
-  // Show loading state while checking authentication
-  if (loading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <div className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"></div>
-      </div>
-    );
-  }
-
-  // Redirect to sign-in if not authenticated
-  if (!user) {
-    return <Navigate to="/sign-in" replace />;
-  }
+  // Handle mobile menu toggle
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex-1 pl-72">
-        <main className="py-10">
-          <Outlet />
+    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
+      {/* Header */}
+      <Header 
+        isMobileMenuOpen={isMobileMenuOpen} 
+        toggleMobileMenu={toggleMobileMenu} 
+      />
+      
+      <div className="flex flex-1">
+        {/* Sidebar */}
+        <Sidebar 
+          isMobileMenuOpen={isMobileMenuOpen} 
+          closeMobileMenu={() => setIsMobileMenuOpen(false)}
+        />
+        
+        {/* Main Content */}
+        <main className="flex-1 p-4 md:p-6 overflow-auto lg:ml-64 transition-all duration-200 bg-gray-50">
+          <div className="max-w-7xl mx-auto">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

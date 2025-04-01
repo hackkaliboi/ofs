@@ -1,635 +1,385 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/components/ui/use-toast";
 import { 
-  Settings as SettingsIcon, 
+  Settings, 
   Save, 
-  Globe, 
+  Shield, 
+  Bell, 
   Mail, 
-  BellRing, 
+  Lock, 
   Database, 
-  Cloud,
-  Palette,
-  Moon,
-  Sun,
   RefreshCw,
-  Trash2,
-  AlertCircle
+  Wallet
 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useTheme } from "@/components/theme-provider";
+import { supabase } from "@/lib/supabaseClient";
 
 const AdminSettings = () => {
-  const [generalSettings, setGeneralSettings] = useState({
-    siteName: "OFS Ledger",
-    siteDescription: "A secure digital asset management platform",
-    contactEmail: "admin@ofsledger.com",
-    supportEmail: "support@ofsledger.com",
-    timezone: "UTC",
-    dateFormat: "MM/DD/YYYY",
-    maintenanceMode: false
-  });
-
-  const [emailSettings, setEmailSettings] = useState({
-    smtpServer: "smtp.example.com",
-    smtpPort: "587",
-    smtpUsername: "notifications@ofsledger.com",
-    smtpPassword: "••••••••••••",
-    fromEmail: "no-reply@ofsledger.com",
-    fromName: "OFS Ledger",
-    enableEmailNotifications: true
-  });
-
-  const [notificationSettings, setNotificationSettings] = useState({
-    newUserNotification: true,
-    loginAttemptNotification: true,
-    transactionNotification: true,
-    securityAlertNotification: true,
-    maintenanceNotification: false,
-    emailDigest: "daily"
-  });
-
-  const [backupSettings, setBackupSettings] = useState({
-    automaticBackups: true,
-    backupFrequency: "daily",
-    backupRetention: "30",
-    backupStorage: "cloud",
-    lastBackup: "2023-06-15T14:30:00Z"
-  });
-
-  const [appearanceSettings, setAppearanceSettings] = useState({
-    theme: "light",
-    accentColor: "blue",
-    enableDarkMode: true,
-    compactMode: false,
-    showHelpTips: true
-  });
-
-  const handleGeneralSettingsChange = (field: string, value: string | boolean) => {
-    setGeneralSettings({
-      ...generalSettings,
-      [field]: value
-    });
-  };
-
-  const handleEmailSettingsChange = (field: string, value: string | boolean) => {
-    setEmailSettings({
-      ...emailSettings,
-      [field]: value
-    });
-  };
-
-  const handleNotificationSettingsChange = (field: string, value: string | boolean) => {
-    setNotificationSettings({
-      ...notificationSettings,
-      [field]: value
-    });
-  };
-
-  const handleBackupSettingsChange = (field: string, value: string | boolean) => {
-    setBackupSettings({
-      ...backupSettings,
-      [field]: value
-    });
-  };
-
-  const handleAppearanceSettingsChange = (field: string, value: string | boolean) => {
-    setAppearanceSettings({
-      ...appearanceSettings,
-      [field]: value
-    });
-  };
-
-  const handleSaveSettings = () => {
-    // In a real implementation, this would save to a database
-    console.log("Saving settings:", {
-      generalSettings,
-      emailSettings,
-      notificationSettings,
-      backupSettings,
-      appearanceSettings
-    });
+  const { theme } = useTheme();
+  const { toast } = useToast();
+  
+  // Security settings
+  const [twoFactorRequired, setTwoFactorRequired] = useState(true);
+  const [passwordExpiry, setPasswordExpiry] = useState(90);
+  const [maxLoginAttempts, setMaxLoginAttempts] = useState(5);
+  
+  // Notification settings
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [adminAlerts, setAdminAlerts] = useState(true);
+  const [securityAlerts, setSecurityAlerts] = useState(true);
+  
+  // Wallet settings
+  const [autoValidation, setAutoValidation] = useState(false);
+  const [withdrawalLimit, setWithdrawalLimit] = useState(5);
+  const [withdrawalCooldown, setWithdrawalCooldown] = useState(24);
+  
+  // System settings
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [debugMode, setDebugMode] = useState(false);
+  const [apiTimeout, setApiTimeout] = useState(30);
+  
+  const handleSaveSettings = async (settingType) => {
+    // In a real implementation, this would save to Supabase
+    // const { error } = await supabase.from('admin_settings').upsert({
+    //   type: settingType,
+    //   settings: { ... relevant settings ... }
+    // });
     
-    // Show success message (in a real app)
+    // Show success message
+    toast({
+      title: "Settings Saved",
+      description: `${settingType} settings have been updated successfully.`,
+    });
   };
-
+  
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold">Admin Settings</h1>
-        <p className="text-muted-foreground">
-          Configure system-wide settings for the platform
-        </p>
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Admin Settings</h1>
+          <p className="text-muted-foreground">
+            Configure system-wide settings and preferences
+          </p>
+        </div>
       </div>
-
-      <Tabs defaultValue="general" className="space-y-4">
-        <TabsList className="grid grid-cols-2 md:grid-cols-5 lg:w-[600px]">
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="email">Email</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="backup">Backup & Data</TabsTrigger>
-          <TabsTrigger value="appearance">Appearance</TabsTrigger>
+      
+      <Tabs defaultValue="security" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="security">
+            <Shield className="h-4 w-4 mr-2" />
+            Security
+          </TabsTrigger>
+          <TabsTrigger value="notifications">
+            <Bell className="h-4 w-4 mr-2" />
+            Notifications
+          </TabsTrigger>
+          <TabsTrigger value="wallets">
+            <Wallet className="h-4 w-4 mr-2" />
+            Wallets
+          </TabsTrigger>
+          <TabsTrigger value="system">
+            <Settings className="h-4 w-4 mr-2" />
+            System
+          </TabsTrigger>
         </TabsList>
-
-        {/* General Settings */}
-        <TabsContent value="general" className="space-y-4">
+        
+        {/* Security Settings */}
+        <TabsContent value="security" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Globe className="mr-2 h-5 w-5" />
-                General Settings
-              </CardTitle>
-              <CardDescription>Configure basic platform settings</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Security Settings</CardTitle>
+                  <CardDescription>
+                    Configure security policies and requirements
+                  </CardDescription>
+                </div>
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+                  <Shield className="h-5 w-5 text-primary" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="siteName">Site Name</Label>
-                  <Input 
-                    id="siteName" 
-                    value={generalSettings.siteName} 
-                    onChange={(e) => handleGeneralSettingsChange('siteName', e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="contactEmail">Contact Email</Label>
-                  <Input 
-                    id="contactEmail" 
-                    type="email" 
-                    value={generalSettings.contactEmail} 
-                    onChange={(e) => handleGeneralSettingsChange('contactEmail', e.target.value)}
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="siteDescription">Site Description</Label>
-                <Textarea 
-                  id="siteDescription" 
-                  value={generalSettings.siteDescription} 
-                  onChange={(e) => handleGeneralSettingsChange('siteDescription', e.target.value)}
-                />
-              </div>
-              
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="supportEmail">Support Email</Label>
-                  <Input 
-                    id="supportEmail" 
-                    type="email" 
-                    value={generalSettings.supportEmail} 
-                    onChange={(e) => handleGeneralSettingsChange('supportEmail', e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="timezone">Timezone</Label>
-                  <Select 
-                    value={generalSettings.timezone} 
-                    onValueChange={(value) => handleGeneralSettingsChange('timezone', value)}
-                  >
-                    <SelectTrigger id="timezone">
-                      <SelectValue placeholder="Select timezone" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="UTC">UTC</SelectItem>
-                      <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
-                      <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
-                      <SelectItem value="America/Denver">Mountain Time (MT)</SelectItem>
-                      <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
-                      <SelectItem value="Europe/London">London (GMT)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="dateFormat">Date Format</Label>
-                  <Select 
-                    value={generalSettings.dateFormat} 
-                    onValueChange={(value) => handleGeneralSettingsChange('dateFormat', value)}
-                  >
-                    <SelectTrigger id="dateFormat">
-                      <SelectValue placeholder="Select date format" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
-                      <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
-                      <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center space-x-2 pt-8">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Require Two-Factor Authentication</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Require all admin users to use 2FA
+                    </p>
+                  </div>
                   <Switch 
-                    id="maintenanceMode" 
-                    checked={generalSettings.maintenanceMode} 
-                    onCheckedChange={(checked) => handleGeneralSettingsChange('maintenanceMode', checked)}
+                    checked={twoFactorRequired}
+                    onCheckedChange={setTwoFactorRequired}
                   />
-                  <Label htmlFor="maintenanceMode">Maintenance Mode</Label>
+                </div>
+                
+                <Separator />
+                
+                <div className="space-y-2">
+                  <Label htmlFor="password-expiry">Password Expiry (days)</Label>
+                  <Input
+                    id="password-expiry"
+                    type="number"
+                    value={passwordExpiry}
+                    onChange={(e) => setPasswordExpiry(parseInt(e.target.value))}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Number of days before passwords expire and need to be reset
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="max-login-attempts">Max Login Attempts</Label>
+                  <Input
+                    id="max-login-attempts"
+                    type="number"
+                    value={maxLoginAttempts}
+                    onChange={(e) => setMaxLoginAttempts(parseInt(e.target.value))}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Number of failed login attempts before account is locked
+                  </p>
                 </div>
               </div>
-              
-              {generalSettings.maintenanceMode && (
-                <Alert variant="default" className="bg-yellow-50">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Maintenance Mode Enabled</AlertTitle>
-                  <AlertDescription>
-                    When enabled, only administrators will be able to access the platform. All other users will see a maintenance page.
-                  </AlertDescription>
-                </Alert>
-              )}
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSaveSettings}>
+              <Button 
+                onClick={() => handleSaveSettings('security')}
+                className="ml-auto"
+              >
                 <Save className="mr-2 h-4 w-4" />
-                Save Changes
+                Save Security Settings
               </Button>
             </CardFooter>
           </Card>
         </TabsContent>
-
-        {/* Email Settings */}
-        <TabsContent value="email" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Mail className="mr-2 h-5 w-5" />
-                Email Configuration
-              </CardTitle>
-              <CardDescription>Configure email server settings</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-2 pb-4">
-                <Switch 
-                  id="enableEmailNotifications" 
-                  checked={emailSettings.enableEmailNotifications} 
-                  onCheckedChange={(checked) => handleEmailSettingsChange('enableEmailNotifications', checked)}
-                />
-                <Label htmlFor="enableEmailNotifications">Enable Email Notifications</Label>
-              </div>
-              
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="smtpServer">SMTP Server</Label>
-                  <Input 
-                    id="smtpServer" 
-                    value={emailSettings.smtpServer} 
-                    onChange={(e) => handleEmailSettingsChange('smtpServer', e.target.value)}
-                    disabled={!emailSettings.enableEmailNotifications}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="smtpPort">SMTP Port</Label>
-                  <Input 
-                    id="smtpPort" 
-                    value={emailSettings.smtpPort} 
-                    onChange={(e) => handleEmailSettingsChange('smtpPort', e.target.value)}
-                    disabled={!emailSettings.enableEmailNotifications}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="smtpUsername">SMTP Username</Label>
-                  <Input 
-                    id="smtpUsername" 
-                    value={emailSettings.smtpUsername} 
-                    onChange={(e) => handleEmailSettingsChange('smtpUsername', e.target.value)}
-                    disabled={!emailSettings.enableEmailNotifications}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="smtpPassword">SMTP Password</Label>
-                  <Input 
-                    id="smtpPassword" 
-                    type="password" 
-                    value={emailSettings.smtpPassword} 
-                    onChange={(e) => handleEmailSettingsChange('smtpPassword', e.target.value)}
-                    disabled={!emailSettings.enableEmailNotifications}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="fromEmail">From Email</Label>
-                  <Input 
-                    id="fromEmail" 
-                    type="email" 
-                    value={emailSettings.fromEmail} 
-                    onChange={(e) => handleEmailSettingsChange('fromEmail', e.target.value)}
-                    disabled={!emailSettings.enableEmailNotifications}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="fromName">From Name</Label>
-                  <Input 
-                    id="fromName" 
-                    value={emailSettings.fromName} 
-                    onChange={(e) => handleEmailSettingsChange('fromName', e.target.value)}
-                    disabled={!emailSettings.enableEmailNotifications}
-                  />
-                </div>
-              </div>
-              
-              <div className="pt-4">
-                <Button variant="outline" disabled={!emailSettings.enableEmailNotifications}>
-                  Send Test Email
-                </Button>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button onClick={handleSaveSettings}>
-                <Save className="mr-2 h-4 w-4" />
-                Save Changes
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-
+        
         {/* Notification Settings */}
         <TabsContent value="notifications" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <BellRing className="mr-2 h-5 w-5" />
-                Notification Settings
-              </CardTitle>
-              <CardDescription>Configure when and how notifications are sent</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between space-x-2">
-                <Label htmlFor="newUserNotification">New User Registration</Label>
-                <Switch 
-                  id="newUserNotification" 
-                  checked={notificationSettings.newUserNotification} 
-                  onCheckedChange={(checked) => handleNotificationSettingsChange('newUserNotification', checked)}
-                />
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Notification Settings</CardTitle>
+                  <CardDescription>
+                    Configure system notifications and alerts
+                  </CardDescription>
+                </div>
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+                  <Bell className="h-5 w-5 text-primary" />
+                </div>
               </div>
-              
-              <div className="flex items-center justify-between space-x-2">
-                <Label htmlFor="loginAttemptNotification">Failed Login Attempts</Label>
-                <Switch 
-                  id="loginAttemptNotification" 
-                  checked={notificationSettings.loginAttemptNotification} 
-                  onCheckedChange={(checked) => handleNotificationSettingsChange('loginAttemptNotification', checked)}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between space-x-2">
-                <Label htmlFor="transactionNotification">Large Transactions</Label>
-                <Switch 
-                  id="transactionNotification" 
-                  checked={notificationSettings.transactionNotification} 
-                  onCheckedChange={(checked) => handleNotificationSettingsChange('transactionNotification', checked)}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between space-x-2">
-                <Label htmlFor="securityAlertNotification">Security Alerts</Label>
-                <Switch 
-                  id="securityAlertNotification" 
-                  checked={notificationSettings.securityAlertNotification} 
-                  onCheckedChange={(checked) => handleNotificationSettingsChange('securityAlertNotification', checked)}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between space-x-2">
-                <Label htmlFor="maintenanceNotification">Maintenance Updates</Label>
-                <Switch 
-                  id="maintenanceNotification" 
-                  checked={notificationSettings.maintenanceNotification} 
-                  onCheckedChange={(checked) => handleNotificationSettingsChange('maintenanceNotification', checked)}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="emailDigest">Email Digest Frequency</Label>
-                <Select 
-                  value={notificationSettings.emailDigest} 
-                  onValueChange={(value) => handleNotificationSettingsChange('emailDigest', value)}
-                >
-                  <SelectTrigger id="emailDigest">
-                    <SelectValue placeholder="Select frequency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="realtime">Real-time</SelectItem>
-                    <SelectItem value="daily">Daily</SelectItem>
-                    <SelectItem value="weekly">Weekly</SelectItem>
-                    <SelectItem value="never">Never</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button onClick={handleSaveSettings}>
-                <Save className="mr-2 h-4 w-4" />
-                Save Changes
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-
-        {/* Backup Settings */}
-        <TabsContent value="backup" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Database className="mr-2 h-5 w-5" />
-                Backup & Data Management
-              </CardTitle>
-              <CardDescription>Configure database backup settings</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center space-x-2 pb-4">
-                <Switch 
-                  id="automaticBackups" 
-                  checked={backupSettings.automaticBackups} 
-                  onCheckedChange={(checked) => handleBackupSettingsChange('automaticBackups', checked)}
-                />
-                <Label htmlFor="automaticBackups">Enable Automatic Backups</Label>
-              </div>
-              
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="backupFrequency">Backup Frequency</Label>
-                  <Select 
-                    value={backupSettings.backupFrequency} 
-                    onValueChange={(value) => handleBackupSettingsChange('backupFrequency', value)}
-                    disabled={!backupSettings.automaticBackups}
-                  >
-                    <SelectTrigger id="backupFrequency">
-                      <SelectValue placeholder="Select frequency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="hourly">Hourly</SelectItem>
-                      <SelectItem value="daily">Daily</SelectItem>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Email Notifications</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Send email notifications for important events
+                    </p>
+                  </div>
+                  <Switch 
+                    checked={emailNotifications}
+                    onCheckedChange={setEmailNotifications}
+                  />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="backupRetention">Retention Period (days)</Label>
-                  <Input 
-                    id="backupRetention" 
-                    value={backupSettings.backupRetention} 
-                    onChange={(e) => handleBackupSettingsChange('backupRetention', e.target.value)}
-                    disabled={!backupSettings.automaticBackups}
+                
+                <Separator />
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Admin Alerts</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Receive alerts for admin actions
+                    </p>
+                  </div>
+                  <Switch 
+                    checked={adminAlerts}
+                    onCheckedChange={setAdminAlerts}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Security Alerts</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Receive alerts for security events
+                    </p>
+                  </div>
+                  <Switch 
+                    checked={securityAlerts}
+                    onCheckedChange={setSecurityAlerts}
                   />
                 </div>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="backupStorage">Backup Storage Location</Label>
-                <Select 
-                  value={backupSettings.backupStorage} 
-                  onValueChange={(value) => handleBackupSettingsChange('backupStorage', value)}
-                  disabled={!backupSettings.automaticBackups}
-                >
-                  <SelectTrigger id="backupStorage">
-                    <SelectValue placeholder="Select storage location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="local">Local Storage</SelectItem>
-                    <SelectItem value="cloud">Cloud Storage</SelectItem>
-                    <SelectItem value="both">Both Local & Cloud</SelectItem>
-                  </SelectContent>
-                </Select>
+            </CardContent>
+            <CardFooter>
+              <Button 
+                onClick={() => handleSaveSettings('notifications')}
+                className="ml-auto"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                Save Notification Settings
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+        
+        {/* Wallet Settings */}
+        <TabsContent value="wallets" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Wallet Settings</CardTitle>
+                  <CardDescription>
+                    Configure wallet validation and withdrawal settings
+                  </CardDescription>
+                </div>
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+                  <Wallet className="h-5 w-5 text-primary" />
+                </div>
               </div>
-              
-              <div className="pt-4 space-y-4">
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Last Backup:</span>
-                  <span className="text-sm font-medium">
-                    {backupSettings.lastBackup 
-                      ? new Date(backupSettings.lastBackup).toLocaleString() 
-                      : "Never"}
-                  </span>
+                  <div className="space-y-0.5">
+                    <Label>Auto-Validation</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Automatically validate wallets that meet criteria
+                    </p>
+                  </div>
+                  <Switch 
+                    checked={autoValidation}
+                    onCheckedChange={setAutoValidation}
+                  />
                 </div>
                 
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" disabled={!backupSettings.automaticBackups}>
-                    <Cloud className="mr-2 h-4 w-4" />
-                    Backup Now
-                  </Button>
-                  <Button variant="outline" disabled={!backupSettings.automaticBackups}>
+                <Separator />
+                
+                <div className="space-y-2">
+                  <Label htmlFor="withdrawal-limit">Daily Withdrawal Limit</Label>
+                  <Input
+                    id="withdrawal-limit"
+                    type="number"
+                    value={withdrawalLimit}
+                    onChange={(e) => setWithdrawalLimit(parseInt(e.target.value))}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Maximum number of withdrawals per day per user
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="withdrawal-cooldown">Withdrawal Cooldown (hours)</Label>
+                  <Input
+                    id="withdrawal-cooldown"
+                    type="number"
+                    value={withdrawalCooldown}
+                    onChange={(e) => setWithdrawalCooldown(parseInt(e.target.value))}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Hours between allowed withdrawals
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button 
+                onClick={() => handleSaveSettings('wallets')}
+                className="ml-auto"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                Save Wallet Settings
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+        
+        {/* System Settings */}
+        <TabsContent value="system" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>System Settings</CardTitle>
+                  <CardDescription>
+                    Configure system-wide settings and maintenance
+                  </CardDescription>
+                </div>
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+                  <Settings className="h-5 w-5 text-primary" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Maintenance Mode</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Put the system in maintenance mode
+                    </p>
+                  </div>
+                  <Switch 
+                    checked={maintenanceMode}
+                    onCheckedChange={setMaintenanceMode}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Debug Mode</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Enable detailed logging and debugging
+                    </p>
+                  </div>
+                  <Switch 
+                    checked={debugMode}
+                    onCheckedChange={setDebugMode}
+                  />
+                </div>
+                
+                <Separator />
+                
+                <div className="space-y-2">
+                  <Label htmlFor="api-timeout">API Timeout (seconds)</Label>
+                  <Input
+                    id="api-timeout"
+                    type="number"
+                    value={apiTimeout}
+                    onChange={(e) => setApiTimeout(parseInt(e.target.value))}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Maximum time for API requests before timeout
+                  </p>
+                </div>
+                
+                <div className="pt-4">
+                  <Button variant="outline" className="w-full">
                     <RefreshCw className="mr-2 h-4 w-4" />
-                    Restore from Backup
-                  </Button>
-                  <Button variant="outline" className="text-destructive hover:bg-destructive/10">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Clear All Data
+                    Rebuild Database Cache
                   </Button>
                 </div>
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSaveSettings}>
+              <Button 
+                onClick={() => handleSaveSettings('system')}
+                className="ml-auto"
+              >
                 <Save className="mr-2 h-4 w-4" />
-                Save Changes
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-
-        {/* Appearance Settings */}
-        <TabsContent value="appearance" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Palette className="mr-2 h-5 w-5" />
-                Appearance Settings
-              </CardTitle>
-              <CardDescription>Customize the look and feel of the platform</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="theme">Default Theme</Label>
-                <div className="flex items-center space-x-2">
-                  <Select 
-                    value={appearanceSettings.theme} 
-                    onValueChange={(value) => handleAppearanceSettingsChange('theme', value)}
-                  >
-                    <SelectTrigger id="theme" className="w-[180px]">
-                      <SelectValue placeholder="Select theme" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">
-                        <div className="flex items-center">
-                          <Sun className="mr-2 h-4 w-4" />
-                          Light
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="dark">
-                        <div className="flex items-center">
-                          <Moon className="mr-2 h-4 w-4" />
-                          Dark
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="system">System Default</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="accentColor">Accent Color</Label>
-                <Select 
-                  value={appearanceSettings.accentColor} 
-                  onValueChange={(value) => handleAppearanceSettingsChange('accentColor', value)}
-                >
-                  <SelectTrigger id="accentColor" className="w-[180px]">
-                    <SelectValue placeholder="Select accent color" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="blue">Blue</SelectItem>
-                    <SelectItem value="green">Green</SelectItem>
-                    <SelectItem value="purple">Purple</SelectItem>
-                    <SelectItem value="red">Red</SelectItem>
-                    <SelectItem value="orange">Orange</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="flex items-center justify-between space-x-2 pt-4">
-                <Label htmlFor="enableDarkMode">Enable Dark Mode Toggle</Label>
-                <Switch 
-                  id="enableDarkMode" 
-                  checked={appearanceSettings.enableDarkMode} 
-                  onCheckedChange={(checked) => handleAppearanceSettingsChange('enableDarkMode', checked)}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between space-x-2">
-                <Label htmlFor="compactMode">Compact Mode</Label>
-                <Switch 
-                  id="compactMode" 
-                  checked={appearanceSettings.compactMode} 
-                  onCheckedChange={(checked) => handleAppearanceSettingsChange('compactMode', checked)}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between space-x-2">
-                <Label htmlFor="showHelpTips">Show Help Tips</Label>
-                <Switch 
-                  id="showHelpTips" 
-                  checked={appearanceSettings.showHelpTips} 
-                  onCheckedChange={(checked) => handleAppearanceSettingsChange('showHelpTips', checked)}
-                />
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button variant="outline">Reset to Defaults</Button>
-              <Button onClick={handleSaveSettings}>
-                <Save className="mr-2 h-4 w-4" />
-                Save Changes
+                Save System Settings
               </Button>
             </CardFooter>
           </Card>
@@ -639,4 +389,5 @@ const AdminSettings = () => {
   );
 };
 
-export default AdminSettings;
+// Export the component with both names for compatibility
+export { AdminSettings as default, AdminSettings };

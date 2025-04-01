@@ -1,12 +1,8 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
 
-interface PrivateRouteProps {
-  children: React.ReactNode;
-}
-
-const PrivateRoute = ({ children }: PrivateRouteProps) => {
+const PrivateRoute = () => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
@@ -22,7 +18,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
     return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
-  return <>{children}</>;
+  return <Outlet />;
 };
 
 export default PrivateRoute;

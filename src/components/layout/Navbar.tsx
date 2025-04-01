@@ -79,8 +79,8 @@ const Navbar = () => {
           <div className="hidden md:flex md:items-center md:space-x-4">
             {user ? (
               <div className="flex items-center space-x-4">
-                <Link to={profile?.role === 'admin' ? "/admin/dashboard" : "/dashboard"}>
-                  <Button variant="ghost" size="sm">Dashboard</Button>
+                <Link to="/profile">
+                  <Button variant="ghost" size="sm">My Profile</Button>
                 </Link>
                 <Button 
                   variant="outline" 
@@ -141,10 +141,10 @@ const Navbar = () => {
             {user ? (
               <>
                 <Link
-                  to={profile?.role === 'admin' ? "/admin/dashboard" : "/dashboard"}
+                  to="/profile"
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
                 >
-                  Dashboard
+                  My Profile
                 </Link>
                 <button
                   onClick={() => signOut()}
