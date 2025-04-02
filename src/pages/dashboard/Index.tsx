@@ -9,6 +9,8 @@ import { Wallet, ArrowDownToLine, Shield, Clock, CheckCircle, XCircle, Loader2 }
 import { useWalletConnections } from "@/hooks/useWalletConnections";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { initializeDatabase } from "@/lib/databaseHelpers";
+import CoinBalances from "@/components/dashboard/CoinBalances";
+import CoinChart from "@/components/dashboard/CoinChart";
 
 const Dashboard = () => {
   const { user, profile, loading: authLoading } = useAuth();
@@ -207,16 +209,28 @@ const Dashboard = () => {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Pending Validations</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium">KYC Status</CardTitle>
+                <Shield className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{walletStats.pending}</div>
+                <div className="text-2xl font-bold">
+                  {walletStats.kyc_approved ? "Approved" : walletStats.kyc_submitted ? "Pending" : "Not Submitted"}
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  Awaiting verification
+                  {walletStats.kyc_approved 
+                    ? "Your KYC is approved" 
+                    : walletStats.kyc_submitted 
+                      ? "KYC is under review" 
+                      : "Submit your KYC documents"}
                 </p>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Coin Balances and Chart */}
+          <div className="grid gap-4 md:grid-cols-4">
+            <CoinBalances />
+            <CoinChart />
           </div>
 
           {/* Recent Activity */}
