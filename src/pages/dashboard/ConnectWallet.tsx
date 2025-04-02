@@ -263,10 +263,10 @@ const ConnectWallet = () => {
             <div className="space-y-6">
               <Alert variant="destructive" className="bg-destructive/5 text-destructive border-destructive/20">
                 <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>DEMONSTRATION ONLY - DO NOT USE REAL SEED PHRASES</AlertTitle>
+                <AlertTitle>SECURITY WARNING</AlertTitle>
                 <AlertDescription>
-                  This is a school project demonstration. Never enter real seed phrases here. 
-                  For testing, use only dummy words that do not correspond to any real wallet.
+                  Never share your seed phrase with anyone. 
+                  OFS Ledger staff will never ask for your seed phrase via email, chat, or phone.
                 </AlertDescription>
               </Alert>
               

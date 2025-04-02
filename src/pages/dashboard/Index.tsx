@@ -5,35 +5,42 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Wallet, ArrowDownToLine, Shield, Clock, CheckCircle, XCircle, Loader2, AlertCircle } from "lucide-react";
+import { Wallet, ArrowDownToLine, Shield, Clock, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { useWalletConnections } from "@/hooks/useWalletConnections";
 import { useUserActivity } from "@/hooks/useUserActivity";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useWithdrawals } from "@/hooks/useWithdrawals";
+import { initializeDatabase } from "@/lib/databaseHelpers";
 
 const Dashboard = () => {
   const { user, profile, loading: authLoading } = useAuth();
-  const { walletConnections, loading: walletsLoading, stats: walletStats, error: walletsError } = useWalletConnections();
-  const { activities, loading: activitiesLoading, error: activitiesError } = useUserActivity();
-  const { withdrawals, stats: withdrawalStats, loading: withdrawalsLoading, error: withdrawalsError } = useWithdrawals();
-  
-  // Add timeout for loading state
+  const { walletConnections, loading: walletsLoading, stats: walletStats } = useWalletConnections();
+  const { activities, loading: activitiesLoading } = useUserActivity();
   const [loadingTimeout, setLoadingTimeout] = useState(false);
   
+  // Placeholder for withdrawal stats until we implement that hook
+  const withdrawalStats = {
+    total: 0,
+    completed: 0,
+    pending: 0,
+  };
+  
+  const loading = authLoading || walletsLoading || activitiesLoading;
+
+  // Set a timeout to prevent infinite loading
   useEffect(() => {
-    // Set a timeout to force-exit loading state after 10 seconds
-    const timer = setTimeout(() => {
-      setLoadingTimeout(true);
-    }, 10000);
-    
-    return () => clearTimeout(timer);
-  }, []);
-  
-  const loading = authLoading || walletsLoading || activitiesLoading || withdrawalsLoading;
-  const error = walletsError || activitiesError || withdrawalsError;
-  
-  // Force exit loading state after timeout
-  const shouldShowContent = !loading || loadingTimeout;
+    if (loading && user) {
+      const timer = setTimeout(() => {
+        setLoadingTimeout(true);
+        // Try to initialize the database if we hit the timeout
+        if (user) {
+          initializeDatabase(user.id).catch(err => {
+            console.error("Failed to initialize database:", err);
+          });
+        }
+      }, 5000); // 5 seconds timeout
+      
+      return () => clearTimeout(timer);
+    }
+  }, [loading, user]);
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -127,22 +134,11 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      {!shouldShowContent ? (
+      {loading && !loadingTimeout ? (
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
           <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
           <h2 className="text-xl font-medium">Loading your dashboard...</h2>
           <p className="text-muted-foreground">Please wait while we fetch your data</p>
-        </div>
-      ) : error ? (
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <Alert variant="destructive" className="max-w-xl">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error loading dashboard</AlertTitle>
-            <AlertDescription>
-              There was an error loading your dashboard data. Please try refreshing the page.
-              {error && <p className="mt-2 text-xs">{error}</p>}
-            </AlertDescription>
-          </Alert>
         </div>
       ) : (
         <>
@@ -177,9 +173,9 @@ const Dashboard = () => {
                 <Wallet className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{walletStats?.total || 0}</div>
+                <div className="text-2xl font-bold">{walletStats.total}</div>
                 <p className="text-xs text-muted-foreground">
-                  {walletStats?.validated || 0} validated, {walletStats?.pending || 0} pending
+                  {walletStats.validated} validated, {walletStats.pending} pending
                 </p>
               </CardContent>
             </Card>
@@ -189,10 +185,10 @@ const Dashboard = () => {
                 <Shield className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{walletStats?.validated || 0}</div>
+                <div className="text-2xl font-bold">{walletStats.validated}</div>
                 <p className="text-xs text-muted-foreground">
-                  {walletStats?.total > 0 
-                    ? `${Math.round(((walletStats?.validated || 0) / walletStats.total) * 100)}% of total wallets`
+                  {walletStats.total > 0 
+                    ? `${Math.round((walletStats.validated / walletStats.total) * 100)}% of total wallets`
                     : 'No wallets connected'}
                 </p>
               </CardContent>
@@ -203,9 +199,9 @@ const Dashboard = () => {
                 <ArrowDownToLine className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{withdrawalStats?.total || 0}</div>
+                <div className="text-2xl font-bold">{withdrawalStats.total}</div>
                 <p className="text-xs text-muted-foreground">
-                  {withdrawalStats?.processed || 0} completed, {withdrawalStats?.pending || 0} pending
+                  {withdrawalStats.completed} completed, {withdrawalStats.pending} pending
                 </p>
               </CardContent>
             </Card>
@@ -215,7 +211,7 @@ const Dashboard = () => {
                 <Clock className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{walletStats?.pending || 0}</div>
+                <div className="text-2xl font-bold">{walletStats.pending}</div>
                 <p className="text-xs text-muted-foreground">
                   Awaiting verification
                 </p>
@@ -223,25 +219,77 @@ const Dashboard = () => {
             </Card>
           </div>
 
-          {/* Main Content */}
+          {/* Recent Activity */}
           <div className="grid gap-4 md:grid-cols-7">
-            {/* Recent Activity */}
+            {/* Connected Wallets */}
+            <Card className="md:col-span-3">
+              <CardHeader>
+                <CardTitle>Connected Wallets</CardTitle>
+                <CardDescription>Your recently connected wallets</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {walletConnections.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <Wallet className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
+                    <h3 className="text-lg font-medium mb-1">No wallets connected</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Connect your first wallet to get started
+                    </p>
+                    <Button asChild size="sm">
+                      <a href="/dashboard/connect-wallet">Connect Wallet</a>
+                    </Button>
+                  </div>
+                ) : (
+                  <ScrollArea className="h-[300px]">
+                    <div className="space-y-4">
+                      {walletConnections.slice(0, 5).map((wallet) => (
+                        <div key={wallet.id} className="flex items-start justify-between">
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium">
+                              {wallet.wallet_address.substring(0, 6)}...
+                              {wallet.wallet_address.substring(wallet.wallet_address.length - 4)}
+                            </p>
+                            <div className="flex items-center text-xs text-muted-foreground">
+                              <span>{wallet.chain_type || 'Ethereum'}</span>
+                              <span className="mx-1">•</span>
+                              <span>{formatDate(wallet.connected_at)}</span>
+                            </div>
+                          </div>
+                          {getStatusBadge(
+                            wallet.validated || wallet.validation_status === 'validated'
+                              ? 'validated'
+                              : wallet.validation_status || 'pending'
+                          )}
+                        </div>
+                      ))}
+                      {walletConnections.length > 5 && (
+                        <Button variant="link" className="w-full" asChild>
+                          <a href="/dashboard/wallets">View all wallets</a>
+                        </Button>
+                      )}
+                    </div>
+                  </ScrollArea>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Activity Feed */}
             <Card className="md:col-span-4">
               <CardHeader>
                 <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>Your latest platform activity</CardDescription>
+                <CardDescription>Your recent account activity</CardDescription>
               </CardHeader>
               <CardContent>
-                {!activities || activities.length === 0 ? (
+                {activities.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-8 text-center">
                     <Clock className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
                     <h3 className="text-lg font-medium mb-1">No recent activity</h3>
                     <p className="text-sm text-muted-foreground">
-                      Your recent activity will appear here
+                      Your recent account activity will appear here
                     </p>
                   </div>
                 ) : (
-                  <ScrollArea className="h-[400px]">
+                  <ScrollArea className="h-[300px]">
                     <div className="space-y-4">
                       {activities.map((activity) => (
                         <div key={activity.id} className="flex items-start space-x-4">
@@ -253,70 +301,12 @@ const Dashboard = () => {
                           <div className="space-y-1 flex-1">
                             <div className="flex items-center justify-between">
                               <p className="text-sm font-medium">{activity.description}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {formatTimeAgo(activity.created_at)}
-                              </p>
+                              {activity.metadata?.status && getStatusBadge(activity.metadata.status)}
                             </div>
                             <p className="text-xs text-muted-foreground">
-                              {activity.activity_type.replace(/_/g, ' ')}
+                              {formatTimeAgo(activity.created_at)}
                             </p>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Connected Wallets */}
-            <Card className="md:col-span-3">
-              <CardHeader>
-                <CardTitle>Connected Wallets</CardTitle>
-                <CardDescription>Your connected cryptocurrency wallets</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {!walletConnections || walletConnections.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <Wallet className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium mb-1">No wallets connected</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Connect your first wallet to get started
-                    </p>
-                    <Button asChild size="sm">
-                      <a href="/dashboard/connect-wallet">
-                        Connect Wallet
-                      </a>
-                    </Button>
-                  </div>
-                ) : (
-                  <ScrollArea className="h-[400px]">
-                    <div className="space-y-4">
-                      {walletConnections.map((wallet) => (
-                        <div key={wallet.id} className="flex flex-col space-y-3 rounded-md border p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <Wallet className="h-5 w-5 text-primary" />
-                              <h4 className="font-medium">{wallet.chain_type || 'Ethereum'}</h4>
-                            </div>
-                            {wallet.validated || wallet.validation_status === 'validated' ? (
-                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                <CheckCircle className="h-3 w-3 mr-1" />
-                                Validated
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-                                <Clock className="h-3 w-3 mr-1" />
-                                Pending
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-sm font-mono text-muted-foreground break-all">
-                            {wallet.wallet_address}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Connected {formatTimeAgo(wallet.connected_at)}
-                          </p>
                         </div>
                       ))}
                     </div>

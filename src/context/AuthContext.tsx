@@ -8,7 +8,6 @@ interface AuthContextType {
   user: User | null
   profile: Profile | null
   loading: boolean
-  isAdmin: boolean
   signIn: (email: string, password: string) => Promise<{ data: any, error: any }>
   signUp: (email: string, password: string) => Promise<{ data: any, error: any }>
   signOut: () => Promise<void>
@@ -167,7 +166,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     profile,
     loading,
-    isAdmin: profile?.role === 'admin',
     signIn: async (email: string, password: string) => {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password })

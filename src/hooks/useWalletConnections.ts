@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/context/AuthContext';
 import { RealtimeChannel } from '@supabase/supabase-js';
+import { ensureWalletConnectionsTable, createSampleData } from '@/lib/databaseHelpers';
 
 export interface WalletConnection {
   id: string;
@@ -42,6 +43,16 @@ export function useWalletConnections(isAdmin = false) {
       setError(null);
       
       try {
+        // Ensure the wallet_connections table exists
+        const tableExists = await ensureWalletConnectionsTable();
+        
+        if (!tableExists) {
+          throw new Error('Could not create or access wallet_connections table');
+        }
+        
+        // Create sample data if needed
+        await createSampleData(user.id);
+        
         // For admin, fetch all wallet connections with user details
         // For regular users, fetch only their own wallet connections
         const query = isAdmin
@@ -89,6 +100,14 @@ export function useWalletConnections(isAdmin = false) {
       } catch (err) {
         console.error('Error fetching wallet connections:', err);
         setError('Failed to load wallet connections');
+        
+        // Use empty arrays and default stats as fallback
+        setWalletConnections([]);
+        setStats({
+          total: 0,
+          validated: 0,
+          pending: 0
+        });
       } finally {
         setLoading(false);
       }

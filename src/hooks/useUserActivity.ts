@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/context/AuthContext';
 import { RealtimeChannel } from '@supabase/supabase-js';
+import { ensureUserActivityTable, createSampleData } from '@/lib/databaseHelpers';
 
 export interface UserActivity {
   id: string;
@@ -44,6 +45,16 @@ export function useUserActivity(isAdmin = false, limit = 10) {
       setError(null);
       
       try {
+        // Ensure the user_activity_log table exists
+        const tableExists = await ensureUserActivityTable();
+        
+        if (!tableExists) {
+          throw new Error('Could not create or access user_activity_log table');
+        }
+        
+        // Create sample data if needed
+        await createSampleData(user.id);
+        
         // For admin, fetch all user activities with user details
         // For regular users, fetch only their own activities
         const query = isAdmin
@@ -79,6 +90,9 @@ export function useUserActivity(isAdmin = false, limit = 10) {
       } catch (err) {
         console.error('Error fetching user activities:', err);
         setError('Failed to load user activities');
+        
+        // Use empty array as fallback
+        setActivities([]);
       } finally {
         setLoading(false);
       }

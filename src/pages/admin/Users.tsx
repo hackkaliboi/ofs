@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,10 +46,15 @@ import {
   Unlock, 
   UserCog,
   Search,
-  Download
+  Download,
+  Loader2
 } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useUserManagement, User } from "@/hooks/useUserManagement";
+import { useUserActions } from "@/hooks/useUserActions";
+import { initializeDatabase } from "@/lib/databaseHelpers";
+import { toast } from "@/components/ui/use-toast";
 
 const UserManagement = () => {
   const { user } = useAuth();
@@ -58,99 +63,58 @@ const UserManagement = () => {
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
   
-  // Mock data - will be replaced with Supabase data later
-  const users = [
-    {
-      id: "1",
-      email: "john.doe@example.com",
-      full_name: "John Doe",
-      role: "user",
-      status: "active",
-      created_at: "2025-01-15T10:30:00Z",
-      last_sign_in: "2025-03-26T14:45:00Z",
-      wallets_count: 3,
-      avatar_url: "",
-    },
-    {
-      id: "2",
-      email: "jane.smith@example.com",
-      full_name: "Jane Smith",
-      role: "admin",
-      status: "active",
-      created_at: "2025-01-20T09:15:00Z",
-      last_sign_in: "2025-03-27T08:30:00Z",
-      wallets_count: 2,
-      avatar_url: "",
-    },
-    {
-      id: "3",
-      email: "robert.johnson@example.com",
-      full_name: "Robert Johnson",
-      role: "user",
-      status: "suspended",
-      created_at: "2025-02-05T11:20:00Z",
-      last_sign_in: "2025-03-10T16:45:00Z",
-      wallets_count: 1,
-      avatar_url: "",
-    },
-    {
-      id: "4",
-      email: "sarah.williams@example.com",
-      full_name: "Sarah Williams",
-      role: "user",
-      status: "active",
-      created_at: "2025-02-10T14:30:00Z",
-      last_sign_in: "2025-03-25T09:15:00Z",
-      wallets_count: 2,
-      avatar_url: "",
-    },
-    {
-      id: "5",
-      email: "michael.brown@example.com",
-      full_name: "Michael Brown",
-      role: "user",
-      status: "inactive",
-      created_at: "2025-02-15T08:45:00Z",
-      last_sign_in: "2025-03-01T10:30:00Z",
-      wallets_count: 0,
-      avatar_url: "",
-    },
-    {
-      id: "6",
-      email: "emily.davis@example.com",
-      full_name: "Emily Davis",
-      role: "admin",
-      status: "active",
-      created_at: "2025-02-20T13:15:00Z",
-      last_sign_in: "2025-03-27T11:45:00Z",
-      wallets_count: 1,
-      avatar_url: "",
-    },
-    {
-      id: "7",
-      email: "david.miller@example.com",
-      full_name: "David Miller",
-      role: "user",
-      status: "pending",
-      created_at: "2025-03-01T09:30:00Z",
-      last_sign_in: null,
-      wallets_count: 0,
-      avatar_url: "",
-    },
-    {
-      id: "8",
-      email: "olivia.wilson@example.com",
-      full_name: "Olivia Wilson",
-      role: "user",
-      status: "active",
-      created_at: "2025-03-05T15:45:00Z",
-      last_sign_in: "2025-03-26T13:30:00Z",
-      wallets_count: 1,
-      avatar_url: "",
-    },
-  ];
+  // Use the hooks to fetch users and handle user actions
+  const { users, loading, error, refetch } = useUserManagement();
+  const { suspendUser, unsuspendUser, deleteUser, isProcessing } = useUserActions({
+    onSuccess: refetch
+  });
+  
+  // Set a timeout to prevent infinite loading
+  useEffect(() => {
+    if (loading && user) {
+      const timer = setTimeout(() => {
+        setLoadingTimeout(true);
+        // Try to initialize the database if we hit the timeout
+        if (user) {
+          initializeDatabase(user.id).catch(err => {
+            console.error("Failed to initialize database:", err);
+          });
+        }
+      }, 5000); // 5 seconds timeout
+      
+      return () => clearTimeout(timer);
+    }
+  }, [loading, user]);
+
+  // Handle suspending a user
+  const handleSuspendUser = async (userToSuspend: User) => {
+    await suspendUser(userToSuspend);
+  };
+  
+  // Handle unsuspending a user
+  const handleUnsuspendUser = async (userToUnsuspend: User) => {
+    await unsuspendUser(userToUnsuspend);
+  };
+  
+  // Handle clicking the delete button
+  const handleDeleteClick = (userToDelete: User) => {
+    setSelectedUser(userToDelete);
+    setShowDeleteDialog(true);
+  };
+  
+  // Handle actual user deletion
+  const handleDeleteUser = async () => {
+    if (!selectedUser) {
+      setShowDeleteDialog(false);
+      return;
+    }
+    
+    await deleteUser(selectedUser);
+    setShowDeleteDialog(false);
+  };
 
   const filteredUsers = users.filter((user) => {
     const query = searchQuery.toLowerCase();
@@ -237,12 +201,6 @@ const UserManagement = () => {
     });
   };
 
-  const handleDeleteUser = (userId: string) => {
-    // This will be implemented with Supabase later
-    console.log("Delete user:", userId);
-    setShowDeleteDialog(false);
-  };
-
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -269,39 +227,39 @@ const UserManagement = () => {
       </div>
 
       <Card>
-        <CardHeader>
-          <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+        <CardHeader className="pb-3">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <CardTitle>Users</CardTitle>
               <CardDescription>
                 Manage all user accounts in the system
               </CardDescription>
             </div>
-            <div className="flex flex-col md:flex-row gap-2">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search users..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 md:w-[250px]"
-                />
-              </div>
-              <Button variant="outline" size="icon">
-                <Download className="h-4 w-4" />
-                <span className="sr-only">Export users</span>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="h-8 gap-1">
+                <Download className="h-3.5 w-3.5" />
+                Export
               </Button>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="grid grid-cols-2 gap-4 w-full md:w-auto">
-              <div className="space-y-2">
-                <Label htmlFor="role-filter">Role</Label>
+            <div className="flex-1 relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search users..."
+                className="pl-8"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-row gap-4">
+              <div className="w-[150px]">
                 <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger id="role-filter" className="w-full">
-                    <SelectValue placeholder="Filter by role" />
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Roles" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Roles</SelectItem>
@@ -310,11 +268,10 @@ const UserManagement = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="status-filter">Status</Label>
+              <div className="w-[150px]">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger id="status-filter" className="w-full">
-                    <SelectValue placeholder="Filter by status" />
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Statuses" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Statuses</SelectItem>
@@ -328,52 +285,89 @@ const UserManagement = () => {
             </div>
           </div>
 
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Wallets</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Last Sign In</TableHead>
-                  <TableHead className="w-[80px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.length === 0 ? (
+          {loading && !loadingTimeout ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+              <p className="text-muted-foreground">Loading user data...</p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <AlertTriangle className="h-8 w-8 text-destructive mb-4" />
+              <p className="text-muted-foreground">Error loading users: {error}</p>
+              <Button 
+                variant="outline" 
+                className="mt-4"
+                onClick={() => {
+                  if (user) {
+                    initializeDatabase(user.id);
+                  }
+                }}
+              >
+                Retry
+              </Button>
+            </div>
+          ) : filteredUsers.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Users className="h-8 w-8 text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">No users found</p>
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
-                      No users found
-                    </TableCell>
+                    <TableHead className="w-[50px]"></TableHead>
+                    <TableHead>User</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-center">Wallets</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead>Last Sign In</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
-                ) : (
-                  filteredUsers.map((user) => (
+                </TableHeader>
+                <TableBody>
+                  {filteredUsers.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar>
+                        <Avatar className="h-8 w-8">
+                          {user.avatar_url ? (
                             <AvatarImage src={user.avatar_url} alt={user.full_name} />
-                            <AvatarFallback>{getInitials(user.full_name)}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium">{user.full_name}</div>
-                            <div className="text-sm text-muted-foreground">{user.email}</div>
-                          </div>
-                        </div>
+                          ) : null}
+                          <AvatarFallback className={theme === "dark" ? "bg-secondary" : ""}>
+                            {user.full_name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
                       </TableCell>
-                      <TableCell>{getRoleBadge(user.role)}</TableCell>
+                      <TableCell>
+                        <div className="font-medium">{user.full_name}</div>
+                        <div className="text-sm text-muted-foreground">{user.email}</div>
+                      </TableCell>
+                      <TableCell>
+                        {user.role === "admin" ? (
+                          <Badge variant="default" className="bg-purple-600">
+                            Admin
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline">User</Badge>
+                        )}
+                      </TableCell>
                       <TableCell>{getStatusBadge(user.status)}</TableCell>
-                      <TableCell>{user.wallets_count}</TableCell>
+                      <TableCell className="text-center">{user.wallets_count}</TableCell>
                       <TableCell>{formatDate(user.created_at)}</TableCell>
-                      <TableCell>{formatDate(user.last_sign_in)}</TableCell>
+                      <TableCell>
+                        {user.last_sign_in ? formatDate(user.last_sign_in) : "Never"}
+                      </TableCell>
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreVertical className="h-4 w-4" />
+                            <Button variant="ghost" className="h-8 w-8 p-0">
                               <span className="sr-only">Open menu</span>
+                              <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
@@ -381,63 +375,44 @@ const UserManagement = () => {
                             <DropdownMenuItem asChild>
                               <Link to={`/admin/users/${user.id}`}>
                                 <Eye className="mr-2 h-4 w-4" />
-                                <span>View Details</span>
+                                View
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                               <Link to={`/admin/users/${user.id}/edit`}>
                                 <Edit className="mr-2 h-4 w-4" />
-                                <span>Edit User</span>
+                                Edit
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            {user.status === "active" ? (
-                              <DropdownMenuItem asChild>
-                                <Link to={`/admin/users/${user.id}/suspend`}>
-                                  <Lock className="mr-2 h-4 w-4" />
-                                  <span>Suspend User</span>
-                                </Link>
+                            {user.status === "suspended" ? (
+                              <DropdownMenuItem onClick={() => handleUnsuspendUser(user)}>
+                                <Unlock className="mr-2 h-4 w-4" />
+                                Unsuspend
                               </DropdownMenuItem>
                             ) : (
-                              <DropdownMenuItem asChild>
-                                <Link to={`/admin/users/${user.id}/activate`}>
-                                  <Unlock className="mr-2 h-4 w-4" />
-                                  <span>Activate User</span>
-                                </Link>
+                              <DropdownMenuItem onClick={() => handleSuspendUser(user)}>
+                                <Lock className="mr-2 h-4 w-4" />
+                                Suspend
                               </DropdownMenuItem>
                             )}
-                            <DropdownMenuItem asChild>
-                              <Link to={`/admin/users/${user.id}/impersonate`}>
-                                <UserCog className="mr-2 h-4 w-4" />
-                                <span>Impersonate</span>
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               className="text-destructive focus:text-destructive"
-                              onClick={() => {
-                                setSelectedUser(user);
-                                setShowDeleteDialog(true);
-                              }}
+                              onClick={() => handleDeleteClick(user)}
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
-                              <span>Delete User</span>
+                              Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <p className="text-sm text-muted-foreground">
-            Showing {filteredUsers.length} of {users.length} users
-          </p>
-        </CardFooter>
       </Card>
 
       {/* Delete User Dialog */}
@@ -465,14 +440,23 @@ const UserManagement = () => {
             <Button
               variant="outline"
               onClick={() => setShowDeleteDialog(false)}
+              disabled={isProcessing}
             >
               Cancel
             </Button>
             <Button
               variant="destructive"
-              onClick={() => selectedUser && handleDeleteUser(selectedUser.id)}
+              onClick={handleDeleteUser}
+              disabled={isProcessing}
             >
-              Delete
+              {isProcessing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete User"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

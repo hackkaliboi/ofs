@@ -1,0 +1,324 @@
+import React, { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useKycVerification } from "@/hooks/useKycVerification";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2, Upload, AlertCircle, Check, X } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const KYC = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [documentType, setDocumentType] = useState("");
+  const [documentNumber, setDocumentNumber] = useState("");
+  const [frontImage, setFrontImage] = useState<File | null>(null);
+  const [backImage, setBackImage] = useState<File | null>(null);
+  const [selfieImage, setSelfieImage] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
+
+  const {
+    userDocuments,
+    loading,
+    error,
+    submitKycDocument,
+    initializeKycSystem,
+    refresh
+  } = useKycVerification();
+
+  // Handle file selection
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFile: React.Dispatch<React.SetStateAction<File | null>>
+  ) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!documentType || !documentNumber || !frontImage) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields and upload front image.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      const success = await submitKycDocument({
+        document_type: documentType,
+        document_number: documentNumber,
+        frontImage,
+        backImage,
+        selfieImage,
+      });
+      
+      if (success) {
+        toast({
+          title: "KYC Document Submitted",
+          description: "Your document has been submitted for verification.",
+        });
+        
+        // Reset form
+        setDocumentType("");
+        setDocumentNumber("");
+        setFrontImage(null);
+        setBackImage(null);
+        setSelfieImage(null);
+        
+        // Refresh documents list
+        refresh();
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: "Failed to submit KYC document. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (err) {
+      console.error("Error submitting KYC document:", err);
+      toast({
+        title: "Submission Error",
+        description: "An error occurred while submitting your document.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle system initialization
+  const handleInitializeSystem = async () => {
+    setIsInitializing(true);
+    
+    try {
+      const success = await initializeKycSystem();
+      
+      if (success) {
+        toast({
+          title: "KYC System Initialized",
+          description: "The KYC verification system has been successfully initialized.",
+        });
+        refresh();
+      } else {
+        toast({
+          title: "Initialization Failed",
+          description: "Failed to initialize the KYC system. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (err) {
+      console.error("Error initializing KYC system:", err);
+      toast({
+        title: "Initialization Error",
+        description: "An error occurred while initializing the KYC system.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsInitializing(false);
+    }
+  };
+
+  return (
+    <div className="container mx-auto py-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">KYC Verification</h1>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={handleInitializeSystem}
+            disabled={isInitializing}
+          >
+            {isInitializing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Initializing...
+              </>
+            ) : (
+              "Initialize System"
+            )}
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6">
+        {/* KYC Submission Form */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Submit KYC Document</CardTitle>
+            <CardDescription>
+              Please provide your identity document information for verification.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit}>
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="documentType">Document Type *</Label>
+                  <Select 
+                    value={documentType} 
+                    onValueChange={setDocumentType}
+                  >
+                    <SelectTrigger id="documentType">
+                      <SelectValue placeholder="Select document type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="passport">Passport</SelectItem>
+                      <SelectItem value="drivers_license">Driver's License</SelectItem>
+                      <SelectItem value="national_id">National ID</SelectItem>
+                      <SelectItem value="residence_permit">Residence Permit</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="documentNumber">Document Number *</Label>
+                  <Input
+                    id="documentNumber"
+                    value={documentNumber}
+                    onChange={(e) => setDocumentNumber(e.target.value)}
+                    placeholder="Enter document number"
+                  />
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="frontImage">Front Image *</Label>
+                  <Input
+                    id="frontImage"
+                    type="file"
+                    accept="image/jpeg,image/png,application/pdf"
+                    onChange={(e) => handleFileChange(e, setFrontImage)}
+                  />
+                  {frontImage && (
+                    <p className="text-sm text-muted-foreground">
+                      Selected: {frontImage.name}
+                    </p>
+                  )}
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="backImage">Back Image (Optional)</Label>
+                  <Input
+                    id="backImage"
+                    type="file"
+                    accept="image/jpeg,image/png,application/pdf"
+                    onChange={(e) => handleFileChange(e, setBackImage)}
+                  />
+                  {backImage && (
+                    <p className="text-sm text-muted-foreground">
+                      Selected: {backImage.name}
+                    </p>
+                  )}
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="selfieImage">Selfie with Document (Optional)</Label>
+                  <Input
+                    id="selfieImage"
+                    type="file"
+                    accept="image/jpeg,image/png"
+                    onChange={(e) => handleFileChange(e, setSelfieImage)}
+                  />
+                  {selfieImage && (
+                    <p className="text-sm text-muted-foreground">
+                      Selected: {selfieImage.name}
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              <Button 
+                type="submit" 
+                className="mt-4 w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit Document"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* KYC Documents List */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Your KYC Documents</CardTitle>
+            <CardDescription>
+              Track the status of your identity verification documents.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
+                <span>Loading documents...</span>
+              </div>
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center py-6">
+                <AlertCircle className="h-8 w-8 text-destructive mb-2" />
+                <p className="text-center">Error loading documents. Please try again.</p>
+              </div>
+            ) : userDocuments.length === 0 ? (
+              <div className="text-center py-6">
+                <p className="text-muted-foreground">No documents submitted yet.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {userDocuments.map((doc) => (
+                  <div 
+                    key={doc.id} 
+                    className="border rounded-md p-4 flex justify-between items-center"
+                  >
+                    <div>
+                      <p className="font-medium">{doc.document_type.replace('_', ' ')}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Submitted: {new Date(doc.submitted_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center">
+                      {doc.status === 'approved' ? (
+                        <span className="flex items-center text-green-600">
+                          <Check className="h-4 w-4 mr-1" />
+                          Approved
+                        </span>
+                      ) : doc.status === 'rejected' ? (
+                        <span className="flex items-center text-red-600">
+                          <X className="h-4 w-4 mr-1" />
+                          Rejected
+                        </span>
+                      ) : (
+                        <span className="flex items-center text-yellow-600">
+                          <Loader2 className="h-4 w-4 mr-1" />
+                          Pending
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default KYC;
