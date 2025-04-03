@@ -54,10 +54,13 @@ export const useCoinBalances = (): CoinBalancesHook => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [totalValueUsd, setTotalValueUsd] = useState<number>(0);
+  const [initialized, setInitialized] = useState<boolean>(false);
 
   const fetchBalances = async () => {
+    // If no user is available, keep loading state until user is available
     if (!user) {
-      setLoading(false);
+      console.log('No user found, waiting for authentication');
+      setLoading(true);
       return;
     }
 
@@ -108,38 +111,61 @@ export const useCoinBalances = (): CoinBalancesHook => {
       console.error('Error fetching coin balances:', err);
       setError(err.message || 'Failed to fetch coin balances');
       
-      // Use sample data if there's an error
-      const sampleBalances = Object.entries(COIN_METADATA).map(([symbol, metadata]) => {
-        const sampleBalance = Math.random() * (symbol === 'BTC' ? 2 : symbol === 'ETH' ? 10 : 1000);
-        const price = metadata.defaultPrice;
-        return {
-          coin_symbol: symbol,
-          balance: sampleBalance,
-          last_updated: new Date().toISOString(),
-          price,
-          change_24h: metadata.defaultChange,
-          value_usd: sampleBalance * price,
-          icon: metadata.icon
-        };
-      });
-      
-      setBalances(sampleBalances);
-      const total = sampleBalances.reduce((sum, coin) => sum + (coin.value_usd || 0), 0);
-      setTotalValueUsd(total);
+      console.error('Error fetching coin balances, retrying in 3 seconds');
+      // Retry after a short delay instead of using sample data
+      setTimeout(() => {
+        fetchBalances();
+      }, 3000);
     } finally {
       setLoading(false);
     }
   };
 
+  // Only used for extreme fallback cases
+  const useSampleData = () => {
+    console.warn('FALLBACK: Using sample data as last resort');
+    const sampleBalances = Object.entries(COIN_METADATA).map(([symbol, metadata]) => {
+      const sampleBalance = 0; // Set to 0 to indicate these are not real balances
+      const price = metadata.defaultPrice;
+      return {
+        coin_symbol: symbol,
+        balance: sampleBalance,
+        last_updated: new Date().toISOString(),
+        price,
+        change_24h: metadata.defaultChange,
+        value_usd: sampleBalance * price,
+        icon: metadata.icon
+      };
+    });
+    
+    setBalances(sampleBalances);
+    setTotalValueUsd(0);
+    setLoading(false);
+    setInitialized(true);
+    setError('Unable to connect to database. Please check your connection.');
+  };
+
   useEffect(() => {
+    // Always fetch when user changes
     fetchBalances();
     
-    // Set up a refresh interval to simulate real-time updates
+    // Set up a refresh interval for real-time updates
     const intervalId = setInterval(() => {
       fetchBalances();
     }, 30000); // Refresh every 30 seconds
     
-    return () => clearInterval(intervalId);
+    // Set a timeout for fallback if data never loads
+    const fallbackTimeout = setTimeout(() => {
+      if (loading && balances.length === 0) {
+        // As a last resort after 10 seconds, use sample data
+        useSampleData();
+      }
+    }, 10000);
+    
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(fallbackTimeout);
+    };
   }, [user]);
 
   return {

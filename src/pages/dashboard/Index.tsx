@@ -10,7 +10,7 @@ import { useWalletConnections } from "@/hooks/useWalletConnections";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { initializeDatabase } from "@/lib/databaseHelpers";
 import CoinBalances from "@/components/dashboard/CoinBalances";
-import CoinChart from "@/components/dashboard/CoinChart";
+import TradingViewWidget from "@/components/dashboard/TradingViewWidget";
 
 const Dashboard = () => {
   const { user, profile, loading: authLoading } = useAuth();
@@ -168,7 +168,7 @@ const Dashboard = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Wallets</CardTitle>
@@ -189,9 +189,7 @@ const Dashboard = () => {
               <CardContent>
                 <div className="text-2xl font-bold">{walletStats.validated}</div>
                 <p className="text-xs text-muted-foreground">
-                  {walletStats.total > 0 
-                    ? `${Math.round((walletStats.validated / walletStats.total) * 100)}% of total wallets`
-                    : 'No wallets connected'}
+                  {walletStats.validated}% of total wallets
                 </p>
               </CardContent>
             </Card>
@@ -214,7 +212,7 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {walletStats.kyc_approved ? "Approved" : walletStats.kyc_submitted ? "Pending" : "Not Submitted"}
+                  {walletStats.kyc_approved ? "Approved" : walletStats.kyc_submitted ? "Submitted" : "Not Submitted"}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {walletStats.kyc_approved 
@@ -226,11 +224,33 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           </div>
+          
+          {/* Full-width coin balances section */}
+          <div className="w-full mb-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Portfolio Overview</CardTitle>
+                <CardDescription>Your cryptocurrency balances</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CoinBalances />
+              </CardContent>
+            </Card>
+          </div>
 
-          {/* Coin Balances and Chart */}
-          <div className="grid gap-4 md:grid-cols-4">
-            <CoinBalances />
-            <CoinChart />
+          {/* Market data section */}
+          <div className="w-full mb-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Market Overview</CardTitle>
+                <CardDescription>Real-time cryptocurrency market data</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="w-full h-[400px]">
+                  <TradingViewWidget />
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Recent Activity */}

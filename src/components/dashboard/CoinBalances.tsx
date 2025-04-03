@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowUp, ArrowDown, RefreshCw } from "lucide-react";
 import { useCoinBalances, CoinBalance } from '@/hooks/useCoinBalances';
 
 const CoinBalances: React.FC = () => {
+  // Use the hook directly without fallback
   const { balances, loading, error, refreshBalances, totalValueUsd } = useCoinBalances();
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -45,11 +45,11 @@ const CoinBalances: React.FC = () => {
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <div>
-          <CardTitle className="text-sm font-medium">Coin Balances</CardTitle>
-          <CardDescription>Your crypto portfolio</CardDescription>
+          <h2 className="text-lg font-medium">Portfolio Overview</h2>
+          <p className="text-sm text-muted-foreground">Total Value: {formatCurrency(totalValueUsd)}</p>
         </div>
         <Button 
           variant="ghost" 
@@ -59,106 +59,63 @@ const CoinBalances: React.FC = () => {
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
         </Button>
-      </CardHeader>
-      <CardContent>
-        {loading && !balances.length ? (
-          <div className="space-y-3">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
+      </div>
+
+      {loading && !balances.length ? (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {balances.map((coin) => (
+              <Card 
+                key={coin.coin_symbol} 
+                className="relative overflow-hidden hover:shadow-lg transition-shadow"
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center">
+                        <img 
+                          src={coin.icon || '/placeholder-coin.svg'} 
+                          alt={coin.coin_symbol} 
+                          className="w-6 h-6"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = '/placeholder-coin.svg';
+                          }}
+                        />
+                      </div>
+                      <CardTitle className="text-base">{coin.coin_symbol}</CardTitle>
+                    </div>
+                    <PriceChangeBadge change={coin.change_24h || 0} />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-1">
+                    <div className="text-2xl font-bold">
+                      {formatCoinAmount(coin.balance, coin.coin_symbol)} {coin.coin_symbol}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {formatCurrency(coin.value_usd || 0)}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        ) : (
-          <>
-            <div className="mb-4">
-              <p className="text-sm text-muted-foreground">Total Portfolio Value</p>
-              <h3 className="text-2xl font-bold">{formatCurrency(totalValueUsd)}</h3>
+          
+          {error && (
+            <div className="mt-4 p-3 text-sm border border-red-200 bg-red-50 text-red-700 rounded-md">
+              {error}
             </div>
-            
-            <Tabs defaultValue="grid" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="grid">Grid View</TabsTrigger>
-                <TabsTrigger value="list">List View</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="grid" className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  {balances.map((coin) => (
-                    <div 
-                      key={coin.coin_symbol} 
-                      className="p-4 border rounded-lg bg-card flex flex-col"
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center">
-                          <img 
-                            src={coin.icon || '/placeholder-coin.svg'} 
-                            alt={coin.coin_symbol} 
-                            className="w-6 h-6"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/placeholder-coin.svg';
-                            }}
-                          />
-                        </div>
-                        <span className="font-medium">{coin.coin_symbol}</span>
-                        <PriceChangeBadge change={coin.change_24h || 0} />
-                      </div>
-                      <div className="mt-1">
-                        <div className="text-xl font-bold">
-                          {formatCoinAmount(coin.balance, coin.coin_symbol)} {coin.coin_symbol}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {formatCurrency(coin.value_usd || 0)}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="list">
-                <div className="space-y-2">
-                  {balances.map((coin) => (
-                    <div 
-                      key={coin.coin_symbol} 
-                      className="p-3 border rounded-lg bg-card flex justify-between items-center"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center">
-                          <img 
-                            src={coin.icon || '/placeholder-coin.svg'} 
-                            alt={coin.coin_symbol} 
-                            className="w-6 h-6"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/placeholder-coin.svg';
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <div className="font-medium">{coin.coin_symbol}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {formatCoinAmount(coin.balance, coin.coin_symbol)}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium">{formatCurrency(coin.value_usd || 0)}</div>
-                        <PriceChangeBadge change={coin.change_24h || 0} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </TabsContent>
-            </Tabs>
-            
-            {error && (
-              <div className="mt-4 p-3 text-sm border border-red-200 bg-red-50 text-red-700 rounded-md">
-                {error}
-              </div>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
+          )}
+        </>
+      )}
+    </div>
   );
 };
 
