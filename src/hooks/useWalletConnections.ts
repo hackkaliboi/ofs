@@ -28,10 +28,21 @@ export function useWalletConnections(isAdmin = false) {
   const [walletConnections, setWalletConnections] = useState<WalletConnection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [stats, setStats] = useState({
+  // Define the stats type to include KYC properties
+  type WalletStats = {
+    total: number;
+    validated: number;
+    pending: number;
+    kyc_approved: boolean;
+    kyc_submitted: boolean;
+  };
+
+  const [stats, setStats] = useState<WalletStats>({
     total: 0,
     validated: 0,
-    pending: 0
+    pending: 0,
+    kyc_approved: false,
+    kyc_submitted: false
   });
 
   // Fetch wallet connections
@@ -92,10 +103,32 @@ export function useWalletConnections(isAdmin = false) {
           wallet.validated === true || wallet.validation_status === 'validated'
         ).length;
         
+        // Check if user has KYC documents
+        let kycApproved = false;
+        let kycSubmitted = false;
+        
+        if (!isAdmin && user) {
+          try {
+            const { data: kycData } = await supabase
+              .from('kyc_documents')
+              .select('status')
+              .eq('user_id', user.id);
+              
+            if (kycData && kycData.length > 0) {
+              kycSubmitted = true;
+              kycApproved = kycData.some(doc => doc.status === 'approved');
+            }
+          } catch (kycError) {
+            console.error('Error fetching KYC status:', kycError);
+          }
+        }
+        
         setStats({
           total: transformedData.length,
           validated: validatedCount,
-          pending: transformedData.length - validatedCount
+          pending: transformedData.length - validatedCount,
+          kyc_approved: kycApproved,
+          kyc_submitted: kycSubmitted
         });
       } catch (err) {
         console.error('Error fetching wallet connections:', err);
@@ -106,7 +139,9 @@ export function useWalletConnections(isAdmin = false) {
         setStats({
           total: 0,
           validated: 0,
-          pending: 0
+          pending: 0,
+          kyc_approved: false,
+          kyc_submitted: false
         });
       } finally {
         setLoading(false);
@@ -219,7 +254,9 @@ export function useWalletConnections(isAdmin = false) {
               setStats(prev => ({
                 total: prev.total - 1,
                 validated: wasValidated ? prev.validated - 1 : prev.validated,
-                pending: wasValidated ? prev.pending : prev.pending - 1
+                pending: wasValidated ? prev.pending : prev.pending - 1,
+                kyc_approved: prev.kyc_approved,
+                kyc_submitted: prev.kyc_submitted
               }));
             }
           } catch (err) {

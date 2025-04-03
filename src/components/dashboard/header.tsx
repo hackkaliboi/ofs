@@ -99,7 +99,10 @@ const Header = ({ isMobileMenuOpen, toggleMobileMenu }: HeaderProps) => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem 
-              onClick={() => signOut()}
+              onClick={(e) => {
+                e.preventDefault();
+                signOut();
+              }}
               className="cursor-pointer text-red-500 focus:text-red-500"
             >
               <LogOut className="mr-2 h-4 w-4" />

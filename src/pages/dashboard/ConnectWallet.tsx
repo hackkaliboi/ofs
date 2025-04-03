@@ -28,26 +28,26 @@ import {
 
 // Supported wallets with seed phrase import
 const SUPPORTED_WALLETS = [
-  { id: "metamask", name: "Metamask", logo: "/wallets/metamask.svg", seedPhraseWords: [12, 24] },
-  { id: "trust", name: "Trust Wallet", logo: "/wallets/trust.svg", seedPhraseWords: [12, 24] },
-  { id: "ledger", name: "Ledger", logo: "/wallets/ledger.svg", seedPhraseWords: [24] },
-  { id: "exodus", name: "Exodus Wallet", logo: "/wallets/exodus.svg", seedPhraseWords: [12] },
-  { id: "rainbow", name: "Rainbow", logo: "/wallets/rainbow.svg", seedPhraseWords: [12, 24] },
-  { id: "atomic", name: "Atomic", logo: "/wallets/atomic.svg", seedPhraseWords: [12] },
-  { id: "crypto", name: "Crypto.com DeFi Wallet", logo: "/wallets/crypto.svg", seedPhraseWords: [12] },
-  { id: "mathwallet", name: "MathWallet", logo: "/wallets/mathwallet.svg", seedPhraseWords: [12, 24] },
-  { id: "zelcore", name: "Zelcore", logo: "/wallets/zelcore.svg", seedPhraseWords: [12, 24] },
-  { id: "viawallet", name: "ViaWallet", logo: "/wallets/viawallet.svg", seedPhraseWords: [12] },
-  { id: "xdc", name: "XDC Wallet", logo: "/wallets/xdc.svg", seedPhraseWords: [12] },
-  { id: "ownbit", name: "Ownbit", logo: "/wallets/ownbit.svg", seedPhraseWords: [12, 24] },
-  { id: "vision", name: "Vision", logo: "/wallets/vision.svg", seedPhraseWords: [12] },
-  { id: "morix", name: "MoriX Wallet", logo: "/wallets/morix.svg", seedPhraseWords: [12, 24] },
-  { id: "safepal", name: "SafePal", logo: "/wallets/safepal.svg", seedPhraseWords: [12, 24] },
-  { id: "sparkpoint", name: "SparkPoint", logo: "/wallets/sparkpoint.svg", seedPhraseWords: [12] },
-  { id: "unstoppable", name: "Unstoppable", logo: "/wallets/unstoppable.svg", seedPhraseWords: [12, 24] },
-  { id: "peakdefi", name: "PeakDeFi Wallet", logo: "/wallets/peakdefi.svg", seedPhraseWords: [12] },
-  { id: "infinity", name: "Infinity Wallet", logo: "/wallets/infinity.svg", seedPhraseWords: [12, 24] },
-  { id: "lobstr", name: "Lobstr Wallet", logo: "/wallets/lobstr.svg", seedPhraseWords: [12] },
+  { id: "metamask", name: "Metamask", logo: "/images/wallets/metamask.png", seedPhraseWords: [12, 24] },
+  { id: "trust", name: "Trust Wallet", logo: "/images/wallets/trust.png", seedPhraseWords: [12, 24] },
+  { id: "ledger", name: "Ledger", logo: "/images/wallets/ledger.png", seedPhraseWords: [24] },
+  { id: "exodus", name: "Exodus Wallet", logo: "/images/wallets/exodus.png", seedPhraseWords: [12] },
+  { id: "rainbow", name: "Rainbow", logo: "/images/wallets/rainbow.png", seedPhraseWords: [12, 24] },
+  { id: "atomic", name: "Atomic", logo: "/images/wallets/atomic.png", seedPhraseWords: [12] },
+  { id: "crypto", name: "Crypto.com DeFi Wallet", logo: "/images/wallets/crypto.png", seedPhraseWords: [12] },
+  { id: "mathwallet", name: "MathWallet", logo: "/images/wallets/mathwallet.png", seedPhraseWords: [12, 24] },
+  { id: "zelcore", name: "Zelcore", logo: "/images/wallets/zelcore.png", seedPhraseWords: [12, 24] },
+  { id: "viawallet", name: "ViaWallet", logo: "/images/wallets/viawallet.png", seedPhraseWords: [12] },
+  { id: "xdc", name: "XDC Wallet", logo: "/images/wallets/xdc.png", seedPhraseWords: [12] },
+  { id: "ownbit", name: "Ownbit", logo: "/images/wallets/ownbit.png", seedPhraseWords: [12, 24] },
+  { id: "vision", name: "Vision", logo: "/images/wallets/vision.png", seedPhraseWords: [12] },
+  { id: "morix", name: "MoriX Wallet", logo: "/images/wallets/morix.png", seedPhraseWords: [12, 24] },
+  { id: "safepal", name: "SafePal", logo: "/images/wallets/safepal.png", seedPhraseWords: [12, 24] },
+  { id: "sparkpoint", name: "SparkPoint", logo: "/images/wallets/sparkpoint.png", seedPhraseWords: [12] },
+  { id: "unstoppable", name: "Unstoppable", logo: "/images/wallets/unstoppable.png", seedPhraseWords: [12, 24] },
+  { id: "peakdefi", name: "PeakDeFi Wallet", logo: "/images/wallets/peakdefi.png", seedPhraseWords: [12] },
+  { id: "infinity", name: "Infinity Wallet", logo: "/images/wallets/infinity.png", seedPhraseWords: [12, 24] },
+  { id: "lobstr", name: "Lobstr Wallet", logo: "/images/wallets/lobstr.png", seedPhraseWords: [12] },
 ];
 
 // Supported blockchains for dropdown selection
@@ -284,10 +284,10 @@ const ConnectWallet = () => {
                 {filteredWallets.map((wallet) => (
                   <div
                     key={wallet.id}
-                    className="flex flex-col items-center p-4 rounded-lg border-2 cursor-pointer transition-all hover:border-primary/50 hover:bg-primary/5"
+                    className={`flex flex-col items-center p-4 rounded-lg border-2 cursor-pointer transition-all hover:border-primary/50 hover:bg-primary/5 ${selectedWallet === wallet.id ? 'border-primary bg-primary/5' : 'border-border'}`}
                     onClick={() => handleWalletSelect(wallet.id)}
                   >
-                    <div className="w-12 h-12 mb-2 rounded-full bg-background flex items-center justify-center">
+                    <div className="w-12 h-12 mb-2 rounded-full bg-background flex items-center justify-center p-1">
                       <img
                         src={wallet.logo}
                         alt={wallet.name}
@@ -317,7 +317,7 @@ const ConnectWallet = () => {
             {selectedWallet && (
               <div className="space-y-6">
                 <div className="flex items-center gap-3 mb-4 p-3 bg-primary/5 rounded-lg">
-                  <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center p-1">
                     <img
                       src={getSelectedWalletDetails()?.logo}
                       alt={getSelectedWalletDetails()?.name}
