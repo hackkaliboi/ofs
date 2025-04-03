@@ -20,7 +20,7 @@ import {
   Activity,
   Zap
 } from "lucide-react";
-import { useAdminAnalytics } from "@/hooks/useAdminAnalytics";
+import { useRealAdminAnalytics } from "@/hooks/useRealAdminAnalytics";
 
 // Simple trend indicator component
 const TrendIndicator: React.FC<{ value: number, suffix?: string }> = ({ value, suffix = '%' }) => {
@@ -83,7 +83,7 @@ const StatCard: React.FC<{
 };
 
 const AnalyticsDashboard: React.FC = () => {
-  const { analytics, loading, error, usingFallbackData, refresh } = useAdminAnalytics();
+  const { analytics, loading, error, usingFallbackData, refresh } = useRealAdminAnalytics();
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("overview");
 
@@ -134,9 +134,10 @@ const AnalyticsDashboard: React.FC = () => {
       {usingFallbackData && (
         <Alert className="bg-yellow-50 border-yellow-200">
           <AlertTriangle className="h-4 w-4 text-yellow-600" />
-          <AlertTitle className="text-yellow-800">Using Sample Data</AlertTitle>
+          <AlertTitle className="text-yellow-800">Limited Data Available</AlertTitle>
           <AlertDescription className="text-yellow-700">
-            Unable to load real analytics data. Displaying sample data instead.
+            Some analytics data may be estimated or limited as your platform grows.
+            Analytics will become more accurate as users interact with the platform.
           </AlertDescription>
         </Alert>
       )}

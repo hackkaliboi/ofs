@@ -32,7 +32,7 @@ import {
   DollarSign
 } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase";
 
 const WithdrawalManagement = () => {
   const { theme } = useTheme();
@@ -41,8 +41,16 @@ const WithdrawalManagement = () => {
   const [loading, setLoading] = useState(true);
   const [withdrawals, setWithdrawals] = useState<any[]>([]);
   
-  // Mock data for withdrawal requests
-  const mockWithdrawals = [
+  // Stats for withdrawal requests
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    completed: 0,
+    rejected: 0
+  });
+  
+  // Sample data for reference only
+  const sampleWithdrawals = [
     {
       id: "1",
       user_id: "1",
@@ -81,26 +89,49 @@ const WithdrawalManagement = () => {
     },
   ];
   
-  useEffect(() => {
-    // Simulate fetching withdrawal requests from Supabase
-    const fetchWithdrawals = async () => {
-      setLoading(true);
-      
-      try {
-        // In a real implementation, this would fetch from Supabase
-        // const { data, error } = await supabase.from('withdrawals').select('*');
-        
-        // For now, use mock data
-        setTimeout(() => {
-          setWithdrawals(mockWithdrawals);
-          setLoading(false);
-        }, 1000);
-      } catch (error) {
-        console.error("Error fetching withdrawals:", error);
-        setLoading(false);
-      }
-    };
+  // Function to fetch withdrawal requests from Supabase
+  const fetchWithdrawals = async () => {
+    setLoading(true);
     
+    try {
+      // Fetch withdrawals with user information
+      const { data, error } = await supabase
+        .from('withdrawals')
+        .select(`
+          *,
+          profiles:user_id (full_name, email)
+        `)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      // Process the data to match our component's expected format
+      const processedData = data.map(item => ({
+        ...item,
+        user_name: item.profiles?.full_name || 'Unknown User',
+        user_email: item.profiles?.email || 'No email',
+        currency: item.token
+      }));
+      
+      setWithdrawals(processedData || []);
+      
+      // Calculate stats
+      if (data) {
+        setStats({
+          total: data.length,
+          pending: data.filter(w => w.status === 'pending').length,
+          completed: data.filter(w => w.status === 'completed').length,
+          rejected: data.filter(w => w.status === 'rejected').length
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching withdrawals:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
     fetchWithdrawals();
   }, []);
   
@@ -121,18 +152,28 @@ const WithdrawalManagement = () => {
   // Update withdrawal status
   const updateWithdrawalStatus = async (withdrawalId, newStatus) => {
     try {
-      // In a real implementation, this would update Supabase
-      // const { error } = await supabase
-      //   .from('withdrawals')
-      //   .update({ status: newStatus })
-      //   .eq('id', withdrawalId);
+      const updateData = {
+        status: newStatus,
+        updated_at: new Date().toISOString()
+      };
       
-      // For now, update local state
-      setWithdrawals(withdrawals.map(withdrawal => 
-        withdrawal.id === withdrawalId ? { ...withdrawal, status: newStatus } : withdrawal
-      ));
+      // Add completed_at if status is completed
+      if (newStatus === "completed") {
+        updateData.completed_at = new Date().toISOString();
+      }
       
-      // Show success message (would use toast in real implementation)
+      // Update the withdrawal in Supabase
+      const { error } = await supabase
+        .from('withdrawals')
+        .update(updateData)
+        .eq('id', withdrawalId);
+      
+      if (error) throw error;
+      
+      // Refresh the withdrawals list
+      await fetchWithdrawals();
+      
+      // Show success message
       console.log(`Withdrawal ${withdrawalId} updated to ${newStatus}`);
     } catch (error) {
       console.error("Error updating withdrawal status:", error);
@@ -195,6 +236,49 @@ const WithdrawalManagement = () => {
             Review and process user withdrawal requests
           </p>
         </div>
+      </div>
+      
+      <div className="grid gap-4 md:grid-cols-4 mb-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Withdrawals</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.total}</div>
+            <p className="text-xs text-muted-foreground">All withdrawal requests</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <Clock className="h-4 w-4 text-yellow-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.pending}</div>
+            <p className="text-xs text-muted-foreground">Awaiting approval</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Completed</CardTitle>
+            <CheckCircle className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.completed}</div>
+            <p className="text-xs text-muted-foreground">Successfully processed</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Rejected</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.rejected}</div>
+            <p className="text-xs text-muted-foreground">Declined withdrawals</p>
+          </CardContent>
+        </Card>
       </div>
       
       <Card>
