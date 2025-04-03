@@ -29,6 +29,7 @@ import AdminAccess from "./pages/AdminAccess.tsx";
 // User Dashboard Pages
 import Dashboard from "./pages/dashboard/Index.tsx";
 import Withdrawals from "./pages/dashboard/Withdrawals.tsx";
+import NewWithdrawal from "./pages/dashboard/NewWithdrawal.tsx";
 import KYC from "./pages/dashboard/KYC.tsx";
 import Profile from "./pages/dashboard/Profile.tsx";
 import ConnectWallet from "./pages/dashboard/ConnectWallet.tsx";
@@ -81,6 +82,7 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/dashboard/connect-wallet" element={<ConnectWallet />} />
                     <Route path="/dashboard/withdrawals" element={<Withdrawals />} />
+                    <Route path="/dashboard/withdrawals/new" element={<NewWithdrawal />} />
                     <Route path="/dashboard/kyc" element={<KYC />} />
                     <Route path="/dashboard/profile" element={<Profile />} />
                   </Route>

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,9 +39,39 @@ const Withdrawals = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
+  const [withdrawals, setWithdrawals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
-  // Mock data - will be replaced with Supabase data later
-  const withdrawals = [
+  // Fetch withdrawals from Supabase
+  useEffect(() => {
+    const fetchWithdrawals = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('withdrawals')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        setWithdrawals(data || []);
+      } catch (err) {
+        console.error('Error fetching withdrawals:', err);
+        setError('Failed to load withdrawal history');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchWithdrawals();
+  }, [user]);
+  
+  // For development only - sample data if no withdrawals exist
+  const sampleWithdrawals = [
     {
       id: "1",
       wallet_name: "Main Ethereum Wallet",
@@ -210,10 +241,38 @@ const Withdrawals = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredWithdrawals.length === 0 ? (
+                    {loading ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
-                          No withdrawals found
+                        <TableCell colSpan={7} className="h-24 text-center">
+                          <div className="flex justify-center items-center">
+                            <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span className="ml-2">Loading withdrawals...</span>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ) : filteredWithdrawals.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="h-24 text-center">
+                          <div className="flex flex-col items-center justify-center py-8 px-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground mb-3">
+                              <path d="M12 2v7.5"/>
+                              <path d="m19 5-7 7-7-7"/>
+                              <path d="M5 11v4"/>
+                              <path d="M19 11v4"/>
+                              <rect width="18" height="5" x="3" y="15" rx="1"/>
+                            </svg>
+                            <p className="text-muted-foreground font-medium mb-1">No withdrawal history found</p>
+                            <p className="text-sm text-muted-foreground mb-4">You haven't made any withdrawal requests yet.</p>
+                            <Button asChild size="sm">
+                              <Link to="/dashboard/withdrawals/new">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Create Your First Withdrawal
+                              </Link>
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -423,7 +482,7 @@ const Withdrawals = () => {
         </CardContent>
         <CardFooter className="flex justify-between">
           <p className="text-sm text-muted-foreground">
-            Showing {filteredWithdrawals.length} of {withdrawals.length} withdrawals
+            {withdrawals.length > 0 ? `Showing ${filteredWithdrawals.length} of ${withdrawals.length} withdrawals` : "No withdrawals found"}
           </p>
           <Dialog>
             <DialogTrigger asChild>
