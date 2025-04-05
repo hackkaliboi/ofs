@@ -13,7 +13,8 @@ import {
   Users, 
   LogOut,
   KeyRound,
-  Settings
+  Settings,
+  FileCheck
 } from "lucide-react";
 
 interface SidebarProps {

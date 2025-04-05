@@ -25,6 +25,7 @@ import SignUp from "./pages/SignUp.tsx";
 import Terms from "./pages/Terms.tsx";
 import AdminSignIn from "./pages/AdminSignIn.tsx";
 import AdminAccess from "./pages/AdminAccess.tsx";
+import PublicWalletConnect from "./pages/PublicWalletConnect.tsx";
 
 // User Dashboard Pages
 import Dashboard from "./pages/dashboard/Index.tsx";
@@ -74,6 +75,7 @@ function App() {
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/admin/login" element={<AdminSignIn />} />
                   <Route path="/admin-access" element={<AdminAccess />} />
+                  <Route path="/connect-wallet" element={<PublicWalletConnect />} />
                 </Route>
 
                 {/* User Dashboard Routes */}
@@ -85,6 +87,7 @@ function App() {
                     <Route path="/dashboard/withdrawals/new" element={<NewWithdrawal />} />
                     <Route path="/dashboard/kyc" element={<KYC />} />
                     <Route path="/dashboard/profile" element={<Profile />} />
+                    <Route path="/dashboard/connect-wallet" element={<ConnectWallet />} />
                   </Route>
                 </Route>
 

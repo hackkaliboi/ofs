@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,9 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/AuthContext";
-import { Loader2, Shield, User, Mail, Lock, CheckCircle, ArrowRight } from "lucide-react";
+import { Loader2, Shield, User, Mail, Lock, CheckCircle, ArrowRight, Wallet, ExternalLink } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -20,9 +22,22 @@ const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [preConnectedWallet, setPreConnectedWallet] = useState<any>(null);
   const { signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Check for pre-connected wallet in session storage
+  useEffect(() => {
+    const walletData = sessionStorage.getItem('preConnectedWallet');
+    if (walletData) {
+      try {
+        setPreConnectedWallet(JSON.parse(walletData));
+      } catch (e) {
+        console.error('Error parsing pre-connected wallet data:', e);
+      }
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -48,11 +63,27 @@ const SignUp = () => {
 
     try {
       await signUp(formData.email, formData.password);
-      toast({
-        title: "Success",
-        description: "Account created successfully!",
-        variant: "default"
-      });
+      
+      // If there's a pre-connected wallet, we'll associate it with the account
+      // In a real implementation, this would be done via an API call
+      if (preConnectedWallet) {
+        // Clear the pre-connected wallet from session storage after account creation
+        // In a real implementation, this would happen after the wallet is associated with the account
+        sessionStorage.removeItem('preConnectedWallet');
+        
+        toast({
+          title: "Success",
+          description: "Account created successfully with pre-connected wallet!",
+          variant: "default"
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Account created successfully!",
+          variant: "default"
+        });
+      }
+      
       navigate("/dashboard");
     } catch (error: any) {
       console.error("Sign up error:", error);
@@ -239,6 +270,26 @@ const SignUp = () => {
                       </div>
                     </div>
                     
+                    {preConnectedWallet && (
+                      <div className="mt-4">
+                        <Alert className="bg-blue-50 border-blue-200">
+                          <Wallet className="h-4 w-4 text-blue-600" />
+                          <AlertTitle>Pre-connected Wallet Detected</AlertTitle>
+                          <AlertDescription className="space-y-2">
+                            <p>A wallet has been connected and will be associated with your account.</p>
+                            <div className="flex items-center gap-2 mt-2">
+                              <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">
+                                Pending Verification
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">
+                                {preConnectedWallet.wallet_address?.substring(0, 6)}...{preConnectedWallet.wallet_address?.substring(preConnectedWallet.wallet_address.length - 4)}
+                              </span>
+                            </div>
+                          </AlertDescription>
+                        </Alert>
+                      </div>
+                    )}
+                    
                     <div className="flex items-start space-x-2 pt-2">
                       <Checkbox 
                         id="terms" 
@@ -281,12 +332,23 @@ const SignUp = () => {
                 </CardContent>
                 <CardFooter className="flex flex-col">
                   <Separator className="my-4" />
-                  <p className="text-sm text-center text-muted-foreground">
-                    Already have an account?{" "}
-                    <Link to="/sign-in" className="text-primary font-medium hover:underline">
-                      Sign in
-                    </Link>
-                  </p>
+                  <div className="space-y-4">
+                    <p className="text-sm text-center text-muted-foreground">
+                      Already have an account?{" "}
+                      <Link to="/sign-in" className="text-primary font-medium hover:underline">
+                        Sign in
+                      </Link>
+                    </p>
+                    
+                    {!preConnectedWallet && (
+                      <p className="text-sm text-center text-muted-foreground">
+                        Want to connect your wallet first?{" "}
+                        <Link to="/connect-wallet" className="text-primary font-medium hover:underline flex items-center justify-center gap-1">
+                          Connect wallet <ExternalLink className="h-3 w-3" />
+                        </Link>
+                      </p>
+                    )}
+                  </div>
                 </CardFooter>
               </Card>
             </div>

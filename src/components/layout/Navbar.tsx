@@ -33,7 +33,7 @@ const Navbar = () => {
   const menuItems = [
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
-    { name: "Validate Assets", path: "/validate-assets" },
+    { name: "Connect Wallet", path: "/connect-wallet" },
     { name: "FAQ", path: "/faq" },
     { name: "Documentation", path: "/documentation" },
     { name: "Contact", path: "/contact" },
