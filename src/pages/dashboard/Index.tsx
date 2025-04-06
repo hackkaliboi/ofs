@@ -9,7 +9,6 @@ import { Wallet, ArrowDownToLine, Shield, Clock, CheckCircle, XCircle, Loader2 }
 import { useWalletConnections } from "@/hooks/useWalletConnections";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { initializeDatabase } from "@/lib/databaseHelpers";
-import CoinBalances from "@/components/dashboard/CoinBalances";
 import TradingViewWidget from "@/components/dashboard/TradingViewWidget";
 
 const Dashboard = () => {
@@ -225,18 +224,7 @@ const Dashboard = () => {
             </Card>
           </div>
           
-          {/* Full-width coin balances section */}
-          <div className="w-full mb-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Portfolio Overview</CardTitle>
-                <CardDescription>Your cryptocurrency balances</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <CoinBalances />
-              </CardContent>
-            </Card>
-          </div>
+          {/* Portfolio section removed */}
 
           {/* Market data section */}
           <div className="w-full mb-6">
