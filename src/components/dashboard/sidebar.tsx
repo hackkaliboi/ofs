@@ -26,8 +26,8 @@ const Sidebar = ({ isMobileMenuOpen, closeMobileMenu }: SidebarProps) => {
   const location = useLocation();
   const { user, profile, signOut } = useAuth();
   
-  // Check if user is admin based on profile role
-  const isAdmin = profile?.role === "admin";
+  // Check if user is admin based on profile role or URL path
+  const isAdmin = profile?.role === "admin" || location.pathname.startsWith("/admin");
 
   // Define navigation items for users
   const userNavItems = [
