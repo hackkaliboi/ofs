@@ -27,27 +27,95 @@ export function useUserManagement() {
     
     setLoading(true);
     setError(null);
+    
+    console.log('Current user ID:', user.id);
+    console.log('Current user email:', user.email);
 
     try {
-      // Fetch all users from the profiles table
-      const { data: profiles, error: profilesError } = await supabase
+      // First check if the profiles table exists with a simple test query
+      const { count, error: countError } = await supabase
         .from('profiles')
-        .select('*');
-
-      if (profilesError) throw profilesError;
-
-      // Fetch admin users to determine roles
-      const { data: adminUsers, error: adminError } = await supabase
-        .from('admin_users')
-        .select('user_id');
-
-      if (adminError) {
-        console.error('Error fetching admin users:', adminError);
-        // Continue with empty admin list
+        .select('*', { count: 'exact', head: true });
+      
+      if (countError) {
+        console.error('Error checking profiles table:', countError);
+        throw new Error(`The profiles table may not exist or is inaccessible: ${countError.message}`);
+      }
+      
+      console.log(`Profiles table exists with approximately ${count} records`);
+      
+      // Check if current user exists in profiles and is an admin
+      let isAdmin = false;
+      
+      try {
+        const { data: currentProfile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        
+        isAdmin = currentProfile?.role === 'admin';
+        console.log(`Current user is ${isAdmin ? 'an admin' : 'not an admin'}`);
+      } catch (err) {
+        console.warn('Could not determine admin status:', err);
       }
 
-      // Create a set of admin user IDs for quick lookup
-      const adminUserIds = new Set((adminUsers || []).map(admin => admin.user_id));
+      // Attempt a direct SQL query as admin to bypass RLS issues
+      // Note: This requires proper function setup in Supabase
+      let profiles;
+      
+      if (isAdmin) {
+        // First try the dedicated RPC function which should bypass RLS
+        const { data: adminProfiles, error: rpcError } = await supabase
+          .rpc('get_all_profiles');
+          
+        if (rpcError) {
+          console.warn('get_all_profiles RPC function failed, this is expected until you run the SQL fix:', rpcError);
+          console.log('Fallback to standard query - this may only return the current user due to RLS');
+          // Fallback to standard query 
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*');
+            
+          if (error) {
+            console.error('Standard query failed:', error);
+            throw error;
+          }
+          profiles = data;
+        } else {
+          console.log('Successfully used get_all_profiles RPC function');
+          profiles = adminProfiles;
+        }
+      } else {
+        // Non-admin users only see themselves
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id);
+          
+        if (error) throw error;
+        profiles = data;
+      }
+
+      console.log('Profiles fetched:', profiles?.length || 0);
+      if (!profiles || profiles.length === 0) {
+        console.warn('No profiles found in the database');
+        // Create a dummy profile for debugging in development
+        if (process.env.NODE_ENV === 'development') {
+          profiles = [{
+            id: user.id,
+            email: user.email,
+            full_name: 'Development User',
+            role: 'admin',
+            status: 'active',
+            created_at: new Date().toISOString(),
+            avatar_url: ''
+          }];
+          console.log('Added development dummy profile for debugging');
+        }
+      }
+
+      // No need to fetch admin users separately as role is stored directly in profiles table
 
       // Fetch wallet connections to count for each user
       const { data: walletConnections, error: walletsError } = await supabase
@@ -70,7 +138,7 @@ export function useUserManagement() {
         id: profile.id,
         email: profile.email || '',
         full_name: profile.full_name || '',
-        role: adminUserIds.has(profile.id) ? 'admin' : 'user',
+        role: profile.role || 'user',
         status: profile.status || 'active',
         created_at: profile.created_at || '',
         last_sign_in: profile.last_sign_in || null,
@@ -79,9 +147,43 @@ export function useUserManagement() {
       }));
 
       setUsers(transformedUsers);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching users:', err);
-      setError('Failed to fetch users. Please try again.');
+      setError(`Failed to fetch users: ${err.message || 'Please try again'}`);
+      
+      // Let's try a SQL function to diagnose the issue
+      try {
+        console.log('Attempting diagnostic query without RLS...');
+        
+        // Check if the user is in the auth.users table directly
+        const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+        
+        if (authError) {
+          console.log('Admin API not available:', authError.message);
+        } else {
+          console.log(`Found ${authUsers?.users?.length || 0} users in auth.users`);
+        }
+      } catch (diagErr) {
+        console.error('Diagnostic query failed:', diagErr);
+      }
+      
+      // Show a more user-friendly error
+      setError('Unable to load users. This might be due to missing permissions or database setup. Please check the browser console for details.');
+      
+      // Create a fallback user entry if we're in development
+      if (process.env.NODE_ENV === 'development') {
+        setUsers([{
+          id: user.id,
+          email: user.email || 'test@example.com',
+          full_name: 'Current User',
+          role: 'admin',
+          status: 'active',
+          created_at: new Date().toISOString(),
+          last_sign_in: new Date().toISOString(),
+          wallets_count: 0,
+          avatar_url: ''
+        }]);
+      }
     } finally {
       setLoading(false);
     }
@@ -109,21 +211,7 @@ export function useUserManagement() {
       )
       .subscribe();
     
-    // Set up realtime subscription for admin_users
-    const adminChannel: RealtimeChannel = supabase
-      .channel('public:admin_users')
-      .on('postgres_changes', 
-        { 
-          event: '*', // Listen for all events (INSERT, UPDATE, DELETE)
-          schema: 'public', 
-          table: 'admin_users'
-        }, 
-        () => {
-          // Refetch users when admin roles change
-          fetchUsers();
-        }
-      )
-      .subscribe();
+    // No need to listen to admin_users table as we're using the role directly from profiles
     
     // Set up realtime subscription for wallet_connections
     const walletsChannel: RealtimeChannel = supabase
@@ -143,7 +231,7 @@ export function useUserManagement() {
 
     return () => {
       profilesChannel.unsubscribe();
-      adminChannel.unsubscribe();
+      // adminChannel.unsubscribe();
       walletsChannel.unsubscribe();
     };
   }, [user, fetchUsers]);
