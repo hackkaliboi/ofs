@@ -274,5 +274,74 @@ export function useWalletConnections(isAdmin = false) {
     };
   }, [user, isAdmin]);
   
-  return { walletConnections, loading, error, stats };
+  // Add a function to manually refresh wallet connections
+  const refreshWallets = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Ensure the wallet_connections table exists
+      const tableExists = await ensureWalletConnectionsTable();
+      
+      if (!tableExists) {
+        throw new Error('Could not create or access wallet_connections table');
+      }
+      
+      // For admin, fetch all wallet connections with user details
+      // For regular users, fetch only their own wallet connections
+      const query = isAdmin
+        ? supabase
+            .from('wallet_connections')
+            .select('*, profiles(email, full_name)')
+            .order('connected_at', { ascending: false })
+        : supabase
+            .from('wallet_connections')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('connected_at', { ascending: false });
+      
+      const { data, error } = await query;
+      
+      if (error) throw error;
+      
+      // Transform data to include user_email and user_name
+      const transformedData = data.map((wallet: any) => ({
+        id: wallet.id,
+        user_id: wallet.user_id,
+        wallet_address: wallet.wallet_address,
+        chain_type: wallet.chain_type || '',
+        connected_at: wallet.connected_at,
+        created_at: wallet.created_at,
+        validated: wallet.validated,
+        validation_status: wallet.validation_status,
+        validated_at: wallet.validated_at,
+        user_email: wallet.profiles?.email || '',
+        user_name: wallet.profiles?.full_name || '',
+      }));
+      
+      setWalletConnections(transformedData);
+      
+      // Calculate stats
+      const validatedCount = transformedData.filter(wallet => 
+        wallet.validated === true || wallet.validation_status === 'validated'
+      ).length;
+      
+      setStats({
+        total: transformedData.length,
+        validated: validatedCount,
+        pending: transformedData.length - validatedCount,
+        kyc_approved: stats.kyc_approved,
+        kyc_submitted: stats.kyc_submitted
+      });
+    } catch (err) {
+      console.error('Error refreshing wallet connections:', err);
+      setError('Failed to refresh wallet connections');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { walletConnections, loading, error, stats, refreshWallets };
 }

@@ -194,7 +194,7 @@ const ValidateAssets = () => {
                           <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
                               <span className="text-muted-foreground">Type:</span>
-                              <span>{wallet.wallet_type || "External Wallet"}</span>
+                              <span>{"External Wallet"}</span>
                             </div>
                             <div className="flex justify-between">
                               <span className="text-muted-foreground">Network:</span>
