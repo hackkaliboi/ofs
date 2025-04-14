@@ -38,104 +38,116 @@ const UserDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!user || !userId) return;
+  const fetchUserData = async () => {
+    console.log('fetchUserData started for userId:', userId);
+    setLoading(true);
+    setError(null);
 
-    const fetchUserData = async () => {
-      setLoading(true);
-      setError(null);
+    try {
+      // Fetch user profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
 
-      try {
-        // Fetch user profile
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
+      if (profileError) {
+        console.error('Error fetching profile data:', profileError);
+        throw profileError;
+      }
+      
+      console.log('Profile data retrieved:', profileData);
 
-        if (profileError) throw profileError;
+      // Check if user is admin
+      const { data: adminData, error: adminError } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('user_id', userId);
 
-        // Check if user is admin
-        const { data: adminData, error: adminError } = await supabase
-          .from('admin_users')
-          .select('*')
-          .eq('user_id', userId);
+      if (adminError) {
+        console.error('Error checking admin status:', adminError);
+        // Continue with empty admin data
+      }
 
-        if (adminError) {
-          console.error('Error checking admin status:', adminError);
-          // Continue with empty admin data
-        }
+      // Fetch user's wallets
+      const { data: walletData, error: walletError } = await supabase
+        .from('wallet_connections')
+        .select('*')
+        .eq('user_id', userId);
 
-        // Fetch user's wallets
-        const { data: walletData, error: walletError } = await supabase
-          .from('wallet_connections')
-          .select('*')
-          .eq('user_id', userId);
+      if (walletError) {
+        console.error('Error fetching wallets:', walletError);
+        // Continue with empty wallet data
+      }
 
-        if (walletError) {
-          console.error('Error fetching wallets:', walletError);
-          // Continue with empty wallet data
-        }
+      // Fetch user's activities
+      const { data: activityData, error: activityError } = await supabase
+        .from('user_activity_log')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(10);
 
-        // Fetch user's activities
-        const { data: activityData, error: activityError } = await supabase
-          .from('user_activity_log')
-          .select('*')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: false })
-          .limit(10);
+      if (activityError) {
+        console.error('Error fetching activities:', activityError);
+        // Continue with empty activity data
+      }
 
-        if (activityError) {
-          console.error('Error fetching activities:', activityError);
-          // Continue with empty activity data
-        }
-
-        // Determine user status
-        let status = profileData.status || 'inactive';
-        if (!status) {
-          if (profileData.last_sign_in) {
-            const lastSignIn = new Date(profileData.last_sign_in);
-            const thirtyDaysAgo = new Date();
-            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-            
-            if (lastSignIn >= thirtyDaysAgo) {
-              status = 'active';
-            }
-          } else if (profileData.created_at) {
-            const createdAt = new Date(profileData.created_at);
-            const sevenDaysAgo = new Date();
-            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-            
-            if (createdAt >= sevenDaysAgo) {
-              status = 'pending';
-            }
+      // Determine user status
+      let status = profileData.status || 'inactive';
+      if (!status) {
+        if (profileData.last_sign_in) {
+          const lastSignIn = new Date(profileData.last_sign_in);
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          
+          if (lastSignIn >= thirtyDaysAgo) {
+            status = 'active';
+          }
+        } else if (profileData.created_at) {
+          const createdAt = new Date(profileData.created_at);
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          
+          if (createdAt >= sevenDaysAgo) {
+            status = 'pending';
           }
         }
-
-        // Transform profile data to UserType
-        const transformedUser: UserType = {
-          id: profileData.id,
-          email: profileData.email || '',
-          full_name: profileData.full_name || '',
-          role: adminData && adminData.length > 0 ? 'admin' : 'user',
-          status,
-          created_at: profileData.created_at || '',
-          last_sign_in: profileData.last_sign_in,
-          wallets_count: walletData ? walletData.length : 0,
-          avatar_url: profileData.avatar_url || '',
-        };
-
-        setUserData(transformedUser);
-        setWallets(walletData || []);
-        setActivities(activityData || []);
-      } catch (err) {
-        console.error('Error fetching user details:', err);
-        setError('Failed to load user details');
-      } finally {
-        setLoading(false);
       }
-    };
 
+      // Transform profile data to UserType
+      const transformedUser: UserType = {
+        id: profileData.id,
+        email: profileData.email || '',
+        full_name: profileData.full_name || '',
+        role: adminData && adminData.length > 0 ? 'admin' : 'user',
+        status,
+        created_at: profileData.created_at || '',
+        last_sign_in: profileData.last_sign_in,
+        wallets_count: walletData ? walletData.length : 0,
+        avatar_url: profileData.avatar_url || '',
+      };
+
+      console.log('Setting user data:', transformedUser);
+      setUserData(transformedUser);
+      setWallets(walletData || []);
+      setActivities(activityData || []);
+    } catch (err) {
+      console.error('Error fetching user details:', err);
+      setError('Failed to load user details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    console.log('UserDetail useEffect triggered with:', { userId, userExists: !!user });
+    if (!user || !userId) {
+      console.log('Missing user or userId, not fetching data');
+      return;
+    }
+
+    console.log('Calling fetchUserData...');
     fetchUserData();
   }, [user, userId]);
 
@@ -201,6 +213,7 @@ const UserDetail = () => {
   }
 
   if (error || !userData) {
+    console.log('Rendering error state:', { error, userData });
     return (
       <div className="space-y-6">
         <div className="flex items-center">
