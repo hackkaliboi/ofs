@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,122 +38,9 @@ const UserDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchUserData = async () => {
-    console.log('fetchUserData started for userId:', userId);
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Fetch user profile
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (profileError) {
-        console.error('Error fetching profile data:', profileError);
-        throw profileError;
-      }
-      
-      console.log('Profile data retrieved:', profileData);
-
-      // Check if user is admin
-      const { data: adminData, error: adminError } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('user_id', userId);
-
-      if (adminError) {
-        console.error('Error checking admin status:', adminError);
-        // Continue with empty admin data
-      }
-
-      // Fetch user's wallets
-      const { data: walletData, error: walletError } = await supabase
-        .from('wallet_connections')
-        .select('*')
-        .eq('user_id', userId);
-
-      if (walletError) {
-        console.error('Error fetching wallets:', walletError);
-        // Continue with empty wallet data
-      }
-
-      // Fetch user's activities
-      const { data: activityData, error: activityError } = await supabase
-        .from('user_activity_log')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (activityError) {
-        console.error('Error fetching activities:', activityError);
-        // Continue with empty activity data
-      }
-
-      // Determine user status
-      let status = profileData.status || 'inactive';
-      if (!status) {
-        if (profileData.last_sign_in) {
-          const lastSignIn = new Date(profileData.last_sign_in);
-          const thirtyDaysAgo = new Date();
-          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-          
-          if (lastSignIn >= thirtyDaysAgo) {
-            status = 'active';
-          }
-        } else if (profileData.created_at) {
-          const createdAt = new Date(profileData.created_at);
-          const sevenDaysAgo = new Date();
-          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-          
-          if (createdAt >= sevenDaysAgo) {
-            status = 'pending';
-          }
-        }
-      }
-
-      // Transform profile data to UserType
-      const transformedUser: UserType = {
-        id: profileData.id,
-        email: profileData.email || '',
-        full_name: profileData.full_name || '',
-        role: adminData && adminData.length > 0 ? 'admin' : 'user',
-        status,
-        created_at: profileData.created_at || '',
-        last_sign_in: profileData.last_sign_in,
-        wallets_count: walletData ? walletData.length : 0,
-        avatar_url: profileData.avatar_url || '',
-      };
-
-      console.log('Setting user data:', transformedUser);
-      setUserData(transformedUser);
-      setWallets(walletData || []);
-      setActivities(activityData || []);
-    } catch (err) {
-      console.error('Error fetching user details:', err);
-      setError('Failed to load user details');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    console.log('UserDetail useEffect triggered with:', { userId, userExists: !!user });
-    if (!user || !userId) {
-      console.log('Missing user or userId, not fetching data');
-      return;
-    }
-
-    console.log('Calling fetchUserData...');
-    fetchUserData();
-  }, [user, userId]);
-
+  // Simple function to format dates
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Never';
-    
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       month: "short",
@@ -164,6 +51,7 @@ const UserDetail = () => {
     });
   };
 
+  // Get status badge based on status string
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
@@ -187,21 +75,97 @@ const UserDetail = () => {
             Suspended
           </Badge>
         );
-      case "inactive":
+      default:
         return (
           <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-200">
             <XCircle className="h-3 w-3 mr-1" />
             Inactive
           </Badge>
         );
-      default:
-        return (
-          <Badge variant="outline">
-            {status}
-          </Badge>
-        );
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log('UserDetail: Starting data fetch for userId:', userId);
+      if (!userId) {
+        setError('No user ID provided');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        
+        // Fetch basic profile data
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
+
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          throw new Error('Failed to load user profile');
+        }
+
+        if (!profile) {
+          throw new Error('User not found');
+        }
+
+        console.log('Profile data loaded:', profile);
+
+        // Get admin status
+        const { data: adminData } = await supabase
+          .from('admin_users')
+          .select('*')
+          .eq('user_id', userId);
+
+        // Get wallets
+        const { data: walletData } = await supabase
+          .from('wallet_connections')
+          .select('*')
+          .eq('user_id', userId);
+
+        // Get activity
+        const { data: activityData } = await supabase
+          .from('user_activity_log')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        // Determine status
+        let status = profile.status || 'inactive';
+        
+        // Create user object
+        const user: UserType = {
+          id: profile.id,
+          email: profile.email || '',
+          full_name: profile.full_name || '',
+          role: adminData && adminData.length > 0 ? 'admin' : 'user',
+          status,
+          created_at: profile.created_at || '',
+          last_sign_in: profile.last_sign_in || null,
+          wallets_count: walletData ? walletData.length : 0,
+          avatar_url: profile.avatar_url || '',
+        };
+
+        setUserData(user);
+        setWallets(walletData || []);
+        setActivities(activityData || []);
+      } catch (err) {
+        console.error('Error in UserDetail:', err);
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [userId]);
+
+
 
   if (loading) {
     return (
