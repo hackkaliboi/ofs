@@ -34,21 +34,43 @@ export function useUserStats() {
     if (!user) return;
     
     const fetchUserStats = async () => {
+      console.log('🔍 useUserStats: Starting to fetch user statistics');
+      console.log('🔍 Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+      console.log('🔍 Supabase Key exists:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+      
       setLoading(true);
       setError(null);
       
       try {
+        console.log('🔍 Ensuring admin table exists...');
         // Ensure admin table exists and create sample data
-        await ensureAdminUsersTable();
-        await createSampleData(user.id);
+        try {
+          await ensureAdminUsersTable();
+          console.log('✅ Admin table check successful');
+        } catch (adminTableError) {
+          console.error('❌ Error ensuring admin table exists:', adminTableError);
+          // Continue anyway to see if we can get user counts
+        }
         
+        try {
+          console.log('🔍 Creating sample data...');
+          await createSampleData(user.id);
+          console.log('✅ Sample data creation successful');
+        } catch (sampleDataError) {
+          console.error('❌ Error creating sample data:', sampleDataError);
+          // Continue anyway to see if we can get user counts
+        }
+        
+        console.log('🔍 Fetching total users count...');
         // Try to get total users count
         const { count: totalUsers, error: countError } = await supabase
           .from('profiles')
           .select('*', { count: 'exact', head: true });
         
+        console.log('📊 Total users count result:', { totalUsers, error: countError });
+        
         if (countError) {
-          console.error('Error fetching total users:', countError);
+          console.error('❌ Error fetching total users:', countError);
           throw countError;
         }
         

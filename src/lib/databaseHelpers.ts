@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
  * @returns Boolean indicating if the table exists
  */
 export async function tableExists(tableName: string): Promise<boolean> {
+  console.log(`🔍 Checking if table '${tableName}' exists...`);
   try {
     // Try a simple query to see if the table exists
     const { data, error } = await supabase
@@ -14,19 +15,21 @@ export async function tableExists(tableName: string): Promise<boolean> {
       .limit(1);
     
     if (!error) {
+      console.log(`✅ Table '${tableName}' exists`);
       return true;
     }
     
     // If there was an error, check if it's because the table doesn't exist
     if (error.message.includes('does not exist')) {
+      console.log(`❌ Table '${tableName}' does not exist. Error:`, error.message);
       return false;
     }
     
     // For other errors, log and return false
-    console.error(`Error checking if table ${tableName} exists:`, error);
+    console.error(`❌ Error checking if table '${tableName}' exists:`, error);
     return false;
   } catch (err) {
-    console.error(`Error checking if table ${tableName} exists:`, err);
+    console.error(`❌ Unexpected error checking if table '${tableName}' exists:`, err);
     return false;
   }
 }
@@ -113,23 +116,36 @@ export async function ensureSecurityEventsTable(): Promise<boolean> {
  * Creates the admin_users table if it doesn't exist
  */
 export async function ensureAdminUsersTable(): Promise<boolean> {
+  console.log('🔍 ensureAdminUsersTable: Starting check...');
   try {
+    console.log('🔍 Checking if admin_users table exists...');
     const exists = await tableExists('admin_users');
-    if (exists) return true;
+    if (exists) {
+      console.log('✅ admin_users table already exists, no need to create');
+      return true;
+    }
     
+    console.log('🔍 admin_users table does not exist, attempting to create...');
     // Try to create the table
     try {
-      await supabase.from('admin_users').insert({
+      const { data, error } = await supabase.from('admin_users').insert({
         user_id: '00000000-0000-0000-0000-000000000000',
         role: 'admin'
       });
+      
+      if (error) {
+        console.error('❌ Failed to create admin_users table:', error);
+        return false;
+      }
+      
+      console.log('✅ Successfully created admin_users table');
       return true;
     } catch (e) {
-      console.error('Failed to create admin_users table:', e);
+      console.error('❌ Failed to create admin_users table with exception:', e);
       return false;
     }
   } catch (err) {
-    console.error('Error ensuring admin_users table exists:', err);
+    console.error('❌ Error in ensureAdminUsersTable:', err);
     return false;
   }
 }
