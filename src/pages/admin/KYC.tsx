@@ -60,18 +60,102 @@ const KYCManagement = () => {
   const [reviewNotes, setReviewNotes] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   
-  // Use the KYC verification hook
-  const { 
-    loading, 
-    error, 
-    adminDocuments, 
-    updateKycStatus, 
-    refresh 
-  } = useKycVerification();
+  // Mock KYC documents data
+  const mockDocuments = [
+    {
+      id: "doc-1",
+      user_id: "user-1",
+      document_type: "Passport",
+      document_number: "P123456789",
+      front_image_url: "https://placehold.co/600x400?text=Passport+Front",
+      back_image_url: "https://placehold.co/600x400?text=Passport+Back",
+      selfie_image_url: "https://placehold.co/400x400?text=Selfie",
+      status: "pending",
+      submitted_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+      profiles: {
+        full_name: "John Smith",
+        email: "john.smith@example.com",
+        avatar_url: null
+      }
+    },
+    {
+      id: "doc-2",
+      user_id: "user-2",
+      document_type: "Driver's License",
+      document_number: "DL98765432",
+      front_image_url: "https://placehold.co/600x400?text=License+Front",
+      back_image_url: "https://placehold.co/600x400?text=License+Back",
+      selfie_image_url: null,
+      status: "approved",
+      submitted_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+      reviewed_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      profiles: {
+        full_name: "Jane Doe",
+        email: "jane.doe@example.com",
+        avatar_url: null
+      }
+    },
+    {
+      id: "doc-3",
+      user_id: "user-3",
+      document_type: "National ID",
+      document_number: "ID87654321",
+      front_image_url: "https://placehold.co/600x400?text=ID+Front",
+      back_image_url: "https://placehold.co/600x400?text=ID+Back",
+      selfie_image_url: "https://placehold.co/400x400?text=Selfie",
+      status: "rejected",
+      submitted_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days ago
+      reviewed_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      rejection_reason: "Document is expired",
+      profiles: {
+        full_name: "Robert Johnson",
+        email: "robert.johnson@example.com",
+        avatar_url: null
+      }
+    }
+  ];
+  
+  // State for loading and error simulation
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Simulate loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  // Mock update function
+  const updateKycStatus = async (documentId, status, notes) => {
+    setIsProcessing(true);
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    toast({
+      title: status === "approved" ? "Document Approved" : "Document Rejected",
+      description: status === "approved" 
+        ? "The KYC document has been approved successfully." 
+        : "The KYC document has been rejected.",
+    });
+    
+    return true;
+  };
+  
+  // Mock refresh function
+  const refresh = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  };
   
   // Filter KYC requests based on search and status filter
-  const filteredRequests = adminDocuments.filter((request) => {
-    const matchesSearch = 
+  const filteredRequests = mockDocuments.filter((request) => {
+    const matchesSearch = searchQuery === "" || 
       request.profiles?.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       request.profiles?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       request.document_type?.toLowerCase().includes(searchQuery.toLowerCase()) ||

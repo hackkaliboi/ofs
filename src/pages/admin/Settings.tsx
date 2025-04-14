@@ -19,7 +19,7 @@ import {
   Wallet
 } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase";
 
 const AdminSettings = () => {
   const { theme } = useTheme();

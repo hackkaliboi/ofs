@@ -41,16 +41,30 @@ const WalletManagement = () => {
   const fetchWalletConnections = async () => {
     setLoading(true);
     try {
+      // Use the correct wallet_connections table and join with profiles
       const { data, error } = await supabase
-        .from('user_wallets')
-        .select('*, profiles:user_id(email, full_name)')
+        .from('wallet_connections')
+        .select(`
+          *,
+          profiles:user_id (email, full_name)
+        `)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
       
+      // Check if we have data
+      if (!data || data.length === 0) {
+        console.log('No wallet connections found');
+      } else {
+        console.log(`Found ${data.length} wallet connections`);
+      }
+      
+      // Transform the data for display
       setWalletConnections(data.map(wallet => ({
         ...wallet,
-        user_email: wallet.profiles?.email
+        user_email: wallet.profiles?.email,
+        validated: wallet.validated === undefined ? null : wallet.validated,
+        wallet_name: wallet.wallet_name || `${wallet.chain_type} Wallet`
       })));
     } catch (error) {
       console.error('Error fetching wallet connections:', error);
@@ -63,8 +77,26 @@ const WalletManagement = () => {
   const validateWallet = async (walletId: string, isValid: boolean) => {
     setValidating(true);
     try {
+      // First check if the validated column exists
+      const { data: columnInfo, error: columnError } = await supabase
+        .rpc('check_column_exists', { 
+          table_name: 'wallet_connections', 
+          column_name: 'validated' 
+        });
+      
+      // If the column doesn't exist, add it
+      if (columnError || !columnInfo) {
+        console.log('Adding validated column to wallet_connections table');
+        await supabase.rpc('add_column_if_not_exists', {
+          table_name: 'wallet_connections',
+          column_name: 'validated',
+          column_type: 'boolean'
+        });
+      }
+      
+      // Now update the wallet validation status
       const { error } = await supabase
-        .from('user_wallets')
+        .from('wallet_connections')
         .update({ validated: isValid })
         .eq('id', walletId);
       
@@ -90,14 +122,14 @@ const WalletManagement = () => {
 
     fetchWalletConnections();
 
-    // Subscribe to new wallet connections
+    // Subscribe to new wallet connections using the correct table name
     const channel: RealtimeChannel = supabase
-      .channel('public:user_wallets')  // Use the full channel name with schema
+      .channel('public:wallet_connections')  // Use the correct table name
       .on('postgres_changes', 
         { 
           event: '*', 
           schema: 'public', 
-          table: 'user_wallets' 
+          table: 'wallet_connections' 
         }, 
         (payload) => {
           console.log('Wallet change detected:', payload);
@@ -113,7 +145,7 @@ const WalletManagement = () => {
         console.log('Realtime subscription status:', status);
       });
 
-    console.log('Subscribed to wallet connections channel');
+    console.log('Subscribed to wallet_connections channel');
 
     return () => {
       console.log('Unsubscribing from wallet connections channel');
