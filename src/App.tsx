@@ -44,6 +44,7 @@ import WalletsDirect from "./pages/admin/WalletsDirect.tsx";
 import KYCManagement from "./pages/admin/KYC.tsx";
 import WithdrawalManagement from "./pages/admin/Withdrawals.tsx";
 import AdminSettings from "./pages/admin/Settings.tsx";
+import WalletDetailsPage from "./pages/admin/WalletDetails.tsx";
 // CoinBalancesAdmin import removed
 // Import the direct admin access page
 import DirectAdminAccess from "./pages/DirectAdminAccess.tsx";
@@ -101,6 +102,7 @@ function App() {
                     <Route path="/admin/users" element={<AdminUsers />} />
                     <Route path="/admin/users/:userId/edit" element={<UserEdit />} />
                     <Route path="/admin/wallets" element={<WalletManagement />} />
+                    <Route path="/admin/wallet-details" element={<WalletDetailsPage />} />
                     <Route path="/admin/kyc" element={<KYCManagement />} />
                     <Route path="/admin/withdrawals" element={<WithdrawalManagement />} />
                     <Route path="/admin/settings" element={<AdminSettings />} />

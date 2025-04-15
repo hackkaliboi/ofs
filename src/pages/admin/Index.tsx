@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -19,13 +20,16 @@ import {
   Loader2,
   Settings,
   FileText,
-  LayoutDashboard
+  LayoutDashboard,
+  CreditCard,
+  RefreshCw
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useWalletConnections } from "@/hooks/useWalletConnections";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { useUserStats } from "@/hooks/useUserStats";
 import { useValidationStats } from "@/hooks/useValidationStats";
+import { useWalletDetailStats } from "@/hooks/useWalletDetailStats";
 import SecurityLogs from "@/components/admin/SecurityLogs";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 import { initializeDatabase } from "@/lib/databaseHelpers";
@@ -36,10 +40,11 @@ const AdminDashboard = () => {
   const { activities, loading: activitiesLoading } = useUserActivity(true, 20);
   const { stats: userStats, loading: userStatsLoading } = useUserStats();
   const { stats: validationStats, loading: validationStatsLoading } = useValidationStats();
+  const { stats: walletDetailStats, loading: walletDetailStatsLoading, refetch: refetchWalletStats } = useWalletDetailStats();
   const [activeView, setActiveView] = useState<string>("dashboard");
   const [loadingTimeout, setLoadingTimeout] = useState(false);
   
-  const loading = authLoading || walletsLoading || activitiesLoading || userStatsLoading || validationStatsLoading;
+  const loading = authLoading || walletsLoading || activitiesLoading || userStatsLoading || validationStatsLoading || walletDetailStatsLoading;
 
   // Set a timeout to prevent infinite loading
   useEffect(() => {
@@ -70,9 +75,9 @@ const AdminDashboard = () => {
     {
       id: 1,
       type: "validation_review",
-      details: `${walletStats.pending} wallet validations pending review`,
-      action: "/admin/validations",
-      priority: walletStats.pending > 30 ? "high" : walletStats.pending > 10 ? "medium" : "low",
+      details: `${walletDetailStats.pending} wallet submissions pending review`,
+      action: "/admin/wallet-details",
+      priority: walletDetailStats.pending > 30 ? "high" : walletDetailStats.pending > 10 ? "medium" : "low",
     },
     {
       id: 2,
@@ -207,9 +212,9 @@ const AdminDashboard = () => {
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{walletStats.total}</div>
+            <div className="text-2xl font-bold">{walletDetailStats.total}</div>
             <p className="text-xs text-muted-foreground">
-              {walletStats.validated} validated, {walletStats.pending} pending
+              {walletDetailStats.approved} approved, {walletDetailStats.pending} pending
             </p>
           </CardContent>
         </Card>
@@ -336,78 +341,81 @@ const AdminDashboard = () => {
       {/* Security Logs */}
       <SecurityLogs />
 
-      {/* Recent Wallets */}
+      {/* Wallet Submissions */}
       <Card>
-        <CardHeader>
-          <CardTitle>Recent Wallet Connections</CardTitle>
-          <CardDescription>Latest wallet connections across the platform</CardDescription>
+        <CardHeader className="pb-2">
+          <CardTitle>Wallet Submissions</CardTitle>
+          <CardDescription>
+            Recent wallet details submitted by users
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          {walletConnections.length === 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-primary/10 rounded-lg p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Total Submissions</p>
+                  <h3 className="text-2xl font-bold mt-1">{walletDetailStats.total}</h3>
+                </div>
+                <Wallet className="h-8 w-8 text-primary opacity-80" />
+              </div>
+            </div>
+            
+            <div className="bg-yellow-50 rounded-lg p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-yellow-600">Pending Review</p>
+                  <h3 className="text-2xl font-bold mt-1 text-yellow-700">{walletDetailStats.pending}</h3>
+                </div>
+                <Clock className="h-8 w-8 text-yellow-500" />
+              </div>
+            </div>
+            
+            <div className="bg-green-50 rounded-lg p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-green-600">Approved</p>
+                  <h3 className="text-2xl font-bold mt-1 text-green-700">{walletDetailStats.approved}</h3>
+                </div>
+                <CheckCircle className="h-8 w-8 text-green-500" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium">Recent Activity</h3>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/admin/wallet-details">
+                <CreditCard className="mr-2 h-4 w-4" />
+                View All
+              </Link>
+            </Button>
+          </div>
+          
+          {walletDetailStats.total === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Wallet className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
-              <h3 className="text-lg font-medium mb-1">No wallet connections</h3>
+              <CreditCard className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
+              <h3 className="text-lg font-medium mb-1">No Wallet Submissions</h3>
               <p className="text-sm text-muted-foreground">
-                Wallet connections will appear here when users connect their wallets
+                No wallet details have been submitted yet
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-3 px-2 text-left font-medium">User</th>
-                    <th className="py-3 px-2 text-left font-medium">Wallet Address</th>
-                    <th className="py-3 px-2 text-left font-medium">Chain</th>
-                    <th className="py-3 px-2 text-left font-medium">Connected</th>
-                    <th className="py-3 px-2 text-left font-medium">Status</th>
-                    <th className="py-3 px-2 text-left font-medium">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {walletConnections.slice(0, 5).map((wallet) => (
-                    <tr key={wallet.id} className="border-b">
-                      <td className="py-3 px-2">{wallet.user_email || wallet.user_name || wallet.user_id.substring(0, 8)}</td>
-                      <td className="py-3 px-2 font-mono">
-                        {wallet.wallet_address.substring(0, 6)}...
-                        {wallet.wallet_address.substring(wallet.wallet_address.length - 4)}
-                      </td>
-                      <td className="py-3 px-2">{wallet.chain_type || 'Ethereum'}</td>
-                      <td className="py-3 px-2">{formatTimeAgo(wallet.connected_at)}</td>
-                      <td className="py-3 px-2">
-                        {wallet.validated || wallet.validation_status === 'validated' ? (
-                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Validated
-                          </Badge>
-                        ) : wallet.validation_status === 'rejected' ? (
-                          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-                            <XCircle className="h-3 w-3 mr-1" />
-                            Rejected
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-                            <Clock className="h-3 w-3 mr-1" />
-                            Pending
-                          </Badge>
-                        )}
-                      </td>
-                      <td className="py-3 px-2">
-                        <Button asChild variant="outline" size="sm">
-                          <Link to={`/admin/wallets/${wallet.id}`}>View</Link>
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {walletConnections.length > 5 && (
-                <div className="mt-4 text-center">
-                  <Button asChild variant="outline">
-                    <Link to="/admin/wallets">View All Wallets</Link>
-                  </Button>
+            <div className="overflow-hidden rounded-md border">
+              <div className="p-6 flex flex-col items-center justify-center text-center">
+                <div className="rounded-full bg-primary/10 p-3 mb-3">
+                  <CreditCard className="h-6 w-6 text-primary" />
                 </div>
-              )}
+                <h3 className="text-lg font-medium mb-1">Wallet Details Available</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {walletDetailStats.pending} submissions pending review
+                </p>
+                <Button asChild>
+                  <Link to="/admin/wallet-details">
+                    Review Wallet Submissions
+                  </Link>
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>
@@ -433,6 +441,20 @@ const AdminDashboard = () => {
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <Button 
+                onClick={() => {
+                  toast({
+                    title: "Refreshing dashboard data",
+                    description: "Please wait while we fetch the latest data",
+                  });
+                  refetchWalletStats();
+                }}
+                variant="outline"
+                disabled={walletDetailStatsLoading}
+              >
+                <RefreshCw className={`mr-2 h-4 w-4 ${walletDetailStatsLoading ? 'animate-spin' : ''}`} />
+                Refresh Data
+              </Button>
               <Button asChild>
                 <Link to="/admin/users/new">
                   <UserPlus className="mr-2 h-4 w-4" />

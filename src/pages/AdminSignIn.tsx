@@ -57,7 +57,7 @@ const AdminSignIn = () => {
   
   // Auto-fill pastendro@gmail.com for convenience
   useEffect(() => {
-    setEmail('pastendro@gmail.com');
+    setEmail('');
   }, []);
   
   const handleSubmit = async (e: React.FormEvent) => {

