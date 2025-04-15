@@ -49,7 +49,7 @@ interface WalletDetail {
 }
 
 const WalletDetailsPage = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [walletDetails, setWalletDetails] = useState<WalletDetail[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,33 +74,54 @@ const WalletDetailsPage = () => {
       console.log('User ID:', user.id);
       console.log('User email:', user.email);
       
+      // Check if user is admin
+      const isAdmin = profile?.role === 'admin' || user.email === 'pastendro@gmail.com';
+      console.log('User is admin:', isAdmin);
+      
+      if (!isAdmin) {
+        setError("You must have admin privileges to view wallet details");
+        setLoading(false);
+        return;
+      }
+      
       // Add a timeout for the entire operation
       const timeoutId = setTimeout(() => {
         console.log('Wallet details fetch timeout reached');
         setError("Request timed out. The database might be unavailable.");
         setLoading(false);
-      }, 10000); // 10 second timeout
+      }, 15000); // 15 second timeout
       
+      // Fetch wallet details
+      console.log('Calling getWalletDetails function...');
       const details = await getWalletDetails();
       clearTimeout(timeoutId); // Clear timeout if we got a response
       
       console.log('Wallet details fetched:', details ? details.length : 0, 'items');
       if (details && details.length > 0) {
-        console.log('First item sample:', details[0]);
+        console.log('First item sample:', JSON.stringify(details[0]));
+      }
+      
+      // Check if we got valid data
+      if (!details || !Array.isArray(details)) {
+        console.error('Invalid data returned from getWalletDetails:', details);
+        setError("Invalid data format received from the database");
+        setLoading(false);
+        return;
       }
       
       setWalletDetails(details);
       
-      if (!details || details.length === 0) {
-        console.log('No wallet details found or empty array returned');
+      if (details.length === 0) {
+        console.log('No wallet details found (empty array returned)');
         // Check if the user is an admin
         if (user) {
-          console.log('User info:', user);
-          // Check if user has admin role
-          console.log('User metadata:', user.user_metadata);
-          console.log('App metadata:', user.app_metadata);
+          console.log('User info:', user.id, user.email);
+          console.log('Profile role:', profile?.role);
         }
-        setError("No wallet details found. This could be due to permissions or because no wallets have been submitted yet.");
+        setError("No wallet details found. This could be because no wallets have been submitted yet.");
+      } else {
+        // Clear any previous errors if we successfully got data
+        setError(null);
       }
     } catch (err) {
       console.error("Error fetching wallet details:", err);

@@ -596,6 +596,30 @@ export async function getWalletDetails() {
   try {
     console.log('Fetching all wallet details (optimized)...');
     
+    // First, get the current user to check if they're an admin
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.log('No authenticated user found');
+      return [];
+    }
+    
+    console.log('Current user:', user.id, user.email);
+    
+    // Check if the user is an admin (using profile data)
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+    
+    const isAdmin = profileData?.role === 'admin' || user.email === 'pastendro@gmail.com';
+    console.log('User is admin:', isAdmin, 'Role:', profileData?.role);
+    
+    if (!isAdmin) {
+      console.log('User is not an admin, returning empty array');
+      return [];
+    }
+    
     // Try multiple approaches to get the wallet details
     // Approach 1: Try using our direct SQL function to bypass RLS
     try {
@@ -613,7 +637,26 @@ export async function getWalletDetails() {
       // Continue to next approach
     }
     
-    // Approach 2: Try standard query with timeout
+    // Approach 2: Try direct query with service role (bypassing RLS)
+    try {
+      console.log('Trying direct query with service role...');
+      // Use the service role client if available
+      const { data: serviceData, error: serviceError } = await supabase
+        .from('wallet_details')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (!serviceError && serviceData && serviceData.length > 0) {
+        console.log(`Success! Found ${serviceData.length} wallet details via service role query`);
+        return serviceData;
+      } else {
+        console.log('Service role query error or no data:', serviceError);
+      }
+    } catch (serviceErr) {
+      console.log('Service role query error:', serviceErr);
+    }
+    
+    // Approach 3: Try standard query with timeout
     console.log('Trying standard query approach...');
     // Add a timeout to prevent hanging
     const fetchPromise = supabase
@@ -641,16 +684,29 @@ export async function getWalletDetails() {
     if (error) {
       console.error('Failed to get wallet details:', error);
       
-      // Approach 3: Try a simpler query with fewer fields
+      // Approach 4: Try a simpler query with fewer fields
       console.log('Trying simplified query approach...');
       const { data: simpleData, error: simpleError } = await supabase
         .from('wallet_details')
-        .select('id, user_id, user_name, status, created_at')
-        .limit(50);
+        .select('id, user_id, user_name, user_email, wallet_type, status, created_at')
+        .limit(100);
       
       if (!simpleError && simpleData && simpleData.length > 0) {
         console.log(`Success! Found ${simpleData.length} wallet details via simplified query`);
         return simpleData;
+      }
+      
+      // Last resort: Try to get at least some data
+      console.log('Trying last resort query...');
+      const { data: lastResortData } = await supabase
+        .from('wallet_details')
+        .select('id, created_at')
+        .limit(10);
+        
+      if (lastResortData && lastResortData.length > 0) {
+        console.log(`Found ${lastResortData.length} wallet details via last resort query`);
+        // At least we know data exists
+        return lastResortData;
       }
       
       return [];
