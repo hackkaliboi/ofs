@@ -38,7 +38,6 @@ import ConnectWallet from "./pages/dashboard/ConnectWallet.tsx";
 // Admin Dashboard Pages
 import AdminDashboard from "./pages/admin/Index.tsx";
 import AdminUsers from "./pages/admin/Users.tsx";
-import UserDetail from "./pages/admin/UserDetail.tsx";
 import UserEdit from "./pages/admin/UserEdit.tsx";
 import WalletManagement from "./pages/admin/Wallets.tsx";
 import WalletsDirect from "./pages/admin/WalletsDirect.tsx";
@@ -100,7 +99,6 @@ function App() {
                   <Route element={<DashboardLayout />}>
                     <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/admin/users" element={<AdminUsers />} />
-                    <Route path="/admin/users/:userId" element={<UserDetail />} />
                     <Route path="/admin/users/:userId/edit" element={<UserEdit />} />
                     <Route path="/admin/wallets" element={<WalletManagement />} />
                     <Route path="/admin/kyc" element={<KYCManagement />} />

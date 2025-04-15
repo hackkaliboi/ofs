@@ -36,7 +36,6 @@ import {
   Users, 
   UserPlus, 
   MoreVertical, 
-  Eye, 
   Edit, 
   Trash2, 
   CheckCircle, 
@@ -372,12 +371,6 @@ const UserManagement = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem asChild>
-                              <Link to={`/admin/users/${user.id}`}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                View
-                              </Link>
-                            </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                               <Link to={`/admin/users/${user.id}/edit`}>
                                 <Edit className="mr-2 h-4 w-4" />
