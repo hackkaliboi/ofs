@@ -161,7 +161,10 @@ const Sidebar = ({ isMobileMenuOpen, closeMobileMenu }: SidebarProps) => {
               <Button
                 variant="ghost"
                 className="w-full justify-start gap-3 rounded-md px-3 py-2 text-sm font-medium text-red-600 hover:bg-gray-100 hover:text-red-700"
-                onClick={() => signOut()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  signOut();
+                }}
               >
                 <LogOut className="h-5 w-5" />
                 Log Out
