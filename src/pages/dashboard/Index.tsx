@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Wallet, ArrowDownToLine, Shield, Clock, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Wallet, ArrowDownToLine, Shield, Clock, CheckCircle, XCircle, Loader2, Coins } from "lucide-react";
 import { useWalletConnections } from "@/hooks/useWalletConnections";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { initializeDatabase } from "@/lib/databaseHelpers";
 import TradingViewWidget from "@/components/dashboard/TradingViewWidget";
+import CoinBalancesWidget from "@/components/dashboard/CoinBalancesWidget";
 
 const Dashboard = () => {
   const { user, profile, loading: authLoading } = useAuth();
@@ -226,8 +227,13 @@ const Dashboard = () => {
           
           {/* Portfolio section removed */}
 
+          {/* Coin Balances */}
+          <div className="mb-6">
+            <CoinBalancesWidget />
+          </div>
+            
           {/* Market data section */}
-          <div className="w-full mb-6">
+          <div className="mb-6">
             <Card>
               <CardHeader>
                 <CardTitle>Market Overview</CardTitle>

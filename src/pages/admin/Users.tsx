@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { AddCoinBalanceDialog } from "@/components/admin/AddCoinBalanceDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -46,7 +47,8 @@ import {
   UserCog,
   Search,
   Download,
-  Loader2
+  Loader2,
+  Coins
 } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -62,6 +64,7 @@ const UserManagement = () => {
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showAddBalanceDialog, setShowAddBalanceDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
   
@@ -377,6 +380,13 @@ const UserManagement = () => {
                                 Edit
                               </Link>
                             </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => {
+                              setSelectedUser(user);
+                              setShowAddBalanceDialog(true);
+                            }}>
+                              <Coins className="mr-2 h-4 w-4" />
+                              Add Balance
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             {user.status === "suspended" ? (
                               <DropdownMenuItem onClick={() => handleUnsuspendUser(user)}>
@@ -454,6 +464,16 @@ const UserManagement = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Add Balance Dialog */}
+      {selectedUser && (
+        <AddCoinBalanceDialog
+          isOpen={showAddBalanceDialog}
+          onClose={() => setShowAddBalanceDialog(false)}
+          userId={selectedUser.id}
+          userEmail={selectedUser.email}
+        />
+      )}
     </div>
   );
 };

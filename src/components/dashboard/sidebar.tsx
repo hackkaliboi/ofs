@@ -72,11 +72,6 @@ const Sidebar = ({ isMobileMenuOpen, closeMobileMenu }: SidebarProps) => {
       icon: <Users className="h-5 w-5" />,
     },
     {
-      name: "Wallet Details",
-      path: "/admin/wallet-details",
-      icon: <CreditCard className="h-5 w-5" />,
-    },
-    {
       name: "KYC Verification",
       path: "/admin/kyc",
       icon: <Shield className="h-5 w-5" />,

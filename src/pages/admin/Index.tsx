@@ -22,9 +22,11 @@ import {
   FileText,
   LayoutDashboard,
   CreditCard,
-  RefreshCw
+  RefreshCw,
+  Coins,
+  LogOut
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useWalletConnections } from "@/hooks/useWalletConnections";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { useUserStats } from "@/hooks/useUserStats";
@@ -32,15 +34,17 @@ import { useValidationStats } from "@/hooks/useValidationStats";
 import { useWalletDetailStats } from "@/hooks/useWalletDetailStats";
 import SecurityLogs from "@/components/admin/SecurityLogs";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
+// CoinBalances component removed - now using inline dialog in Users.tsx
 import { initializeDatabase } from "@/lib/databaseHelpers";
 
 const AdminDashboard = () => {
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading, signOut } = useAuth();
   const { walletConnections, stats: walletStats, loading: walletsLoading } = useWalletConnections(true);
   const { activities, loading: activitiesLoading } = useUserActivity(true, 20);
   const { stats: userStats, loading: userStatsLoading } = useUserStats();
   const { stats: validationStats, loading: validationStatsLoading } = useValidationStats();
   const { stats: walletDetailStats, loading: walletDetailStatsLoading, refetch: refetchWalletStats } = useWalletDetailStats();
+  const [searchParams] = useSearchParams();
   const [activeView, setActiveView] = useState<string>("dashboard");
   const [loadingTimeout, setLoadingTimeout] = useState(false);
   
@@ -467,51 +471,60 @@ const AdminDashboard = () => {
                   Reports
                 </Link>
               </Button>
+              <Button 
+                variant="destructive" 
+                onClick={signOut}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
             </div>
           </div>
 
           {/* Dashboard View Selector */}
           <Tabs value={activeView} onValueChange={setActiveView} className="space-y-4">
-            <TabsList className="grid w-full md:w-auto grid-cols-3">
-              <TabsTrigger value="dashboard">
-                <LayoutDashboard className="h-4 w-4 mr-2" />
-                Dashboard
-              </TabsTrigger>
-              <TabsTrigger value="analytics">
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Analytics
-              </TabsTrigger>
-              <TabsTrigger value="reports">
-                <FileText className="h-4 w-4 mr-2" />
-                Reports
-              </TabsTrigger>
-            </TabsList>
+            <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsTrigger value="dashboard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <LayoutDashboard className="h-4 w-4 mr-2" />
+              Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <FileText className="h-4 w-4 mr-2" />
+              Reports
+            </TabsTrigger>
+          </TabsList>
             
             <TabsContent value="dashboard" className="space-y-6">
-              {renderDashboardView()}
-            </TabsContent>
+            {renderDashboardView()}
+          </TabsContent>
             
-            <TabsContent value="analytics">
-              <AnalyticsDashboard />
-            </TabsContent>
+          <TabsContent value="analytics">
+            <AnalyticsDashboard />
+          </TabsContent>
             
-            <TabsContent value="reports" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Reports</CardTitle>
-                  <CardDescription>Generate and view system reports</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <FileText className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium mb-1">Reports Coming Soon</h3>
-                    <p className="text-sm text-muted-foreground">
-                      This feature is under development and will be available soon
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+          <TabsContent value="reports" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Reports</CardTitle>
+                <CardDescription>Generate and view system reports</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <FileText className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
+                  <h3 className="text-lg font-medium mb-1">Reports Coming Soon</h3>
+                  <p className="text-sm text-muted-foreground">
+                    This feature is under development and will be available soon
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+            
+          {/* Coin Balances tab removed - now using inline dialog */}
           </Tabs>
         </>
       )}
