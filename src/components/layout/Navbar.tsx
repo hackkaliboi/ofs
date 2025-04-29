@@ -4,6 +4,7 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import SignOutButton from "@/components/auth/SignOutButton";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -82,13 +83,12 @@ const Navbar = () => {
                 <Link to="/profile">
                   <Button variant="ghost" size="sm">My Profile</Button>
                 </Link>
-                <Button 
+                <SignOutButton 
                   variant="outline" 
                   size="sm"
-                  onClick={() => signOut()}
                 >
                   Sign out
-                </Button>
+                </SignOutButton>
               </div>
             ) : (
               <>
@@ -146,12 +146,12 @@ const Navbar = () => {
                 >
                   My Profile
                 </Link>
-                <button
-                  onClick={() => signOut()}
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                <SignOutButton 
+                  variant="ghost"
+                  className="block w-full text-left justify-start px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
                 >
                   Sign out
-                </button>
+                </SignOutButton>
               </>
             ) : (
               <>
