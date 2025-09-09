@@ -13,6 +13,7 @@ const PremiumTestimonials = lazy(() => import('../components/home/PremiumTestimo
 const PremiumCTA = lazy(() => import('../components/home/PremiumCTA').then(module => ({ default: module.PremiumCTA })));
 const CryptoMarket = lazy(() => import('../components/home/CryptoMarket'));
 const Integration = lazy(() => import('../components/home/Integration'));
+const CompanyCarousel = lazy(() => import('../components/home/CompanyCarousel'));
 
 // Simplified loading component
 const SectionLoader = () => (
@@ -33,6 +34,14 @@ const Index = () => {
       component: (
         <Suspense fallback={<SectionLoader />}>
           <PremiumStats />
+        </Suspense>
+      )
+    },
+    { 
+      id: 'partners', 
+      component: (
+        <Suspense fallback={<SectionLoader />}>
+          <CompanyCarousel />
         </Suspense>
       )
     },
