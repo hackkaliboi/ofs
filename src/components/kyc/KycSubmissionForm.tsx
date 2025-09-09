@@ -574,7 +574,7 @@ export function KycSubmissionForm({ onSuccess, onCancel }: KycSubmissionFormProp
             
             <div className="space-y-4">
               <div>
-                <Label htmlFor="front_image">Front Image <span className="text-red-500">*</span></Label>
+                <Label htmlFor="front_image">Front Image <span className="text-yellow-500">*</span></Label>
                 <div className="mt-1">
                   {frontImage ? (
                     <div className="flex items-center justify-between">
@@ -602,7 +602,7 @@ export function KycSubmissionForm({ onSuccess, onCancel }: KycSubmissionFormProp
                   Upload the front side of your document
                 </p>
                 {frontImageError && (
-                  <p className="text-sm text-red-500 mt-1">{frontImageError}</p>
+                  <p className="text-sm text-yellow-500 mt-1">{frontImageError}</p>
                 )}
               </div>
               

@@ -11,6 +11,7 @@ import { useUserActivity } from "@/hooks/useUserActivity";
 import { initializeDatabase } from "@/lib/databaseHelpers";
 import TradingViewWidget from "@/components/dashboard/TradingViewWidget";
 import CoinBalancesWidget from "@/components/dashboard/CoinBalancesWidget";
+import ConnectWallet from "@/components/ConnectWallet";
 
 const Dashboard = () => {
   const { user, profile, loading: authLoading } = useAuth();
@@ -68,7 +69,7 @@ const Dashboard = () => {
       case "approved":
       case "validated":
         return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <CheckCircle className="h-3 w-3 mr-1" />
             Completed
           </Badge>
@@ -84,7 +85,7 @@ const Dashboard = () => {
       case "rejected":
       case "failed":
         return (
-          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <XCircle className="h-3 w-3 mr-1" />
             Rejected
           </Badge>
@@ -144,21 +145,20 @@ const Dashboard = () => {
         </div>
       ) : (
         <>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 md:gap-4 mb-4 md:mb-6">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-              <p className="text-muted-foreground">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">Dashboard</h1>
+              <p className="text-muted-foreground mt-1 text-sm md:text-base">
                 Welcome back, {profile?.full_name || user?.email?.split("@")[0] || "User"}
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <Button asChild>
-                <a href="/dashboard/connect-wallet">
-                  <Wallet className="mr-2 h-4 w-4" />
-                  Connect Wallet
-                </a>
-              </Button>
-              <Button asChild variant="outline">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+              <ConnectWallet 
+                variant="default" 
+                size="default" 
+                className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80"
+              />
+              <Button asChild variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
                 <a href="/dashboard/withdrawals/new">
                   <ArrowDownToLine className="mr-2 h-4 w-4" />
                   Request Withdrawal
@@ -168,53 +168,61 @@ const Dashboard = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Wallets</CardTitle>
-                <Wallet className="h-4 w-4 text-muted-foreground" />
+          <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6 md:mb-8">
+            <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
+                <CardTitle className="text-xs sm:text-sm font-semibold text-primary">Total Wallets</CardTitle>
+                <div className="rounded-full bg-gradient-to-br from-primary/20 to-primary/10 p-1.5 md:p-2.5">
+                  <Wallet className="h-3 w-3 md:h-4 md:w-4 text-primary" />
+                </div>
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{walletStats.total}</div>
-                <p className="text-xs text-muted-foreground">
+              <CardContent className="pt-0">
+                <div className="text-xl md:text-2xl font-bold text-foreground">{walletStats.total}</div>
+                <p className="text-xs text-muted-foreground mt-1">
                   {walletStats.validated} validated, {walletStats.pending} pending
                 </p>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Validated Wallets</CardTitle>
-                <Shield className="h-4 w-4 text-muted-foreground" />
+            <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
+                <CardTitle className="text-xs sm:text-sm font-semibold">Validated Wallets</CardTitle>
+                <div className="rounded-full bg-primary/10 p-1.5 md:p-2.5">
+                  <Shield className="h-3 w-3 md:h-4 md:w-4 text-primary" />
+                </div>
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{walletStats.validated}</div>
-                <p className="text-xs text-muted-foreground">
+              <CardContent className="pt-0">
+                <div className="text-xl md:text-2xl font-bold">{walletStats.validated}</div>
+                <p className="text-xs text-muted-foreground mt-1">
                   {walletStats.validated}% of total wallets
                 </p>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Withdrawals</CardTitle>
-                <ArrowDownToLine className="h-4 w-4 text-muted-foreground" />
+            <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
+                <CardTitle className="text-xs sm:text-sm font-semibold">Total Withdrawals</CardTitle>
+                <div className="rounded-full bg-primary/10 p-1.5 md:p-2.5">
+                  <ArrowDownToLine className="h-3 w-3 md:h-4 md:w-4 text-primary" />
+                </div>
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{withdrawalStats.total}</div>
-                <p className="text-xs text-muted-foreground">
+              <CardContent className="pt-0">
+                <div className="text-xl md:text-2xl font-bold">{withdrawalStats.total}</div>
+                <p className="text-xs text-muted-foreground mt-1">
                   {withdrawalStats.completed} completed, {withdrawalStats.pending} pending
                 </p>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">KYC Status</CardTitle>
-                <Shield className="h-4 w-4 text-muted-foreground" />
+            <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
+                <CardTitle className="text-xs sm:text-sm font-semibold">KYC Status</CardTitle>
+                <div className="rounded-full bg-primary/10 p-1.5 md:p-2.5">
+                  <Shield className="h-3 w-3 md:h-4 md:w-4 text-primary" />
+                </div>
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
+              <CardContent className="pt-0">
+                <div className="text-lg md:text-2xl font-bold">
                   {walletStats.kyc_approved ? "Approved" : walletStats.kyc_submitted ? "Submitted" : "Not Submitted"}
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   {walletStats.kyc_approved 
                     ? "Your KYC is approved" 
                     : walletStats.kyc_submitted 
@@ -228,19 +236,19 @@ const Dashboard = () => {
           {/* Portfolio section removed */}
 
           {/* Coin Balances */}
-          <div className="mb-6">
+          <div className="mb-4 md:mb-6">
             <CoinBalancesWidget />
           </div>
             
           {/* Market data section */}
-          <div className="mb-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Market Overview</CardTitle>
-                <CardDescription>Real-time cryptocurrency market data</CardDescription>
+          <div className="mb-6 md:mb-8">
+            <Card className="border-primary/20 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm">
+              <CardHeader className="pb-3 md:pb-6">
+                <CardTitle className="text-base md:text-lg font-semibold">Market Overview</CardTitle>
+                <CardDescription className="text-sm">Real-time cryptocurrency market data</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="w-full h-[400px]">
+                <div className="w-full h-[300px] sm:h-[350px] md:h-[400px] rounded-lg overflow-hidden">
                   <TradingViewWidget />
                 </div>
               </CardContent>
@@ -248,24 +256,28 @@ const Dashboard = () => {
           </div>
 
           {/* Recent Activity */}
-          <div className="grid gap-4 md:grid-cols-7">
+          <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-7">
             {/* Connected Wallets */}
-            <Card className="md:col-span-3">
-              <CardHeader>
-                <CardTitle>Connected Wallets</CardTitle>
-                <CardDescription>Your recently connected wallets</CardDescription>
+            <Card className="lg:col-span-3 border-primary/20 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm">
+              <CardHeader className="pb-3 md:pb-6">
+                <CardTitle className="text-base md:text-lg font-semibold">Connected Wallets</CardTitle>
+                <CardDescription className="text-sm">Your recently connected wallets</CardDescription>
               </CardHeader>
               <CardContent>
                 {walletConnections.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <Wallet className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
+                    <div className="rounded-full bg-primary/10 p-4 mb-4">
+                      <Wallet className="h-8 w-8 text-primary" />
+                    </div>
                     <h3 className="text-lg font-medium mb-1">No wallets connected</h3>
                     <p className="text-sm text-muted-foreground mb-4">
                       Connect your first wallet to get started
                     </p>
-                    <Button asChild size="sm">
-                      <a href="/dashboard/connect-wallet">Connect Wallet</a>
-                    </Button>
+                    <ConnectWallet 
+                      variant="default" 
+                      size="sm" 
+                      className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80"
+                    />
                   </div>
                 ) : (
                   <ScrollArea className="h-[300px]">
@@ -302,10 +314,10 @@ const Dashboard = () => {
             </Card>
 
             {/* Activity Feed */}
-            <Card className="md:col-span-4">
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>Your recent account activity</CardDescription>
+            <Card className="lg:col-span-4">
+              <CardHeader className="pb-3 md:pb-6">
+                <CardTitle className="text-base md:text-lg font-semibold">Recent Activity</CardTitle>
+                <CardDescription className="text-sm">Your recent account activity</CardDescription>
               </CardHeader>
               <CardContent>
                 {activities.length === 0 ? (

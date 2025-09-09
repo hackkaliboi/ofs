@@ -4,39 +4,31 @@ import { useAuth } from "@/context/AuthContext";
 import Sidebar from "./sidebar";
 import Header from "./header";
 
-export function DashboardLayout() {
-  const { user, profile } = useAuth();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const location = useLocation();
+export const DashboardLayout = () => {
+  const { user } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { pathname } = useLocation();
   
   // Close mobile menu when route changes
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
-
-  // Handle mobile menu toggle
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
-      {/* Header */}
-      <Header 
-        isMobileMenuOpen={isMobileMenuOpen} 
-        toggleMobileMenu={toggleMobileMenu} 
+    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-background via-background/95 to-background/90">
+      <Sidebar 
+        mobileMenuOpen={mobileMenuOpen} 
+        setMobileMenuOpen={setMobileMenuOpen} 
       />
       
-      <div className="flex flex-1">
-        {/* Sidebar */}
-        <Sidebar 
-          isMobileMenuOpen={isMobileMenuOpen} 
-          closeMobileMenu={() => setIsMobileMenuOpen(false)}
+      <div className="flex flex-col flex-1 overflow-hidden md:ml-64 lg:ml-72">
+        <Header 
+          mobileMenuOpen={mobileMenuOpen} 
+          setMobileMenuOpen={setMobileMenuOpen} 
         />
         
-        {/* Main Content */}
-        <main className="flex-1 p-4 md:p-6 overflow-auto lg:ml-64 transition-all duration-200 bg-gray-50">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 lg:p-8 bg-gradient-to-b from-transparent to-background/20">
+          <div className="container mx-auto max-w-7xl w-full">
             <Outlet />
           </div>
         </main>
@@ -44,3 +36,5 @@ export function DashboardLayout() {
     </div>
   );
 }
+
+export default DashboardLayout;

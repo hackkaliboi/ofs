@@ -25,7 +25,7 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <section className="section-padding bg-blue-50/50">
+    <section className="section-padding bg-yellow-50/50">
       <div className="container-custom">
         <AnimatedSection>
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -40,17 +40,17 @@ const HowItWorks = () => {
 
         <div className="relative">
           {/* Connection line */}
-          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-400 to-blue-600 transform -translate-y-1/2 z-0" />
+          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-600 transform -translate-y-1/2 z-0" />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
             {steps.map((step, index) => (
               <AnimatedSection key={step.title} delay={(index + 1) as 1 | 2 | 3 | 4}>
-                <div className="bg-white rounded-xl p-6 text-center shadow-lg border border-gray-100 h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-6 text-blue-600">
+                <div className="bg-card rounded-xl p-6 text-center shadow-lg border h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100 mb-6 text-yellow-600">
                     <step.icon className="h-8 w-8" />
                   </div>
                   <div className="mb-2 flex items-center justify-center">
-                    <span className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg mr-2">
+                    <span className="w-8 h-8 bg-yellow-600 text-white rounded-full flex items-center justify-center font-bold text-lg mr-2">
                       {index + 1}
                     </span>
                     <h3 className="text-xl font-semibold">{step.title}</h3>

@@ -1,173 +1,209 @@
-import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { 
-  Wallet, 
-  ArrowDownToLine, 
-  Shield, 
-  User, 
-  LayoutDashboard, 
-  Users, 
-  LogOut,
-  KeyRound,
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import {
+  LayoutDashboard,
+  Wallet,
+  User,
   Settings,
-  FileCheck,
-  CreditCard
+  FileText,
+  Users,
+  CreditCard,
+  Shield,
+  LogOut,
+  ArrowDownToLine,
+  Coins,
+  BarChart3,
 } from "lucide-react";
 
 interface SidebarProps {
-  isMobileMenuOpen: boolean;
-  closeMobileMenu: () => void;
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
 }
 
-const Sidebar = ({ isMobileMenuOpen, closeMobileMenu }: SidebarProps) => {
-  const location = useLocation();
-  const { user, profile, signOut } = useAuth();
-  
-  // Check if user is admin based on profile role or URL path
-  const isAdmin = profile?.role === "admin" || location.pathname.startsWith("/admin");
+const Sidebar = ({ mobileMenuOpen, setMobileMenuOpen }: SidebarProps) => {
+  const { pathname } = useLocation();
+  const { user, profile, isAdmin, signOut } = useAuth();
 
-  // Define navigation items for users
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname, setMobileMenuOpen]);
+
+  // User navigation items
   const userNavItems = [
     {
-      name: "Dashboard",
-      path: "/dashboard",
+      title: "Dashboard",
+      href: "/dashboard",
       icon: <LayoutDashboard className="h-5 w-5" />,
     },
     {
-      name: "Connect Wallet",
-      path: "/dashboard/connect-wallet",
-      icon: <KeyRound className="h-5 w-5" />,
-    },
-    {
-      name: "Withdrawals",
-      path: "/dashboard/withdrawals",
+      title: "Withdrawals",
+      href: "/dashboard/withdrawals",
       icon: <ArrowDownToLine className="h-5 w-5" />,
     },
     {
-      name: "KYC Center",
-      path: "/dashboard/kyc",
+      title: "KYC Verification",
+      href: "/dashboard/kyc",
       icon: <Shield className="h-5 w-5" />,
+      badge: profile?.kyc_status === "verified" ? "Verified" : "Required",
+      badgeVariant: profile?.kyc_status === "verified" ? "success" : "destructive",
     },
     {
-      name: "Profile",
-      path: "/dashboard/profile",
+      title: "Profile",
+      href: "/dashboard/profile",
       icon: <User className="h-5 w-5" />,
     },
   ];
 
-  // Define navigation items for admins
+  // Admin navigation items
   const adminNavItems = [
     {
-      name: "Dashboard",
-      path: "/admin",
-      icon: <LayoutDashboard className="h-5 w-5" />,
+      title: "Admin Dashboard",
+      href: "/admin",
+      icon: <BarChart3 className="h-5 w-5" />,
     },
     {
-      name: "Users",
-      path: "/admin/users",
+      title: "Users",
+      href: "/admin/users",
       icon: <Users className="h-5 w-5" />,
     },
     {
-      name: "KYC Verification",
-      path: "/admin/kyc",
-      icon: <Shield className="h-5 w-5" />,
+      title: "Wallets",
+      href: "/admin/wallets",
+      icon: <Wallet className="h-5 w-5" />,
     },
     {
-      name: "Withdrawals",
-      path: "/admin/withdrawals",
+      title: "Withdrawals",
+      href: "/admin/withdrawals",
       icon: <ArrowDownToLine className="h-5 w-5" />,
     },
     {
-      name: "Settings",
-      path: "/admin/settings",
+      title: "Coin Balances",
+      href: "/admin/coin-balances",
+      icon: <Coins className="h-5 w-5" />,
+    },
+    {
+      title: "Settings",
+      href: "/admin/settings",
       icon: <Settings className="h-5 w-5" />,
     },
   ];
 
-  // Select the appropriate navigation items based on user role
-  const navItems = isAdmin ? adminNavItems : userNavItems;
-
   return (
     <>
-      {/* Mobile sidebar backdrop */}
-      {isMobileMenuOpen && (
+      {/* Mobile backdrop */}
+      {mobileMenuOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-          onClick={closeMobileMenu}
+          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside
+      <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:z-0",
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
-          "bg-white border-r border-gray-200"
+          "fixed inset-y-0 left-0 z-50 w-64 sm:w-72 transform border-r border-primary/20 bg-gradient-to-b from-card/95 to-card/90 backdrop-blur-xl shadow-2xl transition-transform duration-300 ease-in-out md:translate-x-0 md:shadow-xl",
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex h-16 items-center border-b px-6 gap-2">
-          <img 
-            src="/logo.svg" 
-            alt="OFS Ledger" 
-            className="h-8 w-8" 
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/logo-fallback.png";
-            }}
-          />
-          <span className="font-bold text-xl text-gray-900">
-            OFS Ledger
-          </span>
-        </div>
-        <ScrollArea className="h-[calc(100vh-4rem)]">
-          <div className="px-3 py-4">
-            <div className="mb-4">
-              <div className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
-                {isAdmin ? "Admin Navigation" : "Navigation"}
+        <div className="flex h-full flex-col">
+          {/* Sidebar header */}
+          <div className="flex h-16 items-center border-b border-primary/20 px-4 sm:px-6">
+            <Link to="/dashboard" className="flex items-center gap-2 group">
+              <div className="rounded-lg bg-gradient-to-br from-primary to-primary/80 p-2 shadow-lg group-hover:shadow-primary/25 transition-all duration-300">
+                <Coins className="h-5 w-5 text-primary-foreground" />
               </div>
-              <nav className="space-y-1">
-                {navItems.map((item) => (
-                  <NavLink
-                    key={item.path}
-                    to={item.path}
-                    className={({ isActive }) =>
-                      cn(
-                        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                        isActive
-                          ? "bg-primary/10 text-primary"
-                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                      )
-                    }
-                    end={item.path === "/dashboard" || item.path === "/admin"}
-                  >
-                    {item.icon}
-                    {item.name}
-                  </NavLink>
-                ))}
-              </nav>
-            </div>
-            <div className="mt-auto">
-              <div className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
-                Account
-              </div>
-              <Button
-                variant="ghost"
-                className="w-full justify-start gap-3 rounded-md px-3 py-2 text-sm font-medium text-red-600 hover:bg-gray-100 hover:text-red-700"
-                onClick={(e) => {
-                  e.preventDefault();
-                  signOut();
-                }}
-              >
-                <LogOut className="h-5 w-5" />
-                Log Out
-              </Button>
-            </div>
+              <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">OFS Ledger</span>
+            </Link>
           </div>
-        </ScrollArea>
-      </aside>
+
+          {/* Sidebar content */}
+          <ScrollArea className="flex-1 px-3 sm:px-4 py-6">
+            <nav className="flex flex-col gap-6">
+              {/* User navigation */}
+              <div>
+                <h3 className="px-3 text-xs font-semibold text-primary/70 uppercase tracking-wider">
+                  User Dashboard
+                </h3>
+                <ul className="mt-3 space-y-1">
+                  {userNavItems.map((item, index) => (
+                    <li key={index}>
+                      <Link
+                        to={item.href}
+                        className={cn(
+                          "group flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20",
+                          pathname === item.href
+                            ? "bg-gradient-to-r from-primary/20 to-primary/10 text-primary border-primary/30 shadow-lg"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          {item.icon}
+                          <span>{item.title}</span>
+                        </div>
+                        {item.badge && (
+                          <Badge
+                            variant={item.badgeVariant as "default" | "secondary" | "destructive" | "outline"}
+                            className="ml-auto"
+                          >
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Admin navigation (only shown to admins) */}
+              {isAdmin && (
+                <div>
+                  <Separator className="my-2" />
+                  <h3 className="px-2 text-sm font-medium text-muted-foreground">
+                    Admin Controls
+                  </h3>
+                  <ul className="mt-2 space-y-1">
+                    {adminNavItems.map((item, index) => (
+                      <li key={index}>
+                        <Link
+                          to={item.href}
+                          className={cn(
+                            "group flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                            pathname === item.href
+                              ? "bg-accent text-accent-foreground"
+                              : "text-muted-foreground"
+                          )}
+                        >
+                          {item.icon}
+                          <span>{item.title}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </nav>
+          </ScrollArea>
+
+          {/* Sidebar footer */}
+          <div className="border-t p-4">
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-2 text-muted-foreground hover:text-destructive"
+              onClick={() => signOut()}
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Log out</span>
+            </Button>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

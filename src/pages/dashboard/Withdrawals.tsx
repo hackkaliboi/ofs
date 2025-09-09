@@ -133,7 +133,7 @@ const Withdrawals = () => {
     switch (status) {
       case "completed":
         return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <CheckCircle className="h-3 w-3 mr-1" />
             Completed
           </Badge>
@@ -147,14 +147,14 @@ const Withdrawals = () => {
         );
       case "processing":
         return (
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <Clock className="h-3 w-3 mr-1" />
             Processing
           </Badge>
         );
       case "rejected":
         return (
-          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <XCircle className="h-3 w-3 mr-1" />
             Rejected
           </Badge>
@@ -184,60 +184,61 @@ const Withdrawals = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-4 md:space-y-6 p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Withdrawals</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Withdrawals</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Manage your withdrawal requests
           </p>
         </div>
-        <Button asChild>
+        <Button asChild size="sm" className="w-full sm:w-auto">
           <Link to="/dashboard/withdrawals/new">
-            <Plus className="mr-2 h-4 w-4" />
-            New Withdrawal
+            <Plus className="mr-2 h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">New Withdrawal</span>
+            <span className="sm:hidden">New</span>
           </Link>
         </Button>
       </div>
 
       <Card>
-        <CardHeader>
-          <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+        <CardHeader className="p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 md:gap-4">
             <div>
-              <CardTitle>Withdrawal History</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-lg md:text-xl">Withdrawal History</CardTitle>
+              <CardDescription className="text-sm md:text-base">
                 View and manage your withdrawal requests
               </CardDescription>
             </div>
-            <div className="w-full md:w-auto">
+            <div className="w-full sm:w-auto">
               <Input
                 placeholder="Search withdrawals..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="md:w-[250px]"
+                className="sm:w-[200px] md:w-[250px] text-sm md:text-base"
               />
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="all" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="all">All Withdrawals</TabsTrigger>
-              <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="completed">Completed</TabsTrigger>
+        <CardContent className="p-4 md:p-6">
+          <Tabs defaultValue="all" className="space-y-3 md:space-y-4">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
+              <TabsTrigger value="pending" className="text-xs sm:text-sm">Pending</TabsTrigger>
+              <TabsTrigger value="completed" className="text-xs sm:text-sm">Completed</TabsTrigger>
             </TabsList>
             <TabsContent value="all">
-              <div className="rounded-md border">
+              <div className="rounded-md border overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Wallet</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Destination</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Requested</TableHead>
-                      <TableHead>Completed</TableHead>
-                      <TableHead className="w-[80px]"></TableHead>
+                      <TableHead className="text-xs sm:text-sm">Wallet</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Amount</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden sm:table-cell">Destination</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Status</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden md:table-cell">Requested</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden lg:table-cell">Completed</TableHead>
+                      <TableHead className="w-[60px] sm:w-[80px]"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -278,19 +279,21 @@ const Withdrawals = () => {
                     ) : (
                       filteredWithdrawals.map((withdrawal) => (
                         <TableRow key={withdrawal.id}>
-                          <TableCell className="font-medium">
-                            {withdrawal.wallet_name}
+                          <TableCell className="font-medium text-xs sm:text-sm">
+                            <div className="truncate max-w-[120px] sm:max-w-none">
+                              {withdrawal.wallet_name}
+                            </div>
                           </TableCell>
-                          <TableCell>{withdrawal.amount}</TableCell>
-                          <TableCell>{truncateAddress(withdrawal.destination)}</TableCell>
-                          <TableCell>{getStatusBadge(withdrawal.status)}</TableCell>
-                          <TableCell>{formatDate(withdrawal.created_at)}</TableCell>
-                          <TableCell>{formatDate(withdrawal.completed_at)}</TableCell>
+                          <TableCell className="text-xs sm:text-sm">{withdrawal.amount}</TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden sm:table-cell">{truncateAddress(withdrawal.destination)}</TableCell>
+                          <TableCell className="text-xs sm:text-sm">{getStatusBadge(withdrawal.status)}</TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden md:table-cell">{formatDate(withdrawal.created_at)}</TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden lg:table-cell">{formatDate(withdrawal.completed_at)}</TableCell>
                           <TableCell>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                  <MoreVertical className="h-4 w-4" />
+                                <Button variant="ghost" size="icon" className="h-6 w-6 sm:h-8 sm:w-8">
+                                  <MoreVertical className="h-3 w-3 sm:h-4 sm:w-4" />
                                   <span className="sr-only">Open menu</span>
                                 </Button>
                               </DropdownMenuTrigger>

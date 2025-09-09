@@ -28,13 +28,35 @@ import {
 } from "lucide-react";
 import { User as UserType } from "@/hooks/useUserManagement";
 
+interface WalletConnection {
+  id: string;
+  wallet_name: string;
+  wallet_type: string;
+  blockchain: string;
+  created_at: string;
+  status: string;
+  chain_type?: string;
+  wallet_address: string;
+  validated?: boolean;
+  validation_status?: string;
+}
+
+interface ActivityLog {
+  id: string;
+  action: string;
+  details: string;
+  created_at: string;
+  ip_address?: string;
+  description: string;
+}
+
 const UserDetail = () => {
   const { userId } = useParams<{ userId: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [userData, setUserData] = useState<UserType | null>(null);
-  const [wallets, setWallets] = useState<any[]>([]);
-  const [activities, setActivities] = useState<any[]>([]);
+  const [wallets, setWallets] = useState<WalletConnection[]>([]);
+  const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -56,7 +78,7 @@ const UserDetail = () => {
     switch (status) {
       case "active":
         return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <CheckCircle className="h-3 w-3 mr-1" />
             Active
           </Badge>
@@ -70,14 +92,14 @@ const UserDetail = () => {
         );
       case "suspended":
         return (
-          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <Lock className="h-3 w-3 mr-1" />
             Suspended
           </Badge>
         );
       default:
         return (
-          <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-200">
+          <Badge variant="outline" className="bg-gray-900 text-yellow-400 border-yellow-400/30">
             <XCircle className="h-3 w-3 mr-1" />
             Inactive
           </Badge>
@@ -136,7 +158,7 @@ const UserDetail = () => {
           .limit(10);
 
         // Determine status
-        let status = profile.status || 'inactive';
+        const status = profile.status || 'inactive';
         
         // Create user object
         const user: UserType = {
@@ -256,7 +278,7 @@ const UserDetail = () => {
               <p className="text-muted-foreground">{userData.email}</p>
               <div className="mt-2">
                 {userData.role === "admin" ? (
-                  <Badge variant="default" className="bg-purple-600">
+                  <Badge variant="default" className="bg-yellow-600">
                     Admin
                   </Badge>
                 ) : (
@@ -329,7 +351,7 @@ const UserDetail = () => {
                           </div>
                           <div>
                             {wallet.validated || wallet.validation_status === "validated" ? (
-                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
                                 <CheckCircle className="h-3 w-3 mr-1" />
                                 Validated
                               </Badge>

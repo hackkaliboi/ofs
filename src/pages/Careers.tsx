@@ -52,13 +52,13 @@ const Careers = () => {
                 <div>
                   <h3 className="text-xl font-semibold mb-2">{position.title}</h3>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="px-3 py-1 bg-indigo-100 text-indigo-600 rounded-full text-sm">
+                    <span className="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-sm">
                       {position.department}
                     </span>
-                    <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">
+                    <span className="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-sm">
                       {position.location}
                     </span>
-                    <span className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">
+                    <span className="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-sm">
                       {position.type}
                     </span>
                   </div>

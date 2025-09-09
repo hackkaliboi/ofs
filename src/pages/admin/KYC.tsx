@@ -211,7 +211,7 @@ const KYCManagement = () => {
     switch (status) {
       case "approved":
         return (
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">
+          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200">
             <CheckCircle className="mr-1 h-3 w-3" /> Approved
           </Badge>
         );
@@ -223,7 +223,7 @@ const KYCManagement = () => {
         );
       case "rejected":
         return (
-          <Badge className="bg-red-100 text-red-800 hover:bg-red-100 border-red-200">
+          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200">
             <XCircle className="mr-1 h-3 w-3" /> Rejected
           </Badge>
         );

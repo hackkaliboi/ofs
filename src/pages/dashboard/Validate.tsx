@@ -89,7 +89,7 @@ const Validate = () => {
     switch (status) {
       case "approved":
         return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <CheckCircle className="h-3 w-3 mr-1" />
             Approved
           </Badge>
@@ -103,7 +103,7 @@ const Validate = () => {
         );
       case "rejected":
         return (
-          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <XCircle className="h-3 w-3 mr-1" />
             Rejected
           </Badge>
@@ -513,7 +513,7 @@ const Validate = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className={`rounded-lg p-4 border ${
-                theme === "dark" ? "bg-card" : "bg-gray-50"
+                theme === "dark" ? "bg-card" : "bg-gray-900"
               }`}>
                 <div className="flex items-center mb-3">
                   <div className="rounded-full bg-primary text-primary-foreground w-8 h-8 flex items-center justify-center mr-3">
@@ -526,7 +526,7 @@ const Validate = () => {
                 </p>
               </div>
               <div className={`rounded-lg p-4 border ${
-                theme === "dark" ? "bg-card" : "bg-gray-50"
+                theme === "dark" ? "bg-card" : "bg-gray-900"
               }`}>
                 <div className="flex items-center mb-3">
                   <div className="rounded-full bg-primary text-primary-foreground w-8 h-8 flex items-center justify-center mr-3">
@@ -539,7 +539,7 @@ const Validate = () => {
                 </p>
               </div>
               <div className={`rounded-lg p-4 border ${
-                theme === "dark" ? "bg-card" : "bg-gray-50"
+                theme === "dark" ? "bg-card" : "bg-gray-900"
               }`}>
                 <div className="flex items-center mb-3">
                   <div className="rounded-full bg-primary text-primary-foreground w-8 h-8 flex items-center justify-center mr-3">

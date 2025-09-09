@@ -24,26 +24,27 @@ import {
 import { useUserDashboard } from "@/hooks/useUserDashboard";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import ConnectWallet from "@/components/ConnectWallet";
 
 // Simple trend indicator component
 const TrendIndicator: React.FC<{ value: number, suffix?: string }> = ({ value, suffix = '%' }) => {
   if (value > 0) {
     return (
-      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
         <TrendingUp className="h-3 w-3 mr-1" />
         +{value.toFixed(1)}{suffix}
       </Badge>
     );
   } else if (value < 0) {
     return (
-      <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
         <TrendingDown className="h-3 w-3 mr-1" />
         {value.toFixed(1)}{suffix}
       </Badge>
     );
   } else {
     return (
-      <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
+      <Badge variant="outline" className="bg-gray-900 text-yellow-400 border-yellow-400/30">
         0{suffix}
       </Badge>
     );
@@ -142,10 +143,10 @@ const UserDashboardOverview: React.FC = () => {
 
   // Get the appropriate color for the security score
   const getSecurityScoreColor = () => {
-    if (dashboardData.securityScore >= 80) return 'bg-green-500';
-    if (dashboardData.securityScore >= 60) return 'bg-blue-500';
+    if (dashboardData.securityScore >= 80) return 'bg-yellow-500';
+    if (dashboardData.securityScore >= 60) return 'bg-yellow-500';
     if (dashboardData.securityScore >= 40) return 'bg-yellow-500';
-    return 'bg-red-500';
+    return 'bg-yellow-500';
   };
 
   if (loading) {
@@ -193,7 +194,7 @@ const UserDashboardOverview: React.FC = () => {
       )}
 
       {/* Security Score Card */}
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950">
+      <Card className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950 dark:to-amber-950">
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
@@ -225,7 +226,7 @@ const UserDashboardOverview: React.FC = () => {
             
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center space-x-2">
-                <div className={`p-1.5 rounded-full ${dashboardData.validatedWallets > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                <div className={`p-1.5 rounded-full ${dashboardData.validatedWallets > 0 ? 'bg-yellow-100 text-yellow-700' : 'bg-yellow-100 text-yellow-700'}`}>
                   {dashboardData.validatedWallets > 0 ? (
                     <CheckCircle className="h-3 w-3" />
                   ) : (
@@ -236,7 +237,7 @@ const UserDashboardOverview: React.FC = () => {
               </div>
               
               <div className="flex items-center space-x-2">
-                <div className="p-1.5 rounded-full bg-green-100 text-green-700">
+                <div className="p-1.5 rounded-full bg-yellow-100 text-yellow-700">
                   <CheckCircle className="h-3 w-3" />
                 </div>
                 <span className="text-sm">2FA Enabled</span>
@@ -300,12 +301,11 @@ const UserDashboardOverview: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Button variant="outline" className="flex flex-col h-auto py-4" asChild>
-              <Link to="/dashboard/connect-wallet">
-                <Wallet className="h-5 w-5 mb-2" />
-                <span>Connect Wallet</span>
-              </Link>
-            </Button>
+            <ConnectWallet 
+              variant="outline" 
+              className="flex flex-col h-auto py-4"
+              iconSize="h-5 w-5"
+            />
             
             <Button variant="outline" className="flex flex-col h-auto py-4" asChild>
               <Link to="/dashboard/transactions/new">
@@ -343,9 +343,9 @@ const UserDashboardOverview: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className="bg-primary/10 p-2 rounded-full mr-3">
-                    <Activity className="h-4 w-4 text-primary" />
-                  </div>
+                  <div className="bg-yellow-100 p-2 rounded-full mr-3">
+                  <Activity className="h-4 w-4 text-yellow-700" />
+                </div>
                   <div>
                     <p className="text-sm font-medium">Last Login</p>
                     <p className="text-xs text-muted-foreground">{formatDate(dashboardData.lastLogin)}</p>
@@ -358,9 +358,9 @@ const UserDashboardOverview: React.FC = () => {
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className="bg-primary/10 p-2 rounded-full mr-3">
-                    <Landmark className="h-4 w-4 text-primary" />
-                  </div>
+                  <div className="bg-yellow-100 p-2 rounded-full mr-3">
+                  <Landmark className="h-4 w-4 text-yellow-700" />
+                </div>
                   <div>
                     <p className="text-sm font-medium">Total Activity Count</p>
                     <p className="text-xs text-muted-foreground">{dashboardData.activityCount} recorded activities</p>
@@ -381,8 +381,8 @@ const UserDashboardOverview: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className="bg-green-100 p-2 rounded-full mr-3">
-                    <CheckCircle className="h-4 w-4 text-green-700" />
+                  <div className="bg-yellow-100 p-2 rounded-full mr-3">
+                    <CheckCircle className="h-4 w-4 text-yellow-700" />
                   </div>
                   <div>
                     <p className="text-sm font-medium">Validated Wallets</p>
@@ -410,8 +410,8 @@ const UserDashboardOverview: React.FC = () => {
               
               {dashboardData.pendingValidations === 0 && dashboardData.totalWallets > 0 && (
                 <div className="flex items-center">
-                  <div className="bg-green-100 p-2 rounded-full mr-3">
-                    <CheckCircle className="h-4 w-4 text-green-700" />
+                  <div className="bg-yellow-100 p-2 rounded-full mr-3">
+                     <CheckCircle className="h-4 w-4 text-yellow-700" />
                   </div>
                   <p className="text-sm">All wallets are validated</p>
                 </div>
@@ -419,19 +419,19 @@ const UserDashboardOverview: React.FC = () => {
               
               {dashboardData.totalWallets === 0 && (
                 <div className="flex items-center">
-                  <div className="bg-blue-100 p-2 rounded-full mr-3">
-                    <Wallet className="h-4 w-4 text-blue-700" />
-                  </div>
+                  <div className="bg-yellow-100 p-2 rounded-full mr-3">
+                  <Wallet className="h-4 w-4 text-yellow-700" />
+                </div>
                   <p className="text-sm">No wallets connected yet</p>
                 </div>
               )}
               
-              <Button variant="outline" size="sm" className="w-full" asChild>
-                <Link to="/dashboard/connect-wallet">
-                  <Wallet className="h-4 w-4 mr-2" />
-                  {dashboardData.totalWallets === 0 ? 'Connect Your First Wallet' : 'Connect Another Wallet'}
-                </Link>
-              </Button>
+              <ConnectWallet 
+                variant="outline" 
+                size="sm" 
+                className="w-full" 
+                iconSize="h-4 w-4"
+              />
             </div>
           </CardContent>
         </Card>

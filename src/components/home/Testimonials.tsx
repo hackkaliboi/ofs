@@ -33,14 +33,14 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <section className="section-padding bg-gradient-to-b from-white to-gray-50">
+    <section className="section-padding bg-background">
       <div className="container-custom">
         <AnimatedSection>
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Trusted by <span className="text-gradient">Thousands</span>
             </h2>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-muted-foreground">
               See what our users are saying about their experience with OFSLEDGER's financial ecosystem.
             </p>
           </div>
@@ -60,16 +60,16 @@ const Testimonials = () => {
                     ))}
                   </div>
                   <div className="relative mb-6">
-                    <Quote className="absolute top-0 left-0 h-8 w-8 text-blue-100 -translate-x-4 -translate-y-4" />
-                    <p className="text-gray-700 leading-relaxed">{testimonial.content}</p>
+                    <Quote className="absolute top-0 left-0 h-8 w-8 text-primary/20 -translate-x-4 -translate-y-4" />
+                    <p className="text-foreground leading-relaxed">{testimonial.content}</p>
                   </div>
                   <div className="flex items-center">
-                    <div className="bg-gradient-to-r from-blue-500 to-blue-600 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold">
+                    <div className="bg-gradient-to-r from-primary to-primary/80 w-10 h-10 rounded-full flex items-center justify-center text-primary-foreground font-bold">
                       {testimonial.name.charAt(0)}
                     </div>
                     <div className="ml-4">
-                      <p className="font-semibold">{testimonial.name}</p>
-                      <p className="text-sm text-gray-500">{testimonial.role}</p>
+                      <p className="font-semibold text-foreground">{testimonial.name}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
                     </div>
                   </div>
                 </CardContent>

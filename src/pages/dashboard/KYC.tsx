@@ -148,8 +148,13 @@ const KYC = () => {
   };
 
   return (
-    <div className="container mx-auto py-6">
-      <h1 className="text-2xl font-bold">KYC Verification</h1>
+    <div className="container mx-auto p-3 sm:p-4 md:p-6">
+      <div className="text-center mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">KYC Verification</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Complete your identity verification to access all features
+        </p>
+      </div>
 
       {isLoading ? (
         <Card className="mt-6">
@@ -161,16 +166,16 @@ const KYC = () => {
           </CardContent>
         </Card>
       ) : (
-        <Card>
+        <Card className="max-w-2xl mx-auto">
           <CardHeader>
-            <CardTitle>Submit KYC Document</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-lg sm:text-xl">Submit KYC Document</CardTitle>
+            <CardDescription className="text-sm sm:text-base">
               Please provide your identity document information for verification.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit}>
-              <div className="grid gap-4">
+              <div className="grid gap-4 sm:gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="documentType">Document Type *</Label>
                   <Select value={documentType} onValueChange={setDocumentType}>

@@ -57,10 +57,10 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				custodia: {
-					DEFAULT: '#0070f3',
-					light: '#3291ff',
-					dark: '#0050a3',
-					surface: '#f0f7ff'
+					DEFAULT: 'hsl(var(--custodia))',
+					light: 'hsl(var(--custodia-light))',
+					dark: 'hsl(var(--custodia-dark))',
+					surface: 'hsl(var(--custodia-surface))'
 				}
 			},
 			borderRadius: {

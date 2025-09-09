@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import { Loader2, Shield, User, Mail, Lock, CheckCircle, ArrowRight, Wallet, ExternalLink } from "lucide-react";
+import ConnectWallet from "@/components/ConnectWallet";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -22,7 +23,7 @@ const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [preConnectedWallet, setPreConnectedWallet] = useState<any>(null);
+  const [preConnectedWallet, setPreConnectedWallet] = useState<{ wallet_name: string; wallet_type: string; blockchain: string; wallet_address: string } | null>(null);
   const { signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -85,9 +86,10 @@ const SignUp = () => {
       }
       
       navigate("/dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       console.error("Sign up error:", error);
-      setError(error.message || "Failed to create account. Please try again or contact support.");
+      setError(errorMessage || "Failed to create account. Please try again or contact support.");
     } finally {
       setIsLoading(false);
     }
@@ -120,7 +122,7 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="flex-grow bg-gradient-to-b from-indigo-50/50 to-white">
+      <div className="flex-grow bg-background">
         <div className="container relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
           {/* Left side - Branding and benefits */}
           <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
@@ -236,10 +238,10 @@ const SignUp = () => {
                                     className={`h-2 w-full rounded-full ${
                                       level <= passwordStrength.strength
                                         ? level <= 2
-                                          ? "bg-red-500"
-                                          : level <= 3
-                                          ? "bg-yellow-500"
-                                          : "bg-green-500"
+                          ? "bg-yellow-500"
+                          : level <= 3
+                          ? "bg-yellow-500"
+                          : "bg-yellow-500"
                                         : "bg-gray-200"
                                     }`}
                                   />
@@ -272,13 +274,13 @@ const SignUp = () => {
                     
                     {preConnectedWallet && (
                       <div className="mt-4">
-                        <Alert className="bg-blue-50 border-blue-200">
-                          <Wallet className="h-4 w-4 text-blue-600" />
+                        <Alert className="bg-yellow-50 border-yellow-200">
+                <Wallet className="h-4 w-4 text-yellow-600" />
                           <AlertTitle>Pre-connected Wallet Detected</AlertTitle>
                           <AlertDescription className="space-y-2">
                             <p>A wallet has been connected and will be associated with your account.</p>
                             <div className="flex items-center gap-2 mt-2">
-                              <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">
+                              <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300">
                                 Pending Verification
                               </Badge>
                               <span className="text-xs text-muted-foreground">
@@ -341,12 +343,14 @@ const SignUp = () => {
                     </p>
                     
                     {!preConnectedWallet && (
-                      <p className="text-sm text-center text-muted-foreground">
-                        Want to connect your wallet first?{" "}
-                        <Link to="/connect-wallet" className="text-primary font-medium hover:underline flex items-center justify-center gap-1">
-                          Connect wallet <ExternalLink className="h-3 w-3" />
-                        </Link>
-                      </p>
+                      <div className="text-sm text-center text-muted-foreground">
+                        <p className="mb-2">Want to connect your wallet first?</p>
+                        <ConnectWallet 
+                          variant="outline" 
+                          size="sm"
+                          className="text-primary border-primary hover:bg-primary hover:text-primary-foreground"
+                        />
+                      </div>
                     )}
                   </div>
                 </CardFooter>

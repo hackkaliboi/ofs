@@ -26,21 +26,21 @@ import { useRealAdminAnalytics } from "@/hooks/useRealAdminAnalytics";
 const TrendIndicator: React.FC<{ value: number, suffix?: string }> = ({ value, suffix = '%' }) => {
   if (value > 0) {
     return (
-      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
         <TrendingUp className="h-3 w-3 mr-1" />
         +{value.toFixed(1)}{suffix}
       </Badge>
     );
   } else if (value < 0) {
     return (
-      <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
         <TrendingDown className="h-3 w-3 mr-1" />
         {value.toFixed(1)}{suffix}
       </Badge>
     );
   } else {
     return (
-      <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
+      <Badge variant="outline" className="bg-gray-900 text-yellow-400 border-yellow-400/30">
         0{suffix}
       </Badge>
     );
@@ -214,7 +214,7 @@ const AnalyticsDashboard: React.FC = () => {
                   <PieChart className="h-12 w-12 text-muted-foreground mb-4 mx-auto" />
                   <div className="flex justify-center gap-4 mt-4">
                     <div className="flex items-center">
-                      <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
                       <span className="text-sm">Validated ({analytics.validatedWallets})</span>
                     </div>
                     <div className="flex items-center">
@@ -294,7 +294,7 @@ const AnalyticsDashboard: React.FC = () => {
                     <div className="text-sm font-medium mb-1">Processing Rate</div>
                     <div className="w-full bg-secondary h-2 rounded-full">
                       <div 
-                        className="bg-green-500 h-2 rounded-full" 
+                        className="bg-yellow-500 h-2 rounded-full" 
                         style={{ 
                           width: `${analytics.totalWithdrawals === 0 ? 0 : 
                             (analytics.processedWithdrawals / analytics.totalWithdrawals) * 100}%` 

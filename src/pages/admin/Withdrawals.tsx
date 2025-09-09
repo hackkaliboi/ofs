@@ -34,12 +34,27 @@ import {
 import { useTheme } from "@/components/theme-provider";
 import { supabase } from "@/lib/supabase";
 
+interface Withdrawal {
+  id: string;
+  user_id: string;
+  user_name?: string;
+  user_email?: string;
+  wallet_address: string;
+  amount: string;
+  currency: string;
+  status: 'pending' | 'completed' | 'rejected';
+  created_at: string;
+  completed_at?: string;
+  transaction_hash?: string;
+  rejection_reason?: string;
+}
+
 const WithdrawalManagement = () => {
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(true);
-  const [withdrawals, setWithdrawals] = useState<any[]>([]);
+  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
   
   // Stats for withdrawal requests
   const [stats, setStats] = useState({
@@ -152,7 +167,11 @@ const WithdrawalManagement = () => {
   // Update withdrawal status
   const updateWithdrawalStatus = async (withdrawalId, newStatus) => {
     try {
-      const updateData = {
+      const updateData: {
+        status: string;
+        updated_at: string;
+        completed_at?: string;
+      } = {
         status: newStatus,
         updated_at: new Date().toISOString()
       };
@@ -185,7 +204,7 @@ const WithdrawalManagement = () => {
     switch (status) {
       case "completed":
         return (
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">
+          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200">
             <CheckCircle className="mr-1 h-3 w-3" /> Completed
           </Badge>
         );
@@ -197,7 +216,7 @@ const WithdrawalManagement = () => {
         );
       case "rejected":
         return (
-          <Badge className="bg-red-100 text-red-800 hover:bg-red-100 border-red-200">
+          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200">
             <AlertTriangle className="mr-1 h-3 w-3" /> Rejected
           </Badge>
         );
@@ -262,7 +281,7 @@ const WithdrawalManagement = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Completed</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-600" />
+            <CheckCircle className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.completed}</div>
@@ -272,7 +291,7 @@ const WithdrawalManagement = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Rejected</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <AlertTriangle className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.rejected}</div>
@@ -401,7 +420,7 @@ const WithdrawalManagement = () => {
                               <DropdownMenuItem
                                 onClick={() => updateWithdrawalStatus(withdrawal.id, "completed")}
                               >
-                                <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
+                                <CheckCircle className="mr-2 h-4 w-4 text-yellow-600" />
                                 Mark as Completed
                               </DropdownMenuItem>
                             )}
@@ -409,7 +428,7 @@ const WithdrawalManagement = () => {
                               <DropdownMenuItem
                                 onClick={() => updateWithdrawalStatus(withdrawal.id, "rejected")}
                               >
-                                <AlertTriangle className="mr-2 h-4 w-4 text-red-600" />
+                                <AlertTriangle className="mr-2 h-4 w-4 text-yellow-600" />
                                 Reject
                               </DropdownMenuItem>
                             )}

@@ -8,10 +8,10 @@ const Blog = () => {
       <Navbar />
       <main className="flex-grow">
         {/* Hero Section */}
-        <div className="bg-gradient-to-b from-indigo-900 via-purple-900 to-blue-900 text-white pt-32 pb-20">
+        <div className="bg-gradient-to-b from-black via-gray-900 to-black text-white pt-32 pb-20">
           <div className="container-custom">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">OFSLEDGER Blog</h1>
-            <p className="text-xl text-blue-100/90 max-w-2xl">
+            <p className="text-xl text-yellow-100/90 max-w-2xl">
               Insights, updates, and deep dives into the world of oracle financial systems and digital assets.
             </p>
           </div>

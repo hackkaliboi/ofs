@@ -42,13 +42,13 @@ const MarketTable = () => {
   }, []);
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-card">
       <div className="container-custom">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Market Overview</h2>
           <p className="text-gray-600">Real-time cryptocurrency market data and analysis</p>
         </div>
-        <div id="tradingview-market-table" className="tradingview-widget-container rounded-lg overflow-hidden border border-gray-200">
+        <div id="tradingview-market-table" className="tradingview-widget-container rounded-lg overflow-hidden border">
           <div className="tradingview-widget-container__widget"></div>
         </div>
       </div>

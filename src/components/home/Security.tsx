@@ -39,7 +39,7 @@ const securityLayers = [
 
 const Security = () => {
   return (
-    <section id="security" className="section-padding bg-gradient-to-b from-custodia-surface/30 to-white">
+    <section id="security" className="section-padding bg-background">
       <div className="container-custom">
         <div className="flex flex-col lg:flex-row gap-16 items-center">
           <div className="w-full lg:w-5/12">
@@ -63,7 +63,7 @@ const Security = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {securityLayers.map((layer, index) => (
                 <AnimatedSection key={layer.title} delay={(index % 4 + 1) as 1 | 2 | 3 | 4}>
-                  <div className="flex gap-4 p-5 rounded-xl border border-gray-100 bg-white transition-all duration-300 hover:shadow-md hover:border-custodia/20">
+                  <div className="flex gap-4 p-5 rounded-xl border border-border bg-card transition-all duration-300 hover:shadow-md hover:border-primary/20">
                     <div className="flex-shrink-0">
                       <div className="bg-custodia/10 p-2 rounded-full">
                         <layer.icon className="h-5 w-5 text-custodia" />

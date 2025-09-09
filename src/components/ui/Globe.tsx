@@ -85,24 +85,38 @@ const Globe: React.FC<GlobeProps> = ({
     let rotation = 0;
     let animationFrameId: number;
     
-    // Create gradient for dots
+    // Create gradient for dots with gold theme
     const dotGradient = ctx.createLinearGradient(0, 0, size, size);
-    dotGradient.addColorStop(0, color);
-    dotGradient.addColorStop(1, '#7E69AB');
+    dotGradient.addColorStop(0, '#FFD700'); // Gold
+    dotGradient.addColorStop(0.5, '#FFA500'); // Orange-gold
+    dotGradient.addColorStop(1, '#B8860B'); // Dark gold
     
-    // Create gradient for connections
+    // Create gradient for connections with gold theme
     const connectionGradient = ctx.createLinearGradient(0, 0, size, size);
-    connectionGradient.addColorStop(0, 'rgba(79, 70, 229, 0.6)');
-    connectionGradient.addColorStop(1, 'rgba(126, 105, 171, 0.6)');
+    connectionGradient.addColorStop(0, 'rgba(255, 215, 0, 0.8)'); // Gold
+    connectionGradient.addColorStop(1, 'rgba(184, 134, 11, 0.6)'); // Dark gold
     
     // Draw function
     const draw = () => {
       ctx.clearRect(0, 0, size, size);
       
-      // Draw the globe background with subtle opacity
+      // Draw the globe background with dark theme
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+      const globeGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+      globeGradient.addColorStop(0, 'rgba(0, 0, 0, 0.1)');
+      globeGradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.05)');
+      globeGradient.addColorStop(1, 'rgba(255, 215, 0, 0.1)'); // Gold rim
+      ctx.fillStyle = globeGradient;
+      ctx.fill();
+      
+      // Add outer glow effect
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius + 5, 0, Math.PI * 2);
+      const outerGlow = ctx.createRadialGradient(centerX, centerY, radius, centerX, centerY, radius + 10);
+      outerGlow.addColorStop(0, 'rgba(255, 215, 0, 0.2)');
+      outerGlow.addColorStop(1, 'rgba(255, 215, 0, 0)');
+      ctx.fillStyle = outerGlow;
       ctx.fill();
       
       // Draw grid first (behind the dots)
@@ -172,23 +186,32 @@ const Globe: React.FC<GlobeProps> = ({
         // Draw larger dot for financial hub
         const hubSize = ((z / radius) + 1) * dotSize * 2;
         
-        // Glowing effect for hubs
+        // Enhanced glowing effect for hubs with gold theme
         const gradient = ctx.createRadialGradient(
           projectedX, projectedY, 0,
-          projectedX, projectedY, hubSize * 2
+          projectedX, projectedY, hubSize * 3
         );
-        gradient.addColorStop(0, 'rgba(79, 70, 229, 0.8)');
-        gradient.addColorStop(0.5, 'rgba(79, 70, 229, 0.4)');
-        gradient.addColorStop(1, 'rgba(79, 70, 229, 0)');
+        gradient.addColorStop(0, 'rgba(255, 215, 0, 0.9)');
+        gradient.addColorStop(0.3, 'rgba(255, 215, 0, 0.6)');
+        gradient.addColorStop(0.7, 'rgba(255, 165, 0, 0.3)');
+        gradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
         
         ctx.beginPath();
         ctx.arc(projectedX, projectedY, hubSize * 2, 0, Math.PI * 2);
         ctx.fillStyle = gradient;
         ctx.fill();
         
+        // Draw hub core with pulsing effect
+        const pulseIntensity = 0.8 + 0.2 * Math.sin(rotation * 0.1);
         ctx.beginPath();
-        ctx.arc(projectedX, projectedY, hubSize, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.arc(projectedX, projectedY, hubSize * pulseIntensity, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.fill();
+        
+        // Add inner gold ring
+        ctx.beginPath();
+        ctx.arc(projectedX, projectedY, hubSize * 0.7, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
         ctx.fill();
       });
     };
@@ -212,8 +235,8 @@ const Globe: React.FC<GlobeProps> = ({
             ctx.lineTo(centerX + x, centerY + y);
           }
         }
-        ctx.strokeStyle = 'rgba(79, 70, 229, 0.07)';
-        ctx.lineWidth = 0.5;
+        ctx.strokeStyle = 'rgba(255, 215, 0, 0.15)';
+        ctx.lineWidth = 0.8;
         ctx.stroke();
       }
       
@@ -234,8 +257,8 @@ const Globe: React.FC<GlobeProps> = ({
             ctx.lineTo(centerX + x, centerY + y);
           }
         }
-        ctx.strokeStyle = 'rgba(79, 70, 229, 0.07)';
-        ctx.lineWidth = 0.5;
+        ctx.strokeStyle = 'rgba(255, 215, 0, 0.15)';
+        ctx.lineWidth = 0.8;
         ctx.stroke();
       }
     };
@@ -350,21 +373,50 @@ const Globe: React.FC<GlobeProps> = ({
           const flowX = Math.pow(1-t, 2) * projX1 + 2 * (1-t) * t * controlX + Math.pow(t, 2) * projX2;
           const flowY = Math.pow(1-t, 2) * projY1 + 2 * (1-t) * t * controlY + Math.pow(t, 2) * projY2;
           
-          // Draw data packet
-          ctx.beginPath();
-          ctx.arc(flowX, flowY, dotSize * 1.2, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-          ctx.fill();
+          // Draw enhanced data packet with gold theme
+          const packetSize = dotSize * (1.5 + 0.3 * Math.sin(time * 2 + i));
           
-          // Add subtle glow effect
-          const glowSize = dotSize * 3;
+          // Outer glow
+          const glowSize = packetSize * 4;
           const glow = ctx.createRadialGradient(
             flowX, flowY, 0,
             flowX, flowY, glowSize
           );
-          glow.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
-          glow.addColorStop(0.5, 'rgba(126, 105, 171, 0.4)');
-          glow.addColorStop(1, 'rgba(126, 105, 171, 0)');
+          glow.addColorStop(0, 'rgba(255, 215, 0, 0.8)');
+          glow.addColorStop(0.3, 'rgba(255, 165, 0, 0.6)');
+          glow.addColorStop(0.7, 'rgba(255, 215, 0, 0.3)');
+          glow.addColorStop(1, 'rgba(255, 215, 0, 0)');
+          
+          ctx.beginPath();
+          ctx.arc(flowX, flowY, glowSize, 0, Math.PI * 2);
+          ctx.fillStyle = glow;
+          ctx.fill();
+          
+          // Main packet
+          ctx.beginPath();
+          ctx.arc(flowX, flowY, packetSize, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+          ctx.fill();
+          
+          // Inner gold core
+          ctx.beginPath();
+          ctx.arc(flowX, flowY, packetSize * 0.6, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
+          ctx.fill();
+          
+          // Add trailing effect
+          for (let trail = 1; trail <= 3; trail++) {
+            const trailT = Math.max(0, t - trail * 0.05);
+            if (trailT <= 0) continue;
+            
+            const trailX = Math.pow(1-trailT, 2) * projX1 + 2 * (1-trailT) * trailT * controlX + Math.pow(trailT, 2) * projX2;
+            const trailY = Math.pow(1-trailT, 2) * projY1 + 2 * (1-trailT) * trailT * controlY + Math.pow(trailT, 2) * projY2;
+            
+            ctx.beginPath();
+            ctx.arc(trailX, trailY, packetSize * (0.8 - trail * 0.2), 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 215, 0, ${0.4 - trail * 0.1})`;
+            ctx.fill();
+          }
           
           ctx.beginPath();
           ctx.arc(flowX, flowY, glowSize, 0, Math.PI * 2);

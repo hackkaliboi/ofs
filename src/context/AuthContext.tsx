@@ -8,8 +8,29 @@ interface AuthContextType {
   user: User | null
   profile: Profile | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ data: any, error: any }>
-  signUp: (email: string, password: string) => Promise<{ data: any, error: any }>
+  isAdmin: boolean
+  signIn: (email: string, password: string) => Promise<{ 
+    data: { 
+      session: { 
+        user: User 
+      } | null 
+    } | null, 
+    error: { 
+      message: string,
+      status: number 
+    } | null 
+  }>
+  signUp: (email: string, password: string) => Promise<{ 
+    data: { 
+      session: { 
+        user: User 
+      } | null 
+    } | null, 
+    error: { 
+      message: string,
+      status: number 
+    } | null 
+  }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<boolean>
 }
@@ -22,6 +43,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [fetchAttempted, setFetchAttempted] = useState(false)
   const navigate = useNavigate()
+
+  // Calculate isAdmin based on profile role or hardcoded admin email
+  const isAdmin = profile?.role === 'admin' || user?.email === 'pastendro@gmail.com'
 
   // Add a safety timeout to prevent infinite loading
   useEffect(() => {
@@ -166,6 +190,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     profile,
     loading,
+    isAdmin,
     signIn: async (email: string, password: string) => {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password })

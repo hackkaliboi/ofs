@@ -46,7 +46,7 @@ const NewsSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {newsItems.map((item, index) => (
             <AnimatedSection key={item.title} delay={(index + 1) as 1 | 2 | 3 | 4}>
-              <div className="bg-white rounded-xl overflow-hidden shadow-md border border-gray-100 h-full hover:shadow-lg transition-all duration-300">
+              <div className="bg-card rounded-xl overflow-hidden shadow-md border border-gray-100 h-full hover:shadow-lg transition-all duration-300">
                 <img 
                   src={item.image} 
                   alt={item.title} 
@@ -59,7 +59,7 @@ const NewsSection = () => {
                   </div>
                   <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
                   <p className="text-gray-600 mb-4">{item.excerpt}</p>
-                  <Link to={item.link} className="text-blue-600 font-medium inline-flex items-center hover:text-blue-500 transition-colors">
+                  <Link to={item.link} className="text-yellow-600 font-medium inline-flex items-center hover:text-yellow-500 transition-colors">
                     Read More <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </div>

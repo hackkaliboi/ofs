@@ -234,7 +234,7 @@ const DirectAdminAccess = () => {
       <h1 className="text-2xl font-bold mb-2">Admin Access Setup</h1>
       
       {error ? (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
           <p className="font-bold">Error</p>
           <p>{error}</p>
           <Button 
@@ -251,28 +251,28 @@ const DirectAdminAccess = () => {
             {!success ? (
               <Loader2 className="h-5 w-5 animate-spin text-primary" />
             ) : (
-              <CheckCircle className="h-5 w-5 text-green-500" />
+              <CheckCircle className="h-5 w-5 text-yellow-500" />
             )}
             <p className="text-muted-foreground">{message}</p>
           </div>
           
           <div className="space-y-2 w-full max-w-md">
             <div className="flex items-center gap-2 mb-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step > 1 ? 'bg-green-100 text-green-700' : 'bg-primary/10 text-primary'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step > 1 ? 'bg-yellow-100 text-yellow-700' : 'bg-primary/10 text-primary'}`}>
                 {step > 1 ? <CheckCircle className="h-4 w-4" /> : '1'}
               </div>
               <p>Creating database tables</p>
             </div>
             
             <div className="flex items-center gap-2 mb-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step > 2 ? 'bg-green-100 text-green-700' : 'bg-primary/10 text-primary'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step > 2 ? 'bg-yellow-100 text-yellow-700' : 'bg-primary/10 text-primary'}`}>
                 {step > 2 ? <CheckCircle className="h-4 w-4" /> : '2'}
               </div>
               <p>Setting up admin access</p>
             </div>
             
             <div className="flex items-center gap-2 mb-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${success ? 'bg-green-100 text-green-700' : 'bg-primary/10 text-primary'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${success ? 'bg-yellow-100 text-yellow-700' : 'bg-primary/10 text-primary'}`}>
                 {success ? <CheckCircle className="h-4 w-4" /> : '3'}
               </div>
               <p>Granting admin privileges</p>

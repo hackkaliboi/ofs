@@ -22,7 +22,7 @@ const ButtonEffect = ({
       {...props}
     >
       <span className="flex items-center justify-center">{children}</span>
-      <div className="absolute inset-0 w-full h-full bg-white/10 scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
+      <div className="absolute inset-0 w-full h-full bg-yellow-400/10 scale-x-0 origin-left transition-transform duration-500 group-hover:scale-x-100" />
     </button>
   );
 };

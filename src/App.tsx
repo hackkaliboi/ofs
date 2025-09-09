@@ -9,15 +9,15 @@ import AdminRoute from "@/components/auth/AdminRoute";
 import { DashboardLayout } from "./components/dashboard/layout";
 import AdminAccessProvider from "./components/AdminAccessProvider";
 import { useEffect, lazy, Suspense } from "react";
-import "./styles/globals.css";
 
 // Public Pages
 import Index from "./pages/Index.tsx";
-import About from "./pages/About.tsx";
+import CreateToken from "./pages/CreateToken.tsx";
 import Team from "./pages/Team.tsx";
 import Careers from "./pages/Careers.tsx";
-import FAQ from "./pages/FAQ.tsx";
-import Documentation from "./pages/Documentation.tsx";
+// FAQ page removed
+
+import LiquidityPool from "./pages/LiquidityPool.tsx";
 import Contact from "./pages/Contact.tsx";
 import Blog from "./pages/Blog.tsx";
 import SignIn from "./pages/SignIn.tsx";
@@ -25,7 +25,6 @@ import SignUp from "./pages/SignUp.tsx";
 import Terms from "./pages/Terms.tsx";
 import AdminSignIn from "./pages/AdminSignIn.tsx";
 import AdminAccess from "./pages/AdminAccess.tsx";
-import PublicWalletConnect from "./pages/PublicWalletConnect.tsx";
 
 // User Dashboard Pages
 import Dashboard from "./pages/dashboard/Index.tsx";
@@ -33,7 +32,7 @@ import Withdrawals from "./pages/dashboard/Withdrawals.tsx";
 import NewWithdrawal from "./pages/dashboard/NewWithdrawal.tsx";
 import KYC from "./pages/dashboard/KYC.tsx";
 import Profile from "./pages/dashboard/Profile.tsx";
-import ConnectWallet from "./pages/dashboard/ConnectWallet.tsx";
+// Removed ConnectWallet import as we're replacing it with a button
 
 // Admin Dashboard Pages
 import AdminDashboard from "./pages/admin/Index.tsx";
@@ -55,7 +54,7 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light">
+      <ThemeProvider defaultTheme="dark">
         <BrowserRouter>
           <AuthProvider>
             <AdminAccessProvider>
@@ -63,11 +62,12 @@ function App() {
                 {/* Public Routes */}
                 <Route element={<Layout />}>
                   <Route path="/" element={<Index />} />
-                  <Route path="/about" element={<About />} />
+                  <Route path="/create-token" element={<CreateToken />} />
                   <Route path="/team" element={<Team />} />
                   <Route path="/careers" element={<Careers />} />
-                  <Route path="/faq" element={<FAQ />} />
-                  <Route path="/documentation" element={<Documentation />} />
+                  {/* FAQ route removed */}
+                  <Route path="/liquidity-pool" element={<LiquidityPool />} />
+          
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/sign-in" element={<SignIn />} />
@@ -75,19 +75,17 @@ function App() {
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/admin/login" element={<AdminSignIn />} />
                   <Route path="/admin-access" element={<AdminAccess />} />
-                  <Route path="/connect-wallet" element={<PublicWalletConnect />} />
                 </Route>
 
                 {/* User Dashboard Routes */}
                 <Route element={<PrivateRoute />}>
                   <Route element={<DashboardLayout />}>
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/dashboard/connect-wallet" element={<ConnectWallet />} />
+                    {/* Removed ConnectWallet route as we're replacing it with a button */}
                     <Route path="/dashboard/withdrawals" element={<Withdrawals />} />
                     <Route path="/dashboard/withdrawals/new" element={<NewWithdrawal />} />
                     <Route path="/dashboard/kyc" element={<KYC />} />
                     <Route path="/dashboard/profile" element={<Profile />} />
-                    <Route path="/dashboard/connect-wallet" element={<ConnectWallet />} />
                   </Route>
                 </Route>
 

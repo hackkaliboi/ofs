@@ -71,8 +71,8 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-[#0A0F1C]">
       <div className="max-w-md w-full space-y-8 p-8 bg-[#151C31] rounded-xl shadow-lg">
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-indigo-600/10 rounded-full flex items-center justify-center">
-            <LogIn className="h-6 w-6 text-indigo-600" />
+          <div className="mx-auto h-12 w-12 bg-yellow-600/10 rounded-full flex items-center justify-center">
+            <LogIn className="h-6 w-6 text-yellow-600" />
           </div>
           <h2 className="mt-6 text-3xl font-bold text-white">Welcome Back</h2>
           <p className="mt-2 text-sm text-gray-400">
@@ -122,7 +122,7 @@ const Login = () => {
 
             <Button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700"
+              className="w-full bg-yellow-600 hover:bg-yellow-700 text-black"
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? "Signing in..." : "Sign In"}

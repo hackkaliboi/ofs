@@ -57,7 +57,7 @@ const NewWithdrawal = () => {
         if (error) throw error;
         
         setWallets(data || []);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error fetching wallets:', err);
         setError('Failed to load your wallets. Please try again later.');
         
@@ -188,9 +188,10 @@ const NewWithdrawal = () => {
         navigate('/dashboard/withdrawals');
       }, 2000);
       
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error submitting withdrawal request:', err);
-      setError(err.message || 'Failed to submit withdrawal request. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to submit withdrawal request. Please try again.';
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -238,9 +239,9 @@ const NewWithdrawal = () => {
           )}
           
           {success ? (
-            <Alert className="mb-6 bg-green-50 border-green-200">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertTitle className="text-green-600">Success</AlertTitle>
+            <Alert className="mb-6 bg-yellow-50 border-yellow-200">
+        <CheckCircle className="h-4 w-4 text-yellow-600" />
+        <AlertTitle className="text-yellow-600">Success</AlertTitle>
               <AlertDescription>
                 Your withdrawal request has been submitted and is pending review.
                 Redirecting to withdrawals page...
@@ -286,7 +287,7 @@ const NewWithdrawal = () => {
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       disabled={!selectedWallet || submitting}
-                      className={amountError ? "border-red-500" : ""}
+                      className={amountError ? "border-yellow-500" : ""}
                     />
                     <div className="ml-2 w-24">
                       <Select disabled={!selectedWallet || submitting}>
@@ -323,7 +324,7 @@ const NewWithdrawal = () => {
                     </div>
                   </div>
                   {amountError && (
-                    <p className="text-xs text-red-500 mt-1">{amountError}</p>
+                    <p className="text-xs text-yellow-500 mt-1">{amountError}</p>
                   )}
                   <p className="text-xs text-muted-foreground mt-1">
                     Network fees will be deducted from the withdrawal amount
@@ -338,10 +339,10 @@ const NewWithdrawal = () => {
                     value={destinationAddress}
                     onChange={(e) => setDestinationAddress(e.target.value)}
                     disabled={!selectedWallet || submitting}
-                    className={destinationError ? "border-red-500" : ""}
+                    className={destinationError ? "border-yellow-500" : ""}
                   />
                   {destinationError && (
-                    <p className="text-xs text-red-500 mt-1">{destinationError}</p>
+                    <p className="text-xs text-yellow-500 mt-1">{destinationError}</p>
                   )}
                   <p className="text-xs text-muted-foreground mt-1">
                     Double-check the address to ensure it's correct

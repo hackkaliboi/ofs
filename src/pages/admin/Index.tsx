@@ -127,7 +127,7 @@ const AdminDashboard = () => {
     switch (priority) {
       case "high":
         return (
-          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <AlertTriangle className="h-3 w-3 mr-1" />
             High
           </Badge>
@@ -141,7 +141,7 @@ const AdminDashboard = () => {
         );
       case "low":
         return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <CheckCircle className="h-3 w-3 mr-1" />
             Low
           </Badge>
@@ -197,14 +197,14 @@ const AdminDashboard = () => {
   const renderDashboardView = () => (
     <>
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs sm:text-sm font-medium">Total Users</CardTitle>
+            <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{userStats.total_users}</div>
+          <CardContent className="pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{userStats.total_users}</div>
             <p className="text-xs text-muted-foreground">
               {userStats.active_users} active, {userStats.new_users_today} new today
             </p>
@@ -212,11 +212,11 @@ const AdminDashboard = () => {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Wallets</CardTitle>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs sm:text-sm font-medium">Total Wallets</CardTitle>
+            <Wallet className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{walletDetailStats.total}</div>
+          <CardContent className="pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{walletDetailStats.total}</div>
             <p className="text-xs text-muted-foreground">
               {walletDetailStats.approved} approved, {walletDetailStats.pending} pending
             </p>
@@ -224,11 +224,11 @@ const AdminDashboard = () => {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Validation Rate</CardTitle>
-            <Shield className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs sm:text-sm font-medium">Validation Rate</CardTitle>
+            <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{validationStats.validation_rate}%</div>
+          <CardContent className="pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{validationStats.validation_rate}%</div>
             <p className="text-xs text-muted-foreground">
               Avg. {validationStats.average_validation_time.toFixed(1)} hours to validate
             </p>
@@ -236,11 +236,11 @@ const AdminDashboard = () => {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Actions</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs sm:text-sm font-medium">Pending Actions</CardTitle>
+            <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{pendingActions.length}</div>
+          <CardContent className="pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{pendingActions.length}</div>
             <p className="text-xs text-muted-foreground">
               {pendingActions.filter(a => a.priority === "high").length} high priority
             </p>
@@ -249,12 +249,12 @@ const AdminDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="grid gap-4 md:grid-cols-7">
+      <div className="grid gap-4 lg:grid-cols-7">
         {/* Activity Feed */}
-        <Card className="md:col-span-4">
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest platform activity</CardDescription>
+        <Card className="lg:col-span-4">
+          <CardHeader className="pb-3 md:pb-6">
+            <CardTitle className="text-sm sm:text-base md:text-lg">Recent Activity</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Latest platform activity</CardDescription>
           </CardHeader>
           <CardContent>
             {activities.length === 0 ? (
@@ -303,7 +303,7 @@ const AdminDashboard = () => {
           <CardContent>
             {pendingActions.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <CheckCircle className="h-12 w-12 text-green-500 mb-4" />
+                <CheckCircle className="h-12 w-12 text-yellow-500 mb-4" />
                 <h3 className="text-lg font-medium mb-1">All caught up!</h3>
                 <p className="text-sm text-muted-foreground">
                   There are no pending actions requiring your attention
@@ -317,13 +317,13 @@ const AdminDashboard = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           {action.type.includes("validation") ? (
-                            <Shield className="h-5 w-5 text-blue-500" />
+                            <Shield className="h-5 w-5 text-yellow-500" />
                           ) : action.type.includes("withdrawal") ? (
-                            <ArrowDownToLine className="h-5 w-5 text-green-500" />
+                            <ArrowDownToLine className="h-5 w-5 text-yellow-500" />
                           ) : action.type.includes("user") ? (
-                            <Users className="h-5 w-5 text-purple-500" />
+                            <Users className="h-5 w-5 text-yellow-500" />
                           ) : (
-                            <AlertTriangle className="h-5 w-5 text-red-500" />
+                            <AlertTriangle className="h-5 w-5 text-yellow-500" />
                           )}
                           <h4 className="font-medium">{action.type.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}</h4>
                         </div>
@@ -375,13 +375,13 @@ const AdminDashboard = () => {
               </div>
             </div>
             
-            <div className="bg-green-50 rounded-lg p-4">
+            <div className="bg-yellow-50 rounded-lg p-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm font-medium text-green-600">Approved</p>
-                  <h3 className="text-2xl font-bold mt-1 text-green-700">{walletDetailStats.approved}</h3>
+                  <p className="text-sm font-medium text-yellow-600">Approved</p>
+                  <h3 className="text-2xl font-bold mt-1 text-yellow-700">{walletDetailStats.approved}</h3>
                 </div>
-                <CheckCircle className="h-8 w-8 text-green-500" />
+                <CheckCircle className="h-8 w-8 text-yellow-500" />
               </div>
             </div>
           </div>
@@ -437,14 +437,14 @@ const AdminDashboard = () => {
         </div>
       ) : (
         <>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 md:gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Admin Dashboard</h1>
-              <p className="text-muted-foreground">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-primary">Admin Dashboard</h1>
+              <p className="text-muted-foreground text-sm md:text-base">
                 Welcome back, {profile?.full_name || user?.email?.split("@")[0] || "Admin"}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
               <Button 
                 onClick={() => {
                   toast({
@@ -455,46 +455,57 @@ const AdminDashboard = () => {
                 }}
                 variant="outline"
                 disabled={walletDetailStatsLoading}
+                className="shadow-sm text-xs sm:text-sm"
+                size="sm"
               >
-                <RefreshCw className={`mr-2 h-4 w-4 ${walletDetailStatsLoading ? 'animate-spin' : ''}`} />
-                Refresh Data
+                <RefreshCw className={`mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 ${walletDetailStatsLoading ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh Data</span>
+                <span className="sm:hidden">Refresh</span>
               </Button>
-              <Button asChild>
+              <Button asChild size="sm" className="text-xs sm:text-sm">
                 <Link to="/admin/users/new">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Add User
+                  <UserPlus className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Add User</span>
+                  <span className="sm:hidden">Add</span>
                 </Link>
               </Button>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" size="sm" className="text-xs sm:text-sm">
                 <Link to="/admin/reports">
-                  <BarChart3 className="mr-2 h-4 w-4" />
-                  Reports
+                  <BarChart3 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Reports</span>
+                  <span className="sm:hidden">Reports</span>
                 </Link>
               </Button>
               <Button 
                 variant="destructive" 
                 onClick={signOut}
+                size="sm"
+                className="text-xs sm:text-sm"
               >
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
+                <LogOut className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Logout</span>
+                <span className="sm:hidden">Exit</span>
               </Button>
             </div>
           </div>
 
           {/* Dashboard View Selector */}
           <Tabs value={activeView} onValueChange={setActiveView} className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="dashboard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <LayoutDashboard className="h-4 w-4 mr-2" />
-              Dashboard
+            <TabsList className="grid w-full grid-cols-3 mb-4 md:mb-8">
+            <TabsTrigger value="dashboard" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
+              <LayoutDashboard className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Dashboard</span>
+              <span className="sm:hidden">Dash</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Analytics
+            <TabsTrigger value="analytics" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
+              <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Analytics</span>
+              <span className="sm:hidden">Stats</span>
             </TabsTrigger>
-            <TabsTrigger value="reports" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <FileText className="h-4 w-4 mr-2" />
-              Reports
+            <TabsTrigger value="reports" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
+              <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Reports</span>
+              <span className="sm:hidden">Reports</span>
             </TabsTrigger>
           </TabsList>
             

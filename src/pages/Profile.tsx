@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   User, Mail, Phone, Globe, Shield, Camera,
@@ -16,7 +16,7 @@ import { Profile as ProfileType } from "@/types/auth";
 interface UserActivity {
   id: string;
   action_type: string;
-  details: any;
+  details: Record<string, unknown>;
   created_at: string;
 }
 
@@ -39,28 +39,7 @@ const Profile = () => {
     pending_validations: 0
   });
 
-  useEffect(() => {
-    if (!user) {
-      navigate('/signin');
-      return;
-    }
-
-    loadProfileData();
-  }, [user]);
-
-  useEffect(() => {
-    if (profile) {
-      setFormData({
-        full_name: profile.full_name || "",
-        phone: profile.phone || "",
-        country: profile.country || "",
-        timezone: profile.timezone || "",
-        avatar_url: profile.avatar_url || ""
-      });
-    }
-  }, [profile]);
-
-  const loadProfileData = async () => {
+  const loadProfileData = useCallback(async () => {
     try {
       setIsLoading(true);
 
@@ -96,9 +75,31 @@ const Profile = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/signin');
+      return;
+    }
+
+    loadProfileData();
+  }, [user, navigate, loadProfileData]);
+
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        full_name: profile.full_name || "",
+        phone: profile.phone || "",
+        country: profile.country || "",
+        timezone: profile.timezone || "",
+        avatar_url: profile.avatar_url || ""
+      });
+    }
+  }, [profile]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
+
     e.preventDefault();
     
     try {
@@ -157,7 +158,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow pt-28 pb-20">
+      <main className="flex-grow pt-28 pb-20 bg-background">
         <div className="container-custom">
           <AnimatedSection>
             <div className="flex items-center justify-between mb-8">
@@ -179,7 +180,7 @@ const Profile = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <AnimatedSection delay={1}>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div className="bg-card rounded-xl shadow-sm border p-6">
                   <form onSubmit={handleUpdateProfile}>
                     <div className="space-y-6">
                       {/* Avatar Upload */}
@@ -199,7 +200,7 @@ const Profile = () => {
                           {isEditing && (
                             <label 
                               htmlFor="avatar-upload"
-                              className="absolute bottom-0 right-0 p-1 bg-white rounded-full border border-gray-200 cursor-pointer hover:bg-gray-50"
+                              className="absolute bottom-0 right-0 p-1 bg-background rounded-full border cursor-pointer hover:bg-muted/50"
                             >
                               <Camera className="h-4 w-4 text-gray-600" />
                               <input
@@ -230,7 +231,7 @@ const Profile = () => {
                             value={formData.full_name}
                             onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
                             disabled={!isEditing}
-                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-custodia focus:ring-custodia disabled:bg-gray-50"
+                            className="mt-1 block w-full rounded-md border px-3 py-2 focus:border-primary focus:ring-primary disabled:bg-muted/50"
                           />
                         </div>
 
@@ -244,7 +245,7 @@ const Profile = () => {
                             value={formData.phone}
                             onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                             disabled={!isEditing}
-                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-custodia focus:ring-custodia disabled:bg-gray-50"
+                            className="mt-1 block w-full rounded-md border px-3 py-2 focus:border-primary focus:ring-primary disabled:bg-muted/50"
                           />
                         </div>
 
@@ -258,7 +259,7 @@ const Profile = () => {
                             value={formData.country}
                             onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
                             disabled={!isEditing}
-                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-custodia focus:ring-custodia disabled:bg-gray-50"
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-custodia focus:ring-custodia disabled:bg-gray-800"
                           />
                         </div>
 
@@ -272,7 +273,7 @@ const Profile = () => {
                             value={formData.timezone}
                             onChange={(e) => setFormData(prev => ({ ...prev, timezone: e.target.value }))}
                             disabled={!isEditing}
-                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-custodia focus:ring-custodia disabled:bg-gray-50"
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-custodia focus:ring-custodia disabled:bg-gray-800"
                           />
                         </div>
                       </div>
@@ -309,7 +310,7 @@ const Profile = () => {
               <AnimatedSection delay={2}>
                 <div className="mt-8">
                   <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-100 divide-y divide-gray-100">
+                  <div className="bg-card rounded-xl shadow-sm border divide-y">
                     {activities.map((activity) => (
                       <div key={activity.id} className="p-4">
                         <div className="flex items-start gap-3">
@@ -338,7 +339,7 @@ const Profile = () => {
             <div className="lg:col-span-1 space-y-6">
               {/* Stats */}
               <AnimatedSection delay={3}>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div className="bg-card rounded-xl shadow-sm border p-6">
                   <h3 className="text-lg font-semibold mb-4">Validation Statistics</h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -350,7 +351,7 @@ const Profile = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Shield className="h-4 w-4 text-green-600" />
+                        <Shield className="h-4 w-4 text-yellow-600" />
                         <span className="text-sm">Approved</span>
                       </div>
                       <span className="font-semibold">{stats.approved_validations}</span>
@@ -368,7 +369,7 @@ const Profile = () => {
 
               {/* Quick Actions */}
               <AnimatedSection delay={4}>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div className="bg-card rounded-xl shadow-sm border p-6">
                   <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
                   <div className="space-y-3">
                     <Button

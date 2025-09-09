@@ -193,27 +193,33 @@ const WalletManagement = () => {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Wallet Address</TableHead>
-                  <TableHead>Chain</TableHead>
-                  <TableHead>Connected At</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[150px]">User</TableHead>
+                    <TableHead className="min-w-[200px]">Wallet Address</TableHead>
+                    <TableHead className="hidden sm:table-cell">Chain</TableHead>
+                    <TableHead className="hidden md:table-cell">Connected At</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="w-[100px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
               <TableBody>
                 {walletConnections.map((connection) => {
                   const explorerUrl = getExplorerUrl(connection.chain_type, connection.wallet_address);
                   
                   return (
                     <TableRow key={connection.id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium min-w-[150px]">
                         {connection.user_email || 'Unknown User'}
+                        <div className="sm:hidden mt-1">
+                          <Badge variant="secondary" className="text-xs">
+                            {connection.chain_type}
+                          </Badge>
+                        </div>
                       </TableCell>
-                      <TableCell className="font-mono text-sm">
+                      <TableCell className="font-mono text-sm min-w-[200px]">
                         <div className="flex items-center gap-2">
                           {connection.wallet_address.slice(0, 6)}...
                           {connection.wallet_address.slice(-4)}
@@ -227,21 +233,21 @@ const WalletManagement = () => {
                           </Button>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden sm:table-cell">
                         <Badge variant="secondary">
                           {connection.chain_type}
                         </Badge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden md:table-cell">
                         {new Date(connection.created_at).toLocaleString()}
                       </TableCell>
                       <TableCell>
                         {connection.validated === true ? (
-                          <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">
+                          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200">
                             <CheckCircle className="mr-1 h-3 w-3" /> Validated
                           </Badge>
                         ) : connection.validated === false ? (
-                          <Badge className="bg-red-100 text-red-800 hover:bg-red-100 border-red-200">
+                          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-yellow-200">
                             <XCircle className="mr-1 h-3 w-3" /> Rejected
                           </Badge>
                         ) : (
@@ -269,7 +275,7 @@ const WalletManagement = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-8 bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
+                                className="h-8 bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100"
                                 onClick={() => validateWallet(connection.id, true)}
                                 disabled={validating}
                               >
@@ -279,7 +285,7 @@ const WalletManagement = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-8 bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
+                                className="h-8 bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100"
                                 onClick={() => validateWallet(connection.id, false)}
                                 disabled={validating}
                               >
@@ -302,6 +308,7 @@ const WalletManagement = () => {
                 )}
               </TableBody>
             </Table>
+            </div>
           )}
         </CardContent>
       </Card>

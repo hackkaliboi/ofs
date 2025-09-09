@@ -135,7 +135,7 @@ const UserManagement = () => {
     switch (status) {
       case "active":
         return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <CheckCircle className="h-3 w-3 mr-1" />
             Active
           </Badge>
@@ -149,14 +149,14 @@ const UserManagement = () => {
         );
       case "suspended":
         return (
-          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <Lock className="h-3 w-3 mr-1" />
             Suspended
           </Badge>
         );
       case "inactive":
         return (
-          <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-200">
+          <Badge variant="outline" className="bg-gray-900 text-yellow-400 border-yellow-400/30">
             <XCircle className="h-3 w-3 mr-1" />
             Inactive
           </Badge>
@@ -174,13 +174,13 @@ const UserManagement = () => {
     switch (role) {
       case "admin":
         return (
-          <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             Admin
           </Badge>
         );
       case "user":
         return (
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             User
           </Badge>
         );
@@ -314,17 +314,17 @@ const UserManagement = () => {
               <p className="text-muted-foreground">No users found</p>
             </div>
           ) : (
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[50px]"></TableHead>
-                    <TableHead>User</TableHead>
-                    <TableHead>Role</TableHead>
+                    <TableHead className="min-w-[200px]">User</TableHead>
+                    <TableHead className="hidden sm:table-cell">Role</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead className="text-center">Wallets</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead>Last Sign In</TableHead>
+                    <TableHead className="text-center hidden md:table-cell">Wallets</TableHead>
+                    <TableHead className="hidden lg:table-cell">Created</TableHead>
+                    <TableHead className="hidden lg:table-cell">Last Sign In</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -345,13 +345,22 @@ const UserManagement = () => {
                           </AvatarFallback>
                         </Avatar>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="min-w-[200px]">
                         <div className="font-medium">{user.full_name}</div>
                         <div className="text-sm text-muted-foreground">{user.email}</div>
+                        <div className="sm:hidden mt-1">
+                          {user.role === "admin" ? (
+                            <Badge variant="default" className="bg-yellow-600 text-xs">
+                              Admin
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-xs">User</Badge>
+                          )}
+                        </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden sm:table-cell">
                         {user.role === "admin" ? (
-                          <Badge variant="default" className="bg-purple-600">
+                          <Badge variant="default" className="bg-yellow-600">
                             Admin
                           </Badge>
                         ) : (
@@ -359,9 +368,9 @@ const UserManagement = () => {
                         )}
                       </TableCell>
                       <TableCell>{getStatusBadge(user.status)}</TableCell>
-                      <TableCell className="text-center">{user.wallets_count}</TableCell>
-                      <TableCell>{formatDate(user.created_at)}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-center hidden md:table-cell">{user.wallets_count}</TableCell>
+                      <TableCell className="hidden lg:table-cell">{formatDate(user.created_at)}</TableCell>
+                      <TableCell className="hidden lg:table-cell">
                         {user.last_sign_in ? formatDate(user.last_sign_in) : "Never"}
                       </TableCell>
                       <TableCell>

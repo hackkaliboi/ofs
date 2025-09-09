@@ -294,12 +294,12 @@ const KYC = () => {
                     </div>
                     <div className="flex items-center">
                       {doc.status === 'approved' ? (
-                        <span className="flex items-center text-green-600">
+                        <span className="flex items-center text-yellow-600">
                           <Check className="h-4 w-4 mr-1" />
                           Approved
                         </span>
                       ) : doc.status === 'rejected' ? (
-                        <span className="flex items-center text-red-600">
+                        <span className="flex items-center text-yellow-600">
                           <X className="h-4 w-4 mr-1" />
                           Rejected
                         </span>

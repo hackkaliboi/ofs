@@ -118,13 +118,14 @@ export function AddCoinBalanceDialog({ isOpen, onClose, userId, userEmail }: Add
         }
       }, 1500);
       
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error adding balance:", err);
-      setError(err.message || "Failed to add balance. Please try again.");
+      const errorMessage = err instanceof Error ? err.message : "Failed to add balance. Please try again.";
+      setError(errorMessage);
       
       toast({
         title: "Error adding balance",
-        description: err.message || "Failed to add balance. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

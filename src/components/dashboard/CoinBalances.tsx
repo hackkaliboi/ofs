@@ -109,7 +109,7 @@ const CoinBalances: React.FC = () => {
           </div>
           
           {error && (
-            <div className="mt-4 p-3 text-sm border border-red-200 bg-red-50 text-red-700 rounded-md">
+            <div className="mt-4 p-3 text-sm border border-yellow-200 bg-yellow-50 text-yellow-700 rounded-md">
               {error}
             </div>
           )}
@@ -126,7 +126,7 @@ const PriceChangeBadge: React.FC<{ change: number }> = ({ change }) => {
   return (
     <Badge 
       variant="outline" 
-      className={`ml-auto ${isPositive ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}
+      className={`ml-auto ${isPositive ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'}`}
     >
       {isPositive ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
       {Math.abs(change).toFixed(2)}%

@@ -1,0 +1,96 @@
+/* Scroll Performance Optimizations */
+
+/* Enable hardware acceleration for smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Optimize scroll container */
+body {
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* GPU acceleration for transform elements - Reduced will-change usage */
+.transform-gpu {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* Removed will-change: transform for better performance */
+}
+
+/* Only use will-change when actively animating */
+.animating-transform {
+  will-change: transform;
+}
+
+.animating-opacity {
+  will-change: opacity;
+}
+
+/* Reset will-change after animation */
+.animation-complete {
+  will-change: auto;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .parallax-element {
+    transform: none !important;
+  }
+}
+
+/* Optimize blur effects */
+.blur-optimized {
+  filter: blur(20px);
+  -webkit-filter: blur(20px);
+  transform: translateZ(0);
+}
+
+/* Contain layout shifts */
+.contain-layout {
+  contain: layout style paint;
+}
+
+/* Optimize fixed elements - Reduced will-change usage */
+.fixed-optimized {
+  position: fixed;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* Only add will-change when needed */
+}
+
+/* Additional scroll optimizations */
+.scroll-optimized {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-snap-type: y proximity;
+}
+
+/* Prevent layout thrashing */
+.no-layout-shift {
+  contain: layout style;
+}
+
+/* Smooth scroll for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 193, 7, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 193, 7, 0.5);
+}

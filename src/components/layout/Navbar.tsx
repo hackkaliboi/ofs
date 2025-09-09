@@ -35,8 +35,8 @@ const Navbar = () => {
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
     { name: "Connect Wallet", path: "/connect-wallet" },
-    { name: "FAQ", path: "/faq" },
-    { name: "Documentation", path: "/documentation" },
+    { name: "Liquidity Pool", path: "/liquidity-pool" },
+
     { name: "Contact", path: "/contact" },
   ];
 
@@ -45,15 +45,15 @@ const Navbar = () => {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled 
-          ? "bg-white/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/60"
-          : "bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60"
+          ? "bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60"
+          : "bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0 flex items-center">
-            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-600">
+            <span className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">
               OFSLEDGER
             </span>
           </Link>
@@ -67,8 +67,8 @@ const Navbar = () => {
                 className={cn(
                   "px-3 py-2 text-sm font-medium rounded-md transition-colors",
                   isActive(item.path)
-                    ? "text-indigo-600 bg-indigo-50"
-                    : "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                    ? "text-primary bg-primary/10"
+                    : "text-foreground hover:text-primary hover:bg-primary/10"
                 )}
               >
                 {item.name}
@@ -106,7 +106,7 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 focus:outline-none"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-yellow-600 hover:bg-muted/50 focus:outline-none"
             >
               {isMenuOpen ? (
                 <X className="block h-6 w-6" />
@@ -120,7 +120,7 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t">
+        <div className="md:hidden bg-background border-t border-border">
           <div className="px-2 pt-2 pb-3 space-y-1">
             {menuItems.map((item) => (
               <Link
@@ -129,8 +129,8 @@ const Navbar = () => {
                 className={cn(
                   "block px-3 py-2 rounded-md text-base font-medium",
                   isActive(item.path)
-                    ? "text-indigo-600 bg-indigo-50"
-                    : "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                    ? "text-primary bg-primary/10"
+                    : "text-foreground hover:text-primary hover:bg-primary/10"
                 )}
               >
                 {item.name}
@@ -142,13 +142,13 @@ const Navbar = () => {
               <>
                 <Link
                   to="/profile"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-primary/10"
                 >
                   My Profile
                 </Link>
                 <SignOutButton 
                   variant="ghost"
-                  className="block w-full text-left justify-start px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                  className="block w-full text-left justify-start px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-primary/10"
                 >
                   Sign out
                 </SignOutButton>
@@ -157,13 +157,13 @@ const Navbar = () => {
               <>
                 <Link
                   to="/sign-in"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-primary/10"
                 >
                   Sign in
                 </Link>
                 <Link
                   to="/sign-up"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-primary/10"
                 >
                   Sign up
                 </Link>

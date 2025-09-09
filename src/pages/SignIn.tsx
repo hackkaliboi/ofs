@@ -84,7 +84,7 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="flex-grow bg-gradient-to-b from-indigo-50/50 to-white">
+      <div className="flex-grow bg-background">
         <div className="container relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
           {/* Left side - Branding and testimonial */}
           <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">

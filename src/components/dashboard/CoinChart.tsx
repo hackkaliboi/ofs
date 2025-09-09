@@ -122,22 +122,14 @@ const CoinChart: React.FC = () => {
   const { balances, loading } = useCoinBalances();
   const [selectedCoin, setSelectedCoin] = useState<string>('BTC');
   const [timeframe, setTimeframe] = useState<string>('24h');
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<Array<{
+    time: string;
+    price: number;
+    formattedTime: string;
+  }>>([]);
   const [priceChange, setPriceChange] = useState<number>(0);
   
-  useEffect(() => {
-    if (balances.length > 0 && !loading) {
-      // Set default selected coin if not already set
-      if (!selectedCoin || !balances.find(b => b.coin_symbol === selectedCoin)) {
-        setSelectedCoin(balances[0].coin_symbol);
-      }
-      
-      // Generate chart data for the selected coin
-      updateChartData();
-    }
-  }, [balances, loading, selectedCoin, timeframe]);
-  
-  const updateChartData = () => {
+  const updateChartData = React.useCallback(() => {
     const coin = balances.find(b => b.coin_symbol === selectedCoin);
     if (!coin) return;
     
@@ -156,7 +148,21 @@ const CoinChart: React.FC = () => {
       const change = ((endPrice - startPrice) / startPrice) * 100;
       setPriceChange(change);
     }
-  };
+  }, [balances, selectedCoin, timeframe]);
+
+  useEffect(() => {
+    if (balances.length > 0 && !loading) {
+      // Set default selected coin if not already set
+      if (!selectedCoin || !balances.find(b => b.coin_symbol === selectedCoin)) {
+        setSelectedCoin(balances[0].coin_symbol);
+      }
+      
+      // Generate chart data for the selected coin
+      updateChartData();
+    }
+  }, [balances, loading, selectedCoin, timeframe, updateChartData]);
+  
+
   
   const getCoinPrice = () => {
     const coin = balances.find(b => b.coin_symbol === selectedCoin);
@@ -208,7 +214,7 @@ const CoinChart: React.FC = () => {
                 <div className="flex items-center">
                   <Badge 
                     variant="outline" 
-                    className={`${priceChange >= 0 ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}
+                    className={`${priceChange >= 0 ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'}`}
                   >
                     {priceChange >= 0 ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
                     {Math.abs(priceChange).toFixed(2)}%

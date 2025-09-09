@@ -59,7 +59,7 @@ const SecurityLogs: React.FC = () => {
     switch (severity) {
       case "critical":
         return (
-          <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300">
+          <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300">
             <AlertCircle className="h-3 w-3 mr-1" />
             Critical
           </Badge>
@@ -80,7 +80,7 @@ const SecurityLogs: React.FC = () => {
         );
       case "low":
         return (
-          <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
+          <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300">
             <Shield className="h-3 w-3 mr-1" />
             Low
           </Badge>
@@ -171,10 +171,10 @@ const SecurityLogs: React.FC = () => {
                 <p className="text-muted-foreground">Loading security logs...</p>
               </div>
             ) : error && !usingFallbackData ? (
-              <Alert className="bg-red-50 border-red-200">
-                <AlertCircle className="h-4 w-4 text-red-600" />
-                <AlertTitle className="text-red-800">Error Loading Logs</AlertTitle>
-                <AlertDescription className="text-red-700">
+              <Alert className="bg-yellow-50 border-yellow-200">
+                <AlertCircle className="h-4 w-4 text-yellow-600" />
+                <AlertTitle className="text-yellow-800">Error Loading Logs</AlertTitle>
+                <AlertDescription className="text-yellow-700">
                   {error}. Please try refreshing the page.
                 </AlertDescription>
               </Alert>
@@ -193,10 +193,10 @@ const SecurityLogs: React.FC = () => {
                     <div key={log.id} className="flex items-start space-x-4 p-3 rounded-md border bg-card hover:bg-accent/5 transition-colors">
                       <div className="mt-0.5">
                         <div className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                          log.severity === 'critical' ? 'bg-red-100' :
+                          log.severity === 'critical' ? 'bg-yellow-100' :
                           log.severity === 'high' ? 'bg-orange-100' :
                           log.severity === 'medium' ? 'bg-yellow-100' :
-                          'bg-green-100'
+                          'bg-yellow-100'
                         }`}>
                           {getEventIcon(log.event_type)}
                         </div>

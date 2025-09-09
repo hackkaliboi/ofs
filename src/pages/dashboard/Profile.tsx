@@ -91,21 +91,21 @@ const Profile = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 p-3 sm:p-0">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Profile</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Profile</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Manage your account settings and preferences
           </p>
         </div>
       </div>
 
-      <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
+      <Tabs defaultValue="profile" className="space-y-4 sm:space-y-6">
+        <TabsList className="grid w-full grid-cols-3 h-auto">
+          <TabsTrigger value="profile" className="text-xs sm:text-sm">Profile</TabsTrigger>
+          <TabsTrigger value="notifications" className="text-xs sm:text-sm">Notifications</TabsTrigger>
+          <TabsTrigger value="security" className="text-xs sm:text-sm">Security</TabsTrigger>
         </TabsList>
         
         {/* Profile Tab */}
@@ -242,7 +242,7 @@ const Profile = () => {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className={`rounded-lg p-4 border ${
-                    theme === "dark" ? "bg-card" : "bg-gray-50"
+                    theme === "dark" ? "bg-card" : "bg-gray-900"
                   }`}>
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
@@ -256,7 +256,7 @@ const Profile = () => {
                   </div>
                   
                   <div className={`rounded-lg p-4 border ${
-                    theme === "dark" ? "bg-card" : "bg-gray-50"
+                    theme === "dark" ? "bg-card" : "bg-gray-900"
                   }`}>
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
@@ -265,12 +265,12 @@ const Profile = () => {
                           Active
                         </p>
                       </div>
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <CheckCircle className="h-5 w-5 text-yellow-500" />
                     </div>
                   </div>
                   
                   <div className={`rounded-lg p-4 border ${
-                    theme === "dark" ? "bg-card" : "bg-gray-50"
+                    theme === "dark" ? "bg-card" : "bg-gray-900"
                   }`}>
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
@@ -280,7 +280,7 @@ const Profile = () => {
                         </p>
                       </div>
                       {user?.email_confirmed_at ? (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
+                        <CheckCircle className="h-5 w-5 text-yellow-500" />
                       ) : (
                         <AlertTriangle className="h-5 w-5 text-yellow-500" />
                       )}
@@ -288,7 +288,7 @@ const Profile = () => {
                   </div>
                   
                   <div className={`rounded-lg p-4 border ${
-                    theme === "dark" ? "bg-card" : "bg-gray-50"
+                    theme === "dark" ? "bg-card" : "bg-gray-900"
                   }`}>
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
@@ -298,7 +298,7 @@ const Profile = () => {
                         </p>
                       </div>
                       {twoFactorEnabled ? (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
+                        <CheckCircle className="h-5 w-5 text-yellow-500" />
                       ) : (
                         <AlertTriangle className="h-5 w-5 text-yellow-500" />
                       )}
@@ -506,7 +506,7 @@ const Profile = () => {
                     
                     {twoFactorEnabled && (
                       <div className={`rounded-lg p-4 border ${
-                        theme === "dark" ? "bg-card" : "bg-gray-50"
+                        theme === "dark" ? "bg-card" : "bg-gray-900"
                       }`}>
                         <div className="flex items-center gap-3 mb-3">
                           <Key className="h-5 w-5 text-primary" />

@@ -115,7 +115,7 @@ const CoinBalancesWidget = () => {
                           {formatCoinAmount(coin.balance, coin.coin_symbol)}
                         </div>
                         <div className="font-medium">{formatCurrency(coin.value_usd || 0)}</div>
-                        <div className={`text-xs ${(coin.change_24h || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <div className={`text-xs ${(coin.change_24h || 0) >= 0 ? 'text-yellow-600' : 'text-yellow-600'}`}>
                           {(coin.change_24h || 0) >= 0 ? '↑' : '↓'} {Math.abs(coin.change_24h || 0).toFixed(2)}%
                         </div>
                       </div>

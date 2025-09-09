@@ -87,7 +87,7 @@ const ValidateAssets = () => {
     switch (status) {
       case "validated":
         return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <CheckCircle className="h-3 w-3 mr-1" />
             Validated
           </Badge>
@@ -102,14 +102,14 @@ const ValidateAssets = () => {
         );
       case "rejected":
         return (
-          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <AlertTriangle className="h-3 w-3 mr-1" />
             Rejected
           </Badge>
         );
       default:
         return (
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
             <Shield className="h-3 w-3 mr-1" />
             Needs Validation
           </Badge>
@@ -153,8 +153,8 @@ const ValidateAssets = () => {
           ) : walletsNeedingValidation.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+                <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center mb-4">
+                  <CheckCircle className="h-6 w-6 text-yellow-600" />
                 </div>
                 <h3 className="text-lg font-medium mb-1">All Wallets Validated</h3>
                 <p className="text-sm text-muted-foreground max-w-md">
@@ -164,8 +164,8 @@ const ValidateAssets = () => {
             </Card>
           ) : (
             <>
-              <Alert className="bg-blue-50 border-blue-200">
-                <Shield className="h-4 w-4 text-blue-600" />
+              <Alert className="bg-yellow-50 border-yellow-200">
+              <Shield className="h-4 w-4 text-yellow-600" />
                 <AlertTitle>Wallet Validation Required</AlertTitle>
                 <AlertDescription>
                   Validate your wallets to enable withdrawals and other platform features. This helps ensure the security of your assets.
@@ -211,11 +211,11 @@ const ValidateAssets = () => {
                           <h3 className="text-sm font-medium mb-1">Validation Requirements</h3>
                           <ul className="space-y-1 text-sm">
                             <li className="flex items-center gap-2">
-                              <CheckCircle className="h-4 w-4 text-green-600" />
+                              <CheckCircle className="h-4 w-4 text-yellow-600" />
                               <span>Wallet must be connected to your account</span>
                             </li>
                             <li className="flex items-center gap-2">
-                              <CheckCircle className="h-4 w-4 text-green-600" />
+                              <CheckCircle className="h-4 w-4 text-yellow-600" />
                               <span>Proof of ownership must be provided</span>
                             </li>
                             <li className="flex items-center gap-2">
@@ -248,12 +248,12 @@ const ValidateAssets = () => {
                           </div>
                         </div>
                       ) : wallet.validation_status === "rejected" ? (
-                        <div className="bg-red-50 p-4 rounded-lg">
+                        <div className="bg-yellow-50 p-4 rounded-lg">
                           <div className="flex items-center gap-3">
-                            <AlertTriangle className="h-5 w-5 text-red-600" />
+                            <AlertTriangle className="h-5 w-5 text-yellow-600" />
                             <div>
-                              <h3 className="font-medium text-red-800">Validation Rejected</h3>
-                              <p className="text-sm text-red-700">
+                              <h3 className="font-medium text-yellow-800">Validation Rejected</h3>
+                              <p className="text-sm text-yellow-700">
                                 Your validation was rejected. Please submit a new validation with correct information.
                               </p>
                             </div>
@@ -369,8 +369,8 @@ const ValidateAssets = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Alert className="bg-blue-50 border-blue-200">
-                  <FileText className="h-4 w-4 text-blue-600" />
+                <Alert className="bg-yellow-50 border-yellow-200">
+              <FileText className="h-4 w-4 text-yellow-600" />
                   <AlertTitle>Why Provide Asset Proof?</AlertTitle>
                   <AlertDescription>
                     Providing proof of asset ownership enhances your account security and enables additional platform features.
@@ -442,25 +442,25 @@ const ValidateAssets = () => {
                   <h3 className="text-sm font-medium mb-2">Acceptable Proof Types</h3>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                      <CheckCircle className="h-4 w-4 text-yellow-600 mt-0.5" />
                       <span>
                         <strong>Signed Messages:</strong> A message signed with your private key proving ownership
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                      <CheckCircle className="h-4 w-4 text-yellow-600 mt-0.5" />
                       <span>
                         <strong>Transaction Screenshots:</strong> Screenshots showing transactions from your wallet
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                      <CheckCircle className="h-4 w-4 text-yellow-600 mt-0.5" />
                       <span>
                         <strong>Exchange Statements:</strong> Official statements from exchanges showing your holdings
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                      <CheckCircle className="h-4 w-4 text-yellow-600 mt-0.5" />
                       <span>
                         <strong>Wallet Interface Screenshots:</strong> Screenshots of your wallet interface showing the assets
                       </span>

@@ -2,7 +2,9 @@ import React, { useEffect, useRef } from 'react';
 
 declare global {
   interface Window {
-    TradingView: any;
+    TradingView: {
+      widget: new (config: Record<string, unknown>) => unknown;
+    };
   }
 }
 
@@ -10,6 +12,9 @@ const TradingViewWidget: React.FC = () => {
   const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const currentContainer = container.current;
+    if (!currentContainer) return;
+
     // Create the script element
     const script = document.createElement('script');
     script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
@@ -32,17 +37,12 @@ const TradingViewWidget: React.FC = () => {
     });
 
     // Add the script to the container
-    if (container.current) {
-      container.current.appendChild(script);
-    }
+    currentContainer.appendChild(script);
 
     // Cleanup
     return () => {
-      if (container.current) {
-        const scripts = container.current.getElementsByTagName('script');
-        if (scripts.length > 0) {
-          container.current.removeChild(scripts[0]);
-        }
+      if (currentContainer && currentContainer.contains(script)) {
+        currentContainer.removeChild(script);
       }
     };
   }, []);

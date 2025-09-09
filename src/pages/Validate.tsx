@@ -76,7 +76,7 @@ const Validate = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <main className="flex-grow pt-28 pb-20 bg-gradient-to-b from-custodia-surface/30 to-white">
+      <main className="flex-grow pt-28 pb-20 bg-background">
         <div className="container-custom max-w-2xl">
           <AnimatedSection>
             <div className="mb-8">

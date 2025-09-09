@@ -12,6 +12,7 @@ const AdminRoute: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Original admin authentication logic
   // Persist admin session
   useEffect(() => {
     if (user && location.pathname.startsWith('/admin')) {
@@ -49,25 +50,24 @@ const AdminRoute: React.FC = () => {
             } else {
               console.log('✅ Updated profile to admin role');
             }
-          } catch (err) {
-            console.error('Error ensuring admin access:', err);
+          } catch (e) {
+            console.error('Error updating profile:', e);
           }
           
           setIsAdmin(true);
-          localStorage.setItem('isAdmin', 'true');
           setCheckingAdmin(false);
           return;
         }
 
-        // Check if we have a saved admin session
-        const adminSession = localStorage.getItem('adminSession');
-        if (adminSession === 'true') {
+        // Then check the profile from the context
+        if (profile?.role === 'admin') {
+          console.log('Admin access granted based on profile role');
           setIsAdmin(true);
           setCheckingAdmin(false);
           return;
         }
 
-        // Otherwise check the profile in the database
+        // If we don't have a profile or it's not admin, check directly from the database
         const { data, error } = await supabase
           .from('profiles')
           .select('role')
@@ -76,39 +76,42 @@ const AdminRoute: React.FC = () => {
 
         if (error) {
           console.error('Error checking admin status:', error);
-          setIsAdmin(false);
-        } else if (data && data.role === 'admin') {
+          setCheckingAdmin(false);
+          return;
+        }
+
+        if (data?.role === 'admin') {
+          console.log('Admin access granted based on database role');
           setIsAdmin(true);
-          localStorage.setItem('isAdmin', 'true');
         } else {
-          setIsAdmin(false);
+          console.log('Admin access denied - not an admin user');
         }
       } catch (error) {
         console.error('Unexpected error checking admin status:', error);
-        setIsAdmin(false);
       } finally {
         setCheckingAdmin(false);
       }
     };
 
     checkAdminStatus();
-  }, [user]);
+  }, [user, profile]);
 
-  // Show loading state while checking authentication
   if (loading || checkingAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-yellow-600" />
       </div>
     );
   }
 
-  // If not authenticated or not an admin, redirect to admin login
-  if (!user || !isAdmin) {
-    return <Navigate to="/admin/login" replace />;
+  if (!user) {
+    return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
 
-  // If authenticated and is admin, render the protected route
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
   return <Outlet />;
 };
 
