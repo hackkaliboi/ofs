@@ -33,7 +33,7 @@ const AdminRoute: React.FC = () => {
         // First check if the email is pastendro@gmail.com (hardcoded admin)
         if (user.email === 'pastendro@gmail.com') {
           console.log('Admin access granted to pastendro@gmail.com');
-          
+
           // Force update the profile to have admin role
           try {
             const { error } = await supabase
@@ -44,7 +44,7 @@ const AdminRoute: React.FC = () => {
                 role: 'admin',
                 email: user.email
               });
-            
+
             if (error) {
               console.error('Error updating profile:', error);
             } else {
@@ -53,7 +53,7 @@ const AdminRoute: React.FC = () => {
           } catch (e) {
             console.error('Error updating profile:', e);
           }
-          
+
           setIsAdmin(true);
           setCheckingAdmin(false);
           return;
@@ -105,7 +105,7 @@ const AdminRoute: React.FC = () => {
   }
 
   if (!user) {
-    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
   if (!isAdmin) {

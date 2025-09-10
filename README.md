@@ -1,8 +1,8 @@
-# OFSLEDGER - Next Generation Oracle Finance System
+# SolmintX - Next Generation Oracle Finance System
 
 ## Overview
 
-OFSLEDGER is a cutting-edge financial platform that transforms global finance through blockchain technology and oracle systems. Our platform provides enterprise-grade security, lightning-fast transactions, and complete sovereignty over digital assets.
+SolmintX is a cutting-edge financial platform that transforms global finance through blockchain technology and oracle systems. Our platform provides enterprise-grade security, lightning-fast transactions, and complete sovereignty over digital assets.
 
 ## Key Features
 
@@ -34,10 +34,10 @@ OFSLEDGER is a cutting-edge financial platform that transforms global finance th
 
 ```bash
 # Clone the repository
-git clone https://github.com/A2DIGIHUB/ofsledger.git
+git clone https://github.com/A2DIGIHUB/solmintx.git
 
 # Navigate to project directory
-cd ofsledger
+cd solmintx
 
 # Install dependencies
 npm install
@@ -84,7 +84,7 @@ For security reasons, admin users can only be created through the Supabase Manag
 ## Project Structure
 
 ```
-ofsledger/
+solmintx/
 ├── src/
 │   ├── components/     # Reusable UI components
 │   ├── pages/         # Page components
@@ -106,7 +106,7 @@ ofsledger/
 
 ## Security
 
-OFSLEDGER implements multiple layers of security:
+SolmintX implements multiple layers of security:
 - Enterprise-grade encryption
 - Multi-signature wallet support
 - Regular security audits
@@ -118,9 +118,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-- Website: [ofsledger.com](https://ofsledger.com)
-- Email: support@ofsledger.com
-- Twitter: [@ofsledger](https://twitter.com/ofsledger)
+- Website: [solmintx.com](https://solmintx.com)
+- Email: support@solmintx.com
+- Twitter: [@solmintx](https://twitter.com/solmintx)
 
 ## Acknowledgments
 

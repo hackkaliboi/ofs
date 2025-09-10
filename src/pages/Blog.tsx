@@ -10,7 +10,7 @@ const Blog = () => {
         {/* Hero Section */}
         <div className="bg-gradient-to-b from-black via-gray-900 to-black text-white pt-32 pb-20">
           <div className="container-custom">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">OFSLEDGER Blog</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">SolmintX Blog</h1>
             <p className="text-xl text-yellow-100/90 max-w-2xl">
               Insights, updates, and deep dives into the world of oracle financial systems and digital assets.
             </p>
@@ -24,8 +24,8 @@ const Blog = () => {
               Coming Soon
             </h2>
             <p className="text-gray-600">
-              Our blog section is currently under development. Soon, you'll find the latest insights, 
-              technical deep-dives, and updates about OFSLEDGER and the future of oracle financial systems.
+              Our blog section is currently under development. Soon, you'll find the latest insights,
+              technical deep-dives, and updates about SolmintX and the future of oracle financial systems.
             </p>
           </div>
         </div>

@@ -8,25 +8,25 @@ const testimonials = [
   {
     name: "Sarah Johnson",
     role: "Crypto Investor",
-    content: "OFSLEDGER has transformed how I manage my digital assets. The security features are unmatched and the real-time tracking is incredibly valuable.",
+    content: "SolmintX has transformed how I manage my digital assets. The security features are unmatched and the real-time tracking is incredibly valuable.",
     rating: 5,
   },
   {
     name: "Michael Chen",
     role: "Financial Advisor",
-    content: "I recommend OFSLEDGER to all my clients. Their quantum-secure technology provides peace of mind, and the interface is intuitive even for beginners.",
+    content: "I recommend SolmintX to all my clients. Their quantum-secure technology provides peace of mind, and the interface is intuitive even for beginners.",
     rating: 5,
   },
   {
     name: "Diana Rodriguez",
     role: "Blockchain Developer",
-    content: "As someone who works in blockchain technology, I appreciate the technical excellence of OFSLEDGER. Their architecture is cutting-edge.",
+    content: "As someone who works in blockchain technology, I appreciate the technical excellence of SolmintX. Their architecture is cutting-edge.",
     rating: 5,
   },
   {
     name: "Robert Williams",
     role: "Enterprise Client",
-    content: "We've integrated OFSLEDGER across our entire organization. The API is robust and the customer support has been exceptional.",
+    content: "We've integrated SolmintX across our entire organization. The API is robust and the customer support has been exceptional.",
     rating: 4,
   },
 ];
@@ -53,9 +53,9 @@ const Testimonials = () => {
                 <CardContent className="p-6">
                   <div className="flex mb-4">
                     {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        className={`h-5 w-5 ${i < testimonial.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+                      <Star
+                        key={i}
+                        className={`h-5 w-5 ${i < testimonial.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
                       />
                     ))}
                   </div>

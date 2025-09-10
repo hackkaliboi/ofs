@@ -33,14 +33,14 @@ const Compliance = () => {
       {/* Blurred background effects */}
       <div className="fixed top-20 left-10 w-72 h-72 bg-yellow-500/10 rounded-full blur-3xl" />
       <div className="fixed bottom-20 right-10 w-96 h-96 bg-yellow-600/10 rounded-full blur-3xl" />
-      
+
       <Navbar />
-      
+
       <main className="flex-grow pt-28 pb-16 relative z-10">
         <div className="container-custom">
           <AnimatedSection>
             <div className="max-w-3xl mx-auto text-center mb-12">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
@@ -51,13 +51,13 @@ const Compliance = () => {
               </motion.div>
               <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-white via-yellow-100 to-yellow-200 bg-clip-text text-transparent">Compliance & Regulatory Framework</h1>
               <p className="text-lg text-gray-300">
-                At OFSLEDGER, we maintain the highest standards of compliance with financial regulations worldwide, ensuring a secure and legal environment for all users.
+                At SolmintX, we maintain the highest standards of compliance with financial regulations worldwide, ensuring a secure and legal environment for all users.
               </p>
             </div>
           </AnimatedSection>
 
           <AnimatedSection delay={1}>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -67,15 +67,15 @@ const Compliance = () => {
                 <Shield className="h-7 w-7 text-yellow-400" />
                 <h2 className="text-2xl font-semibold text-white">Our Compliance Commitment</h2>
               </div>
-              
+
               <p className="text-gray-300 mb-6">
-                OFSLEDGER is committed to full compliance with all applicable laws and regulations in the jurisdictions where we operate. Our platform is designed with compliance at its core, ensuring all transactions and validations meet or exceed regulatory requirements.
+                SolmintX is committed to full compliance with all applicable laws and regulations in the jurisdictions where we operate. Our platform is designed with compliance at its core, ensuring all transactions and validations meet or exceed regulatory requirements.
               </p>
-              
+
               <div className="grid md:grid-cols-2 gap-6">
                 {regulatoryItems.map((item, index) => (
-                  <motion.div 
-                    key={index} 
+                  <motion.div
+                    key={index}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
@@ -93,7 +93,7 @@ const Compliance = () => {
           </AnimatedSection>
 
           <AnimatedSection delay={2}>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
@@ -103,7 +103,7 @@ const Compliance = () => {
                 <FileText className="h-7 w-7 text-yellow-400" />
                 <h2 className="text-2xl font-semibold text-white">Regulatory Guidelines We Follow</h2>
               </div>
-              
+
               <div className="space-y-6">
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
@@ -115,7 +115,7 @@ const Compliance = () => {
                     We maintain compliance with guidelines from major financial authorities, including SEC, FINRA, FCA, and other international regulatory bodies.
                   </p>
                 </motion.div>
-                
+
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -126,7 +126,7 @@ const Compliance = () => {
                     Our platform adheres to GDPR, CCPA, and other regional data protection regulations to ensure user data is properly protected.
                   </p>
                 </motion.div>
-                
+
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -142,7 +142,7 @@ const Compliance = () => {
           </AnimatedSection>
 
           <AnimatedSection delay={3}>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
@@ -152,11 +152,11 @@ const Compliance = () => {
                 <Lock className="h-7 w-7 text-yellow-400" />
                 <h2 className="text-2xl font-semibold text-white">Compliance Documentation</h2>
               </div>
-              
+
               <p className="text-gray-300 mb-6">
                 Our compliance documentation is available to users and regulatory authorities upon request. This includes:
               </p>
-              
+
               <ul className="list-disc pl-6 space-y-2 text-gray-300">
                 <li>Privacy policies and procedures</li>
                 <li>Data protection impact assessments</li>
@@ -169,7 +169,7 @@ const Compliance = () => {
           </AnimatedSection>
 
           <AnimatedSection delay={4}>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
@@ -182,7 +182,7 @@ const Compliance = () => {
           </AnimatedSection>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

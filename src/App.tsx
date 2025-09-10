@@ -5,7 +5,6 @@ import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./components/theme-provider";
 import Layout from "./components/layout/Layout";
 import PrivateRoute from "./components/auth/PrivateRoute";
-import AdminRoute from "@/components/auth/AdminRoute";
 import { DashboardLayout } from "./components/dashboard/layout";
 import AdminAccessProvider from "./components/AdminAccessProvider";
 import { useEffect, lazy, Suspense } from "react";
@@ -15,15 +14,16 @@ import Index from "./pages/Index.tsx";
 import CreateToken from "./pages/CreateToken.tsx";
 import Team from "./pages/Team.tsx";
 import Careers from "./pages/Careers.tsx";
-// FAQ page removed
-
 import LiquidityPool from "./pages/LiquidityPool.tsx";
 import Contact from "./pages/Contact.tsx";
 import Blog from "./pages/Blog.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import Terms from "./pages/Terms.tsx";
-import AdminSignIn from "./pages/AdminSignIn.tsx";
+import Privacy from "./pages/Privacy.tsx";
+import SecurityPolicy from "./pages/SecurityPolicy.tsx";
+import Compliance from "./pages/Compliance.tsx";
+import Cookies from "./pages/Cookies.tsx";
 import AdminAccess from "./pages/AdminAccess.tsx";
 
 // User Dashboard Pages
@@ -43,8 +43,9 @@ import WalletsDirect from "./pages/admin/WalletsDirect.tsx";
 import KYCManagement from "./pages/admin/KYC.tsx";
 import WithdrawalManagement from "./pages/admin/Withdrawals.tsx";
 import AdminSettings from "./pages/admin/Settings.tsx";
+import CoinBalancesAdmin from "./pages/admin/CoinBalances.tsx";
+import AdminRoute from "./components/auth/AdminRoute.tsx";
 // import WalletDetailsPage from "./pages/admin/WalletDetails.tsx"; // Removed because file was deleted
-// CoinBalancesAdmin import removed
 // Import the direct admin access page
 import DirectAdminAccess from "./pages/DirectAdminAccess.tsx";
 
@@ -65,15 +66,16 @@ function App() {
                   <Route path="/create-token" element={<CreateToken />} />
                   <Route path="/team" element={<Team />} />
                   <Route path="/careers" element={<Careers />} />
-                  {/* FAQ route removed */}
                   <Route path="/liquidity-pool" element={<LiquidityPool />} />
-          
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/sign-in" element={<SignIn />} />
                   <Route path="/sign-up" element={<SignUp />} />
                   <Route path="/terms" element={<Terms />} />
-                  <Route path="/admin/login" element={<AdminSignIn />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/security-policy" element={<SecurityPolicy />} />
+                  <Route path="/compliance" element={<Compliance />} />
+                  <Route path="/cookies" element={<Cookies />} />
                   <Route path="/admin-access" element={<AdminAccess />} />
                 </Route>
 
@@ -93,7 +95,7 @@ function App() {
                 <Route path="/admin-access" element={<DirectAdminAccess />} />
                 <Route path="/admin-wallets" element={<WalletsDirect />} />
 
-                {/* Admin Dashboard Routes */}
+                {/* Admin Dashboard Routes - Authentication Enabled */}
                 <Route element={<AdminRoute />}>
                   <Route element={<DashboardLayout />}>
                     <Route path="/admin" element={<AdminDashboard />} />
@@ -103,8 +105,8 @@ function App() {
                     {/* <Route path="/admin/wallet-details" element={<WalletDetailsPage />} /> */}
                     <Route path="/admin/kyc" element={<KYCManagement />} />
                     <Route path="/admin/withdrawals" element={<WithdrawalManagement />} />
+                    <Route path="/admin/coin-balances" element={<CoinBalancesAdmin />} />
                     <Route path="/admin/settings" element={<AdminSettings />} />
-                    {/* CoinBalances route removed */}
                   </Route>
                 </Route>
 

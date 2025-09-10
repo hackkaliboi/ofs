@@ -27,7 +27,7 @@ const SignUp = () => {
   const { signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   // Check for pre-connected wallet in session storage
   useEffect(() => {
     const walletData = sessionStorage.getItem('preConnectedWallet');
@@ -64,14 +64,14 @@ const SignUp = () => {
 
     try {
       await signUp(formData.email, formData.password);
-      
+
       // If there's a pre-connected wallet, we'll associate it with the account
       // In a real implementation, this would be done via an API call
       if (preConnectedWallet) {
         // Clear the pre-connected wallet from session storage after account creation
         // In a real implementation, this would happen after the wallet is associated with the account
         sessionStorage.removeItem('preConnectedWallet');
-        
+
         toast({
           title: "Success",
           description: "Account created successfully with pre-connected wallet!",
@@ -84,7 +84,7 @@ const SignUp = () => {
           variant: "default"
         });
       }
-      
+
       navigate("/dashboard");
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
@@ -98,14 +98,14 @@ const SignUp = () => {
   // Password strength indicator
   const getPasswordStrength = (password: string) => {
     if (!password) return { strength: 0, text: "" };
-    
+
     let strength = 0;
     if (password.length >= 8) strength += 1;
     if (/[A-Z]/.test(password)) strength += 1;
     if (/[a-z]/.test(password)) strength += 1;
     if (/[0-9]/.test(password)) strength += 1;
     if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-    
+
     const strengthText = [
       "",
       "Weak",
@@ -114,7 +114,7 @@ const SignUp = () => {
       "Strong",
       "Very Strong"
     ][strength];
-    
+
     return { strength, text: strengthText };
   };
 
@@ -134,9 +134,9 @@ const SignUp = () => {
                 <span className="text-2xl font-bold text-white/70">LEDGER</span>
               </Link>
             </div>
-            
+
             <div className="relative z-20 mt-auto">
-              <h3 className="text-xl font-semibold mb-4">Why join OFS Ledger?</h3>
+              <h3 className="text-xl font-semibold mb-4">Why join SolmintX?</h3>
               <ul className="space-y-4">
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 mr-2 mt-0.5 text-white/80" />
@@ -182,7 +182,7 @@ const SignUp = () => {
                         {error}
                       </div>
                     )}
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="fullName">Full Name</Label>
                       <div className="relative">
@@ -197,7 +197,7 @@ const SignUp = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
                       <div className="relative">
@@ -213,7 +213,7 @@ const SignUp = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="password">Password</Label>
                       <div className="relative">
@@ -235,15 +235,14 @@ const SignUp = () => {
                                 {[1, 2, 3, 4, 5].map((level) => (
                                   <div
                                     key={level}
-                                    className={`h-2 w-full rounded-full ${
-                                      level <= passwordStrength.strength
+                                    className={`h-2 w-full rounded-full ${level <= passwordStrength.strength
                                         ? level <= 2
-                          ? "bg-yellow-500"
-                          : level <= 3
-                          ? "bg-yellow-500"
-                          : "bg-yellow-500"
+                                          ? "bg-yellow-500"
+                                          : level <= 3
+                                            ? "bg-yellow-500"
+                                            : "bg-yellow-500"
                                         : "bg-gray-200"
-                                    }`}
+                                      }`}
                                   />
                                 ))}
                               </div>
@@ -256,7 +255,7 @@ const SignUp = () => {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="confirmPassword">Confirm Password</Label>
                       <div className="relative">
@@ -271,11 +270,11 @@ const SignUp = () => {
                         />
                       </div>
                     </div>
-                    
+
                     {preConnectedWallet && (
                       <div className="mt-4">
                         <Alert className="bg-yellow-50 border-yellow-200">
-                <Wallet className="h-4 w-4 text-yellow-600" />
+                          <Wallet className="h-4 w-4 text-yellow-600" />
                           <AlertTitle>Pre-connected Wallet Detected</AlertTitle>
                           <AlertDescription className="space-y-2">
                             <p>A wallet has been connected and will be associated with your account.</p>
@@ -291,10 +290,10 @@ const SignUp = () => {
                         </Alert>
                       </div>
                     )}
-                    
+
                     <div className="flex items-start space-x-2 pt-2">
-                      <Checkbox 
-                        id="terms" 
+                      <Checkbox
+                        id="terms"
                         checked={acceptTerms}
                         onCheckedChange={(checked) => setAcceptTerms(checked as boolean)}
                       />
@@ -312,7 +311,7 @@ const SignUp = () => {
                         </Link>
                       </label>
                     </div>
-                    
+
                     <Button
                       type="submit"
                       className="w-full"
@@ -341,12 +340,12 @@ const SignUp = () => {
                         Sign in
                       </Link>
                     </p>
-                    
+
                     {!preConnectedWallet && (
                       <div className="text-sm text-center text-muted-foreground">
                         <p className="mb-2">Want to connect your wallet first?</p>
-                        <ConnectWallet 
-                          variant="outline" 
+                        <ConnectWallet
+                          variant="outline"
                           size="sm"
                           className="text-primary border-primary hover:bg-primary hover:text-primary-foreground"
                         />

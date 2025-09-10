@@ -1,6 +1,6 @@
-# OFS Ledger Design System
+# SolmintX Design System
 
-This document outlines the comprehensive design system for OFS Ledger, ensuring consistency across all pages and components.
+This document outlines the comprehensive design system for SolmintX, ensuring consistency across all pages and components.
 
 ## Color Palette
 

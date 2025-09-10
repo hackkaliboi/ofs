@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useInView, useAnimation, AnimatePresence } from 'framer-motion';
-import { 
-  Shield, Zap, Globe, Users, BarChart3, Settings, 
+import {
+  Shield, Zap, Globe, Users, BarChart3, Settings,
   Lock, Cpu, Database, Cloud, ArrowRight, Play,
   CheckCircle, Star, TrendingUp, Award, Eye,
   Code, Layers, Smartphone, Monitor
 } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Link } from 'react-router-dom';
 
 // TypeScript interfaces
 interface FeatureStat {
@@ -140,7 +141,7 @@ const premiumFeatures = [
 const SecurityDemo = () => {
   const [activeLayer, setActiveLayer] = useState(0);
   const layers = ['Encryption', 'Authentication', 'Monitoring', 'Storage'];
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveLayer((prev) => (prev + 1) % layers.length);
@@ -160,14 +161,13 @@ const SecurityDemo = () => {
           >
             <Shield className="w-10 h-10 text-black" />
           </motion.div>
-          
+
           {/* Security Layers */}
           {layers.map((layer, index) => (
             <motion.div
               key={layer}
-              className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${
-                activeLayer === index ? 'text-yellow-400' : 'text-gray-500'
-              }`}
+              className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${activeLayer === index ? 'text-yellow-400' : 'text-gray-500'
+                }`}
               style={{
                 transform: `translate(-50%, -50%) rotate(${index * 90}deg) translateY(-60px)`,
               }}
@@ -183,17 +183,15 @@ const SecurityDemo = () => {
           ))}
         </div>
       </div>
-      
+
       {/* Status Indicators */}
       <div className="absolute bottom-4 left-4 right-4">
         <div className="flex justify-between text-xs">
           {layers.map((layer, index) => (
-            <div key={layer} className={`flex items-center space-x-1 ${
-              activeLayer === index ? 'text-yellow-400' : 'text-gray-500'
-            }`}>
-              <div className={`w-2 h-2 rounded-full ${
-                activeLayer === index ? 'bg-yellow-400' : 'bg-gray-600'
-              }`} />
+            <div key={layer} className={`flex items-center space-x-1 ${activeLayer === index ? 'text-yellow-400' : 'text-gray-500'
+              }`}>
+              <div className={`w-2 h-2 rounded-full ${activeLayer === index ? 'bg-yellow-400' : 'bg-gray-600'
+                }`} />
               <span>{layer}</span>
             </div>
           ))}
@@ -206,7 +204,7 @@ const SecurityDemo = () => {
 // Performance Chart Demo
 const PerformanceDemo = () => {
   const [data, setData] = useState([20, 45, 30, 80, 60, 90, 75]);
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       setData(prev => prev.map(() => Math.random() * 100));
@@ -223,7 +221,7 @@ const PerformanceDemo = () => {
           <span className="text-sm">Live</span>
         </div>
       </div>
-      
+
       <div className="flex items-end justify-between h-40 space-x-2">
         {data.map((value, index) => (
           <motion.div
@@ -235,7 +233,7 @@ const PerformanceDemo = () => {
           />
         ))}
       </div>
-      
+
       <div className="flex justify-between mt-4 text-xs text-gray-400">
         {['1s', '2s', '3s', '4s', '5s', '6s', '7s'].map(time => (
           <span key={time}>{time}</span>
@@ -249,7 +247,7 @@ const PerformanceDemo = () => {
 const GlobalDemo = () => {
   const [activeRegion, setActiveRegion] = useState(0);
   const regions = ['North America', 'Europe', 'Asia Pacific', 'South America'];
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveRegion((prev) => (prev + 1) % regions.length);
@@ -263,28 +261,26 @@ const GlobalDemo = () => {
       <div className="absolute inset-0 opacity-20">
         <div className="w-full h-full bg-gradient-to-r from-yellow-500/30 to-amber-500/30 rounded-xl" />
       </div>
-      
+
       <div className="relative z-10">
         <h4 className="text-white font-medium mb-6">Global Network Status</h4>
-        
+
         <div className="grid grid-cols-2 gap-4">
           {regions.map((region, index) => (
             <motion.div
               key={region}
-              className={`p-3 rounded-lg border transition-all duration-500 ${
-                activeRegion === index 
+              className={`p-3 rounded-lg border transition-all duration-500 ${activeRegion === index
                   ? 'bg-yellow-400/10 border-yellow-400/50 text-yellow-400'
                   : 'bg-black/50 border-yellow-500/30 text-gray-400'
-              }`}
+                }`}
               animate={{
                 scale: activeRegion === index ? 1.05 : 1
               }}
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">{region}</span>
-                <div className={`w-2 h-2 rounded-full ${
-                  activeRegion === index ? 'bg-yellow-400' : 'bg-gray-600'
-                } animate-pulse`} />
+                <div className={`w-2 h-2 rounded-full ${activeRegion === index ? 'bg-yellow-400' : 'bg-gray-600'
+                  } animate-pulse`} />
               </div>
               <div className="text-xs mt-1 opacity-75">
                 {activeRegion === index ? 'Active' : 'Standby'}
@@ -292,7 +288,7 @@ const GlobalDemo = () => {
             </motion.div>
           ))}
         </div>
-        
+
         <div className="mt-6 text-center">
           <div className="text-2xl font-bold text-yellow-400">150+</div>
           <div className="text-sm text-gray-400">Countries Served</div>
@@ -310,7 +306,7 @@ const EnterpriseDemo = () => {
     volume: 2.5,
     uptime: 99.99
   });
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       setMetrics(prev => ({
@@ -332,7 +328,7 @@ const EnterpriseDemo = () => {
           <span className="text-xs text-yellow-400">Live Data</span>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-black/50 rounded-lg p-3">
           <div className="text-yellow-400 text-lg font-bold">
@@ -340,21 +336,21 @@ const EnterpriseDemo = () => {
           </div>
           <div className="text-xs text-gray-400">Active Users</div>
         </div>
-        
+
         <div className="bg-black/50 rounded-lg p-3">
           <div className="text-yellow-400 text-lg font-bold">
             {metrics.transactions.toLocaleString()}
           </div>
           <div className="text-xs text-gray-400">Transactions</div>
         </div>
-        
+
         <div className="bg-black/50 rounded-lg p-3">
           <div className="text-yellow-400 text-lg font-bold">
             ${metrics.volume.toFixed(1)}B
           </div>
           <div className="text-xs text-gray-400">Volume</div>
         </div>
-        
+
         <div className="bg-black/50 rounded-lg p-3">
           <div className="text-yellow-400 text-lg font-bold">
             {metrics.uptime}%
@@ -373,7 +369,7 @@ const FeatureCard = ({ feature, index }: { feature: PremiumFeature; index: numbe
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const controls = useAnimation();
-  
+
   useEffect(() => {
     if (isInView) {
       controls.start("visible");
@@ -418,7 +414,7 @@ const FeatureCard = ({ feature, index }: { feature: PremiumFeature; index: numbe
           scale: isHovered ? 1.05 : 1,
         }}
       />
-      
+
       {/* Main Card */}
       <motion.div
         className="relative bg-black/40 backdrop-blur-sm border border-gray-800 rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 h-full overflow-hidden card-premium gpu-accelerated"
@@ -440,13 +436,13 @@ const FeatureCard = ({ feature, index }: { feature: PremiumFeature; index: numbe
             >
               <Icon className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </motion.div>
-            
+
             <div>
               <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-1">{feature.title}</h3>
               <p className="text-sm md:text-base text-gray-400">{feature.subtitle}</p>
             </div>
           </div>
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -570,7 +566,7 @@ export const PremiumFeatures = () => {
           </h2>
 
           <p className="text-base md:text-lg lg:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
-            Experience cutting-edge blockchain technology with enterprise-grade security, 
+            Experience cutting-edge blockchain technology with enterprise-grade security,
             lightning-fast performance, and global scalability.
           </p>
         </motion.div>
@@ -589,20 +585,22 @@ export const PremiumFeatures = () => {
           transition={{ duration: 0.8, delay: 1 }}
           className="text-center mt-12 md:mt-16 lg:mt-20"
         >
-          <Button
-            size="lg"
-            className="group px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-semibold text-base md:text-lg rounded-xl md:rounded-2xl btn-premium ripple magnetic focus-premium gpu-accelerated"
-          >
-            <span className="hidden sm:inline">Explore All Features</span>
-            <span className="sm:hidden">Explore Features</span>
-            <motion.div
-              animate={{ x: [0, 5, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="ml-2"
+          <Link to="/sign-up">
+            <Button
+              size="lg"
+              className="group px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-semibold text-base md:text-lg rounded-xl md:rounded-2xl btn-premium ripple magnetic focus-premium gpu-accelerated"
             >
-              <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-            </motion.div>
-          </Button>
+              <span className="hidden sm:inline">Explore All Features</span>
+              <span className="sm:hidden">Explore Features</span>
+              <motion.div
+                animate={{ x: [0, 5, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="ml-2"
+              >
+                <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+              </motion.div>
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>

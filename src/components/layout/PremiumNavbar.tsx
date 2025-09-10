@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  Menu, X, ChevronDown, Shield, Zap, Globe, Users, 
+import {
+  Menu, X, ChevronDown, Shield, Zap, Globe, Users,
   BarChart3, Settings, HelpCircle, Phone, Mail,
   ArrowRight, Star, Award, TrendingUp
 } from 'lucide-react';
@@ -83,7 +83,7 @@ const megaMenuData = {
       {
         title: 'Resources',
         items: [
-  
+
           { name: 'Blog', href: '/blog', icon: BarChart3, description: 'Latest insights and updates' },
           { name: 'Support Center', href: '/support', icon: Phone, description: '24/7 customer support' },
           { name: 'Contact Us', href: '/contact', icon: Mail, description: 'Get in touch with our team' }
@@ -111,7 +111,7 @@ const AnimatedLogo = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-lg blur opacity-50" />
       </motion.div>
       <span className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent">
-        OFS Ledger
+        SolmintX
       </span>
     </motion.div>
   );
@@ -206,10 +206,10 @@ const MegaMenu = ({ data, isOpen, onClose }: { data: MegaMenuData; isOpen: boole
 };
 
 // Navigation Item Component
-const NavItem = ({ 
-  children, 
-  href, 
-  hasDropdown = false, 
+const NavItem = ({
+  children,
+  href,
+  hasDropdown = false,
   isActive = false,
   onClick,
   onMouseEnter,
@@ -226,9 +226,8 @@ const NavItem = ({
   const content = (
     <motion.div
       whileHover={{ y: -2 }}
-      className={`relative px-4 py-2 rounded-lg transition-all duration-300 cursor-pointer group ${
-        isActive ? 'text-yellow-400' : 'text-gray-300 hover:text-white'
-      }`}
+      className={`relative px-4 py-2 rounded-lg transition-all duration-300 cursor-pointer group ${isActive ? 'text-yellow-400' : 'text-gray-300 hover:text-white'
+        }`}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -239,13 +238,13 @@ const NavItem = ({
           <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
         )}
       </div>
-      
+
       {/* Hover Effect */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-amber-400/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         layoutId="navHover"
       />
-      
+
       {/* Active Indicator */}
       {isActive && (
         <motion.div
@@ -276,7 +275,7 @@ export const PremiumNavbar = () => {
 
   useEffect(() => {
     let ticking = false;
-    
+
     const handleScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
@@ -319,9 +318,8 @@ export const PremiumNavbar = () => {
     <motion.nav
       ref={navRef}
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(20px)' }}
-      className={`fixed top-8 left-6 right-6 z-50 transition-all duration-500 rounded-3xl ${
-        isScrolled ? 'border border-yellow-400/30 shadow-2xl' : 'border border-white/20'
-      }`}
+      className={`fixed top-8 left-6 right-6 z-50 transition-all duration-500 rounded-3xl ${isScrolled ? 'border border-yellow-400/30 shadow-2xl' : 'border border-white/20'
+        }`}
     >
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-20">
@@ -342,8 +340,8 @@ export const PremiumNavbar = () => {
                 {item.name}
               </NavItem>
             ))}
-            <ConnectWallet 
-              variant="outline" 
+            <ConnectWallet
+              variant="outline"
               className="text-gray-300 hover:text-white border-gray-600 hover:border-yellow-400"
             />
           </div>
@@ -354,13 +352,13 @@ export const PremiumNavbar = () => {
               <div className="flex items-center space-x-4">
                 <Button
                   variant="outline"
-                  onClick={() => navigate('/dashboard')} 
+                  onClick={() => navigate('/dashboard')}
                   className="border-yellow-400/50 text-yellow-400 hover:bg-yellow-400 hover:text-black transition-all duration-300"
                 >
                   Sign In
                 </Button>
                 <Button
-                  onClick={() => navigate('/dashboard')} 
+                  onClick={() => navigate('/dashboard')}
                   className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-black font-medium transition-all duration-300"
                 >
                   Get Started
@@ -440,18 +438,18 @@ export const PremiumNavbar = () => {
                   </Link>
                 </motion.div>
               ))}
-              
+
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <ConnectWallet 
-                  variant="outline" 
+                <ConnectWallet
+                  variant="outline"
                   className="w-full border-yellow-400/50 text-yellow-400 hover:bg-yellow-400 hover:text-black"
                 />
               </motion.div>
-              
+
               <div className="pt-6 border-t border-yellow-400/20 space-y-4">
                 {user ? (
                   <>

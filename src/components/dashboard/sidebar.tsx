@@ -30,6 +30,9 @@ const Sidebar = ({ mobileMenuOpen, setMobileMenuOpen }: SidebarProps) => {
   const { pathname } = useLocation();
   const { user, profile, isAdmin, signOut } = useAuth();
 
+  // Determine if we're on admin routes
+  const isAdminRoute = pathname.startsWith('/admin');
+
   // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -115,73 +118,66 @@ const Sidebar = ({ mobileMenuOpen, setMobileMenuOpen }: SidebarProps) => {
         <div className="flex h-full flex-col">
           {/* Sidebar header */}
           <div className="flex h-16 items-center border-b border-primary/20 px-4 sm:px-6">
-            <Link to="/dashboard" className="flex items-center gap-2 group">
-              <div className="rounded-lg bg-gradient-to-br from-primary to-primary/80 p-2 shadow-lg group-hover:shadow-primary/25 transition-all duration-300">
-                <Coins className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">OFS Ledger</span>
-            </Link>
+            {/* Empty header space - SolmintX logo is now only in the main header */}
           </div>
 
           {/* Sidebar content */}
           <ScrollArea className="flex-1 px-3 sm:px-4 py-6">
             <nav className="flex flex-col gap-6">
-              {/* User navigation */}
-              <div>
-                <h3 className="px-3 text-xs font-semibold text-primary/70 uppercase tracking-wider">
-                  User Dashboard
-                </h3>
-                <ul className="mt-3 space-y-1">
-                  {userNavItems.map((item, index) => (
-                    <li key={index}>
-                      <Link
-                        to={item.href}
-                        className={cn(
-                          "group flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20",
-                          pathname === item.href
-                            ? "bg-gradient-to-r from-primary/20 to-primary/10 text-primary border-primary/30 shadow-lg"
-                            : "text-muted-foreground hover:text-foreground"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          {item.icon}
-                          <span>{item.title}</span>
-                        </div>
-                        {item.badge && (
-                          <Badge
-                            variant={item.badgeVariant as "default" | "secondary" | "destructive" | "outline"}
-                            className="ml-auto"
-                          >
-                            {item.badge}
-                          </Badge>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Admin navigation (only shown to admins) */}
-              {isAdmin && (
+              {/* Show admin navigation when on admin routes, user navigation otherwise */}
+              {isAdminRoute ? (
                 <div>
-                  <Separator className="my-2" />
-                  <h3 className="px-2 text-sm font-medium text-muted-foreground">
-                    Admin Controls
+                  <h3 className="px-3 text-xs font-semibold text-primary/70 uppercase tracking-wider">
+                    Admin Dashboard
                   </h3>
-                  <ul className="mt-2 space-y-1">
+                  <ul className="mt-3 space-y-1">
                     {adminNavItems.map((item, index) => (
                       <li key={index}>
                         <Link
                           to={item.href}
                           className={cn(
-                            "group flex items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+                            "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20",
                             pathname === item.href
-                              ? "bg-accent text-accent-foreground"
-                              : "text-muted-foreground"
+                              ? "bg-gradient-to-r from-primary/20 to-primary/10 text-primary border-primary/30 shadow-lg"
+                              : "text-muted-foreground hover:text-foreground"
                           )}
                         >
                           {item.icon}
                           <span>{item.title}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div>
+                  <h3 className="px-3 text-xs font-semibold text-primary/70 uppercase tracking-wider">
+                    User Dashboard
+                  </h3>
+                  <ul className="mt-3 space-y-1">
+                    {userNavItems.map((item, index) => (
+                      <li key={index}>
+                        <Link
+                          to={item.href}
+                          className={cn(
+                            "group flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20",
+                            pathname === item.href
+                              ? "bg-gradient-to-r from-primary/20 to-primary/10 text-primary border-primary/30 shadow-lg"
+                              : "text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          <div className="flex items-center gap-3">
+                            {item.icon}
+                            <span>{item.title}</span>
+                          </div>
+                          {item.badge && (
+                            <Badge
+                              variant={item.badgeVariant as "default" | "secondary" | "destructive" | "outline"}
+                              className="ml-auto"
+                            >
+                              {item.badge}
+                            </Badge>
+                          )}
                         </Link>
                       </li>
                     ))}

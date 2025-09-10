@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -11,29 +11,62 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Shield, Loader2, Mail, Lock, ArrowRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
+/**
+ * Unified Sign In Page
+ * 
+ * Both users and admins login through this single page.
+ * After successful authentication, users are automatically
+ * redirected to the appropriate dashboard based on their role:
+ * 
+ * - Admins (role: 'admin') → /admin dashboard
+ * - Regular users (role: 'user') → /dashboard
+ * 
+ * The role is determined from the user's profile in the database.
+ * Admin access is granted to 'pastendro@gmail.com' by default.
+ */
+
 export default function SignIn() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, signIn, loading: authLoading } = useAuth();
+  const { user, profile, signIn, loading: authLoading, isAdmin } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  
-  // Get the intended destination from location state or default to dashboard
-  const from = location.state?.from?.pathname || "/dashboard";
 
-  // Check if user is already logged in
+  // Get the intended destination from location state or determine based on role
+  const from = location.state?.from?.pathname;
+
+  // Check if user is already logged in and redirect appropriately
   useEffect(() => {
-    if (user && !isLoading) {
-      // If user is already authenticated, redirect to dashboard or intended destination
+    if (user && profile && !isLoading) {
+      // Determine redirect destination based on user role
+      let redirectPath = from;
+
+      if (!redirectPath) {
+        // If no specific destination, redirect based on role
+        redirectPath = isAdmin ? '/admin' : '/dashboard';
+      }
+
+      // If user is admin but trying to access user dashboard, redirect to admin
+      if (isAdmin && redirectPath.startsWith('/dashboard')) {
+        redirectPath = '/admin';
+      }
+
+      // If user is not admin but trying to access admin, redirect to user dashboard
+      if (!isAdmin && redirectPath.startsWith('/admin')) {
+        redirectPath = '/dashboard';
+      }
+
+      console.log(`Redirecting ${isAdmin ? 'admin' : 'user'} to: ${redirectPath}`);
+
       const redirectTimer = setTimeout(() => {
-        navigate(from, { replace: true });
+        navigate(redirectPath, { replace: true });
       }, 100);
-      
+
       return () => clearTimeout(redirectTimer);
     }
-  }, [user, isLoading, navigate, from]);
+  }, [user, profile, isAdmin, isLoading, navigate, from]);
 
   // If auth is still loading, show loading state
   if (authLoading) {
@@ -65,12 +98,9 @@ export default function SignIn() {
         description: "Successfully signed in to your account.",
       });
 
-      // Redirect to dashboard or intended destination with a slight delay
-      // to ensure auth state is properly updated
-      setTimeout(() => {
-        navigate(from, { replace: true });
-      }, 500);
-      
+      // The redirect will be handled by the useEffect hook above
+      // after the user and profile state are updated
+
     } catch (error: any) {
       setError(error.message || "Failed to sign in");
       toast({
@@ -92,14 +122,13 @@ export default function SignIn() {
             <div className="relative z-20 flex items-center text-lg font-medium">
               <Link to="/" className="flex items-center">
                 <Shield className="h-6 w-6 mr-2" />
-                <span className="text-2xl font-bold">OFS</span>
-                <span className="text-2xl font-bold text-white/70">LEDGER</span>
+                <span className="text-2xl font-bold">SolmintX</span>
               </Link>
             </div>
             <div className="relative z-20 mt-auto">
               <blockquote className="space-y-2">
                 <p className="text-lg">
-                  "OFS Ledger has revolutionized how we manage and validate our digital assets. 
+                  "SolmintX has revolutionized how we manage and validate our digital assets.
                   The transparency and security it provides are unmatched."
                 </p>
                 <footer className="text-sm">Sofia Davis, Digital Asset Manager</footer>
@@ -115,13 +144,16 @@ export default function SignIn() {
                 <p className="text-sm text-muted-foreground">
                   Enter your credentials to access your account
                 </p>
+                <p className="text-xs text-muted-foreground">
+                  Users and admins sign in here - you'll be redirected to the appropriate dashboard
+                </p>
               </div>
 
               <Card className="border-none shadow-md">
                 <CardHeader className="space-y-1">
                   <CardTitle className="text-xl">Sign in</CardTitle>
                   <CardDescription>
-                    Access your OFS Ledger dashboard
+                    Access your SolmintX account (Users & Admins)
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -131,7 +163,7 @@ export default function SignIn() {
                         {error}
                       </div>
                     )}
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
                       <div className="relative">
@@ -147,7 +179,7 @@ export default function SignIn() {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label htmlFor="password">Password</Label>
@@ -168,10 +200,10 @@ export default function SignIn() {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="remember" 
+                      <Checkbox
+                        id="remember"
                         checked={rememberMe}
                         onCheckedChange={(checked) => setRememberMe(checked as boolean)}
                       />
@@ -182,7 +214,7 @@ export default function SignIn() {
                         Remember me
                       </label>
                     </div>
-                    
+
                     <Button className="w-full" type="submit" disabled={isLoading}>
                       {isLoading ? (
                         <div className="flex items-center justify-center gap-2">
@@ -208,7 +240,7 @@ export default function SignIn() {
                   </p>
                 </CardFooter>
               </Card>
-              
+
               <p className="text-center text-sm text-muted-foreground mt-4">
                 By signing in, you agree to our{" "}
                 <Link to="/terms" className="underline underline-offset-4 hover:text-primary">

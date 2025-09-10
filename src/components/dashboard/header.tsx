@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import ConnectWallet from "@/components/ConnectWallet";
@@ -15,6 +15,10 @@ interface HeaderProps {
 
 const Header = ({ mobileMenuOpen, setMobileMenuOpen }: HeaderProps) => {
   const { user, profile, loading, signOut } = useAuth();
+  const { pathname } = useLocation();
+
+  // Determine if we're on admin routes
+  const isAdminRoute = pathname.startsWith('/admin');
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-primary/20 bg-gradient-to-r from-card/95 to-card/90 backdrop-blur-xl px-3 sm:px-4 md:px-6 shadow-xl">
@@ -31,8 +35,8 @@ const Header = ({ mobileMenuOpen, setMobileMenuOpen }: HeaderProps) => {
             <Menu className="h-5 w-5" aria-hidden="true" />
           )}
         </button>
-        <Link to="/dashboard" className="ml-3 md:ml-0">
-          <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">OFS Ledger</h1>
+        <Link to={isAdminRoute ? "/admin" : "/dashboard"} className="ml-3 md:ml-0">
+          <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">SolmintX</h1>
         </Link>
       </div>
 
@@ -48,7 +52,8 @@ const Header = ({ mobileMenuOpen, setMobileMenuOpen }: HeaderProps) => {
       </div>
 
       <div className="flex items-center gap-4">
-        {!user && (
+        {/* Only show Connect Wallet button for user dashboard, not admin */}
+        {!isAdminRoute && !user && (
           <ConnectWallet variant="default" size="sm" className="shadow-sm" />
         )}
 
@@ -77,23 +82,35 @@ const Header = ({ mobileMenuOpen, setMobileMenuOpen }: HeaderProps) => {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to="/dashboard/profile" className="flex w-full cursor-pointer items-center">
+              <Link to={isAdminRoute ? "/admin" : "/dashboard/profile"} className="flex w-full cursor-pointer items-center">
                 <User className="mr-2 h-4 w-4" />
-                Profile
+                {isAdminRoute ? "Admin Profile" : "Profile"}
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/dashboard/wallets" className="flex w-full cursor-pointer items-center">
-                <Wallet className="mr-2 h-4 w-4" />
-                Wallets
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/dashboard/settings" className="flex w-full cursor-pointer items-center">
-                <Settings className="mr-2 h-4 w-4" />
-                Settings
-              </Link>
-            </DropdownMenuItem>
+            {!isAdminRoute && (
+              <>
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard/wallets" className="flex w-full cursor-pointer items-center">
+                    <Wallet className="mr-2 h-4 w-4" />
+                    Wallets
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard/settings" className="flex w-full cursor-pointer items-center">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+              </>
+            )}
+            {isAdminRoute && (
+              <DropdownMenuItem asChild>
+                <Link to="/admin/settings" className="flex w-full cursor-pointer items-center">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Admin Settings
+                </Link>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="flex cursor-pointer items-center text-destructive focus:text-destructive"

@@ -100,7 +100,7 @@ const testimonials = [
     company: "Asset Management Pro",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
     rating: 5,
-    content: "OFSLEDGER's analytics and reporting capabilities have transformed how we manage our digital asset portfolios. The insights are invaluable.",
+    content: "SolmintX's analytics and reporting capabilities have transformed how we manage our digital asset portfolios. The insights are invaluable.",
     metrics: {
       improvement: "$2.5B+",
       label: "Assets Managed"
@@ -148,15 +148,14 @@ const TestimonialCard = ({ testimonial, index }: { testimonial: Testimonial; ind
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, delay: index * 0.1 }}
-      className={`relative group ${
-        testimonial.featured 
-          ? 'lg:col-span-2 bg-gradient-to-br from-yellow-400/10 to-amber-400/10 border-yellow-400/30' 
-          : 'bg-gray-900/50 border-gray-700/50'
-      } backdrop-blur-sm border rounded-2xl p-8 hover:border-yellow-400/50 transition-all duration-500`}
+      className={`relative group ${testimonial.featured
+        ? 'lg:col-span-2 bg-gradient-to-br from-yellow-400/10 to-amber-400/10 border-yellow-400/30'
+        : 'bg-gray-900/50 border-gray-700/50'
+        } backdrop-blur-sm border rounded-2xl p-8 hover:border-yellow-400/50 transition-all duration-500`}
     >
       {/* Background Glow */}
       <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/5 to-amber-400/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
+
       {/* Quote Icon */}
       <div className="relative mb-6">
         <Quote className="w-8 h-8 text-yellow-400/60" />
@@ -263,7 +262,7 @@ export const PremiumTestimonials = () => {
         <div className="absolute top-1/4 right-0 w-64 h-64 md:w-96 md:h-96 bg-yellow-400/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-0 w-64 h-64 md:w-96 md:h-96 bg-amber-400/5 rounded-full blur-3xl" />
       </div>
-      
+
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -294,8 +293,8 @@ export const PremiumTestimonials = () => {
           </h2>
 
           <p className="text-base md:text-lg lg:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
-            See how leading enterprises are transforming their digital asset operations 
-            with OFSLEDGER's cutting-edge platform.
+            See how leading enterprises are transforming their digital asset operations
+            with SolmintX's cutting-edge platform.
           </p>
         </motion.div>
 
@@ -314,13 +313,13 @@ export const PremiumTestimonials = () => {
                 transition={{ duration: 0.5 }}
                 className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8"
               >
-                <TestimonialCard 
-                  testimonial={featuredTestimonials[currentSlide]} 
+                <TestimonialCard
+                  testimonial={featuredTestimonials[currentSlide]}
                   index={0}
                 />
                 <div className="hidden lg:block">
-                  <TestimonialCard 
-                    testimonial={featuredTestimonials[(currentSlide + 1) % featuredTestimonials.length]} 
+                  <TestimonialCard
+                    testimonial={featuredTestimonials[(currentSlide + 1) % featuredTestimonials.length]}
                     index={1}
                   />
                 </div>
@@ -337,19 +336,18 @@ export const PremiumTestimonials = () => {
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              
+
               <div className="flex space-x-2">
                 {featuredTestimonials.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentSlide(index)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      index === currentSlide ? 'bg-yellow-400 w-6 md:w-8' : 'bg-gray-600'
-                    }`}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentSlide ? 'bg-yellow-400 w-6 md:w-8' : 'bg-gray-600'
+                      }`}
                   />
                 ))}
               </div>
-              
+
               <Button
                 variant="outline"
                 size="sm"
@@ -368,41 +366,6 @@ export const PremiumTestimonials = () => {
             <TestimonialCard key={testimonial.id} testimonial={testimonial} index={index} />
           ))}
         </div>
-
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center"
-        >
-          <div className="bg-gradient-to-r from-yellow-400/10 to-amber-400/10 backdrop-blur-sm border border-yellow-400/30 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12">
-            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-3 md:mb-4">
-              Ready to Join Our Success Stories?
-            </h3>
-            <p className="text-gray-400 text-sm md:text-base lg:text-lg mb-6 md:mb-8 max-w-2xl mx-auto px-4">
-              Experience the same transformative results that our clients achieve every day. 
-              Start your journey with OFSLEDGER today.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-semibold hover:from-yellow-300 hover:to-amber-400 transition-all duration-300 text-sm md:text-base"
-              >
-                <span className="hidden sm:inline">Start Free Trial</span>
-                <span className="sm:hidden">Start Trial</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 text-sm md:text-base"
-              >
-                <span className="hidden sm:inline">Schedule Demo</span>
-                <span className="sm:hidden">Demo</span>
-              </Button>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );

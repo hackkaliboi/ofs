@@ -12,11 +12,11 @@ const Terms = () => {
       <div className="fixed inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-yellow-600/5 pointer-events-none" />
       <div className="fixed top-20 left-20 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="fixed bottom-20 right-20 w-96 h-96 bg-yellow-600/10 rounded-full blur-3xl pointer-events-none" />
-      
+
       <div className="flex-grow relative z-10">
         <div className="container mx-auto px-4 py-24">
           <div className="max-w-4xl mx-auto">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
@@ -30,8 +30,8 @@ const Terms = () => {
                 Terms of Service
               </h1>
             </motion.div>
-            
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -42,7 +42,7 @@ const Terms = () => {
                 Please read these terms carefully before using our services.
               </p>
 
-              <motion.section 
+              <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
@@ -53,13 +53,13 @@ const Terms = () => {
                   <h2 className="text-2xl font-semibold text-white">1. Acceptance of Terms</h2>
                 </div>
                 <p className="text-gray-300">
-                  By accessing or using OFSLEDGER's platform and services, you agree to be bound by these Terms 
-                  of Service and all applicable laws and regulations. If you do not agree with any of these terms, 
+                  By accessing or using SolmintX's platform and services, you agree to be bound by these Terms
+                  of Service and all applicable laws and regulations. If you do not agree with any of these terms,
                   you are prohibited from using or accessing our services.
                 </p>
               </motion.section>
 
-              <motion.section 
+              <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
@@ -70,7 +70,7 @@ const Terms = () => {
                   <h2 className="text-2xl font-semibold text-white">2. Platform Services</h2>
                 </div>
                 <p className="text-gray-300 mb-4">
-                  OFSLEDGER provides the following services:
+                  SolmintX provides the following services:
                 </p>
                 <ul className="list-disc pl-6 space-y-2 text-gray-300">
                   <li>Digital asset validation and verification</li>
@@ -81,7 +81,7 @@ const Terms = () => {
                 </ul>
               </motion.section>
 
-              <motion.section 
+              <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
@@ -103,7 +103,7 @@ const Terms = () => {
                 </ul>
               </motion.section>
 
-              <motion.section 
+              <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
@@ -114,14 +114,14 @@ const Terms = () => {
                   <h2 className="text-2xl font-semibold text-white">4. Intellectual Property</h2>
                 </div>
                 <p className="text-gray-300">
-                  All content, features, and functionality of the OFSLEDGER platform, including but not limited 
-                  to text, graphics, logos, icons, images, audio clips, digital downloads, data compilations, 
-                  and software, are the exclusive property of OFSLEDGER and are protected by international 
+                  All content, features, and functionality of the SolmintX platform, including but not limited
+                  to text, graphics, logos, icons, images, audio clips, digital downloads, data compilations,
+                  and software, are the exclusive property of SolmintX and are protected by international
                   copyright, trademark, patent, trade secret, and other intellectual property laws.
                 </p>
               </motion.section>
 
-              <motion.section 
+              <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.7 }}
@@ -132,14 +132,14 @@ const Terms = () => {
                   <h2 className="text-2xl font-semibold text-white">5. Limitation of Liability</h2>
                 </div>
                 <p className="text-gray-300">
-                  OFSLEDGER shall not be liable for any indirect, incidental, special, consequential, or 
-                  punitive damages, including without limitation, loss of profits, data, use, goodwill, or 
-                  other intangible losses, resulting from your access to or use of or inability to access 
+                  OFSLEDGER shall not be liable for any indirect, incidental, special, consequential, or
+                  punitive damages, including without limitation, loss of profits, data, use, goodwill, or
+                  other intangible losses, resulting from your access to or use of or inability to access
                   or use the platform.
                 </p>
               </motion.section>
 
-              <motion.section 
+              <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
@@ -150,14 +150,14 @@ const Terms = () => {
                   <h2 className="text-2xl font-semibold text-white">6. Modifications to Terms</h2>
                 </div>
                 <p className="text-gray-300">
-                  OFSLEDGER reserves the right to modify or replace these Terms of Service at any time. 
-                  We will notify users of any material changes via email or through the platform. Your 
-                  continued use of the platform after such modifications constitutes acceptance of the 
+                  OFSLEDGER reserves the right to modify or replace these Terms of Service at any time.
+                  We will notify users of any material changes via email or through the platform. Your
+                  continued use of the platform after such modifications constitutes acceptance of the
                   updated terms.
                 </p>
               </motion.section>
 
-              <motion.section 
+              <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.9 }}
@@ -181,23 +181,23 @@ const Terms = () => {
                 </div>
               </motion.section>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 1.0 }}
                 className="flex flex-col sm:flex-row gap-4 mt-12"
               >
                 <Link to="/privacy">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10 hover:border-yellow-400 transition-all duration-300"
                   >
                     Privacy Policy
                   </Button>
                 </Link>
                 <Link to="/contact">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10 hover:border-yellow-400 transition-all duration-300"
                   >
                     Contact Us

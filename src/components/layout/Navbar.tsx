@@ -33,18 +33,17 @@ const Navbar = () => {
 
   const menuItems = [
     { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
+    { name: "Team", path: "/team" },
     { name: "Connect Wallet", path: "/connect-wallet" },
     { name: "Liquidity Pool", path: "/liquidity-pool" },
-
     { name: "Contact", path: "/contact" },
   ];
 
   return (
-    <nav 
+    <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled 
+        isScrolled
           ? "bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/60"
           : "bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60"
       )}
@@ -54,7 +53,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex-shrink-0 flex items-center">
             <span className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">
-              OFSLEDGER
+              SolmintX
             </span>
           </Link>
 
@@ -83,8 +82,8 @@ const Navbar = () => {
                 <Link to="/profile">
                   <Button variant="ghost" size="sm">My Profile</Button>
                 </Link>
-                <SignOutButton 
-                  variant="outline" 
+                <SignOutButton
+                  variant="outline"
                   size="sm"
                 >
                   Sign out
@@ -146,7 +145,7 @@ const Navbar = () => {
                 >
                   My Profile
                 </Link>
-                <SignOutButton 
+                <SignOutButton
                   variant="ghost"
                   className="block w-full text-left justify-start px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-primary/10"
                 >

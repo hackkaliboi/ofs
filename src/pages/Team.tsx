@@ -38,11 +38,11 @@ const Team = () => {
       <div className="fixed inset-0 bg-gradient-to-br from-yellow-500/10 via-transparent to-amber-500/10 pointer-events-none" />
       <div className="fixed top-1/4 left-1/4 w-96 h-96 bg-yellow-500/20 rounded-full blur-3xl pointer-events-none" />
       <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
-      
+
       <div className="flex-grow relative z-10">
         <div className="container mx-auto px-4 py-24">
           {/* Header Section */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -56,7 +56,7 @@ const Team = () => {
               Our Team
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Meet the experts behind OFSLEDGER. Our team combines decades of experience
+              Meet the experts behind SolmintX. Our team combines decades of experience
               in blockchain, finance, and technology.
             </p>
           </motion.div>
@@ -91,11 +91,11 @@ const Team = () => {
               </motion.div>
             ))}
           </div>
-         </div>
-       </div>
-       <Footer />
-     </div>
-   );
+        </div>
+      </div>
+      <Footer />
+    </div>
+  );
 };
 
 export default Team;
