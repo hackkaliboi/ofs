@@ -33,40 +33,33 @@ export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   // Get the intended destination from location state or determine based on role
   const from = location.state?.from?.pathname;
 
   // Check if user is already logged in and redirect appropriately
   useEffect(() => {
-    if (user && profile && !isLoading) {
+    // Only redirect if we have user, profile, auth is not loading, and we haven't redirected yet
+    if (user && profile && !authLoading && !hasRedirected) {
+      console.log('User authenticated, preparing redirect...')
+      console.log('User:', user.email, 'Role:', profile.role, 'IsAdmin:', isAdmin)
+
       // Determine redirect destination based on user role
-      let redirectPath = from;
+      let redirectPath = from || (isAdmin ? '/admin' : '/dashboard')
 
-      if (!redirectPath) {
-        // If no specific destination, redirect based on role
-        redirectPath = isAdmin ? '/admin' : '/dashboard';
-      }
+      console.log(`Redirecting ${isAdmin ? 'admin' : 'user'} to: ${redirectPath}`)
 
-      // If user is admin but trying to access user dashboard, redirect to admin
-      if (isAdmin && redirectPath.startsWith('/dashboard')) {
-        redirectPath = '/admin';
-      }
+      // Mark that we're redirecting to prevent multiple redirects
+      setHasRedirected(true)
+      setIsLoading(false)
 
-      // If user is not admin but trying to access admin, redirect to user dashboard
-      if (!isAdmin && redirectPath.startsWith('/admin')) {
-        redirectPath = '/dashboard';
-      }
-
-      console.log(`Redirecting ${isAdmin ? 'admin' : 'user'} to: ${redirectPath}`);
-
-      const redirectTimer = setTimeout(() => {
-        navigate(redirectPath, { replace: true });
-      }, 100);
-
-      return () => clearTimeout(redirectTimer);
+      // Redirect with a small delay to ensure state is fully updated
+      setTimeout(() => {
+        navigate(redirectPath, { replace: true })
+      }, 100)
     }
-  }, [user, profile, isAdmin, isLoading, navigate, from]);
+  }, [user, profile, isAdmin, authLoading, navigate, from, hasRedirected])
 
   // If auth is still loading, show loading state
   if (authLoading) {
@@ -81,36 +74,48 @@ export default function SignIn() {
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
+    e.preventDefault()
+    if (isLoading || hasRedirected) return // Prevent multiple submissions
 
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    setIsLoading(true)
+    setError("")
+    setHasRedirected(false) // Reset redirect flag for new sign in
+
+    const formData = new FormData(e.currentTarget)
+    const email = formData.get("email") as string
+    const password = formData.get("password") as string
+
+    console.log('Starting sign in for:', email)
 
     try {
-      const { data: authData, error } = await signIn(email, password);
-      if (error) throw error;
+      const { data, error } = await signIn(email, password)
+      
+      if (error) {
+        throw new Error(error.message || 'Sign in failed')
+      }
+
+      console.log('Sign in successful, auth context will handle redirect')
 
       toast({
         title: "Welcome back!",
         description: "Successfully signed in to your account.",
-      });
+      })
 
       // The redirect will be handled by the useEffect hook above
-      // after the user and profile state are updated
+      // after the user and profile state are updated by the auth context
 
     } catch (error: any) {
-      setError(error.message || "Failed to sign in");
+      console.error('Sign in error:', error)
+      setError(error.message || "Failed to sign in")
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to sign in",
-      });
-      setIsLoading(false);
+      })
+      setIsLoading(false)
+      setHasRedirected(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -145,7 +150,7 @@ export default function SignIn() {
                   Enter your credentials to access your account
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Users and admins sign in here - you'll be redirected to the appropriate dashboard
+                  sign in here - you'll be redirected to the appropriate dashboard
                 </p>
               </div>
 
@@ -153,7 +158,7 @@ export default function SignIn() {
                 <CardHeader className="space-y-1">
                   <CardTitle className="text-xl">Sign in</CardTitle>
                   <CardDescription>
-                    Access your SolmintX account (Users & Admins)
+                    Access your SolmintX account to manage your digital assets
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

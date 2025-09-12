@@ -25,6 +25,7 @@ import SecurityPolicy from "./pages/SecurityPolicy.tsx";
 import Compliance from "./pages/Compliance.tsx";
 import Cookies from "./pages/Cookies.tsx";
 import AdminAccess from "./pages/AdminAccess.tsx";
+import SimpleSignInTest from "./pages/SimpleSignInTest.tsx";
 
 // User Dashboard Pages
 import Dashboard from "./pages/dashboard/Index.tsx";
@@ -77,6 +78,7 @@ function App() {
                   <Route path="/compliance" element={<Compliance />} />
                   <Route path="/cookies" element={<Cookies />} />
                   <Route path="/admin-access" element={<AdminAccess />} />
+                  <Route path="/test-signin" element={<SimpleSignInTest />} />
                 </Route>
 
                 {/* User Dashboard Routes */}

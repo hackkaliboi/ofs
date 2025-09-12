@@ -1,35 +1,21 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import type { User } from '@supabase/supabase-js'
-import type { Profile } from '@/types/auth'
-import { useNavigate } from 'react-router-dom'
+import { authService, DjangoUser, UserProfile } from '@/services/auth'
+
+// Use DjangoUser type
+type User = DjangoUser
 
 interface AuthContextType {
   user: User | null
-  profile: Profile | null
+  profile: UserProfile | null
   loading: boolean
   isAdmin: boolean
-  signIn: (email: string, password: string) => Promise<{ 
-    data: { 
-      session: { 
-        user: User 
-      } | null 
-    } | null, 
-    error: { 
-      message: string,
-      status: number 
-    } | null 
+  signIn: (email: string, password: string) => Promise<{
+    data: any,
+    error: any
   }>
-  signUp: (email: string, password: string) => Promise<{ 
-    data: { 
-      session: { 
-        user: User 
-      } | null 
-    } | null, 
-    error: { 
-      message: string,
-      status: number 
-    } | null 
+  signUp: (email: string, password: string, firstName?: string, lastName?: string) => Promise<{
+    data: any,
+    error: any
   }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<boolean>
@@ -39,152 +25,100 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<Profile | null>(null)
+  const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
-  const [fetchAttempted, setFetchAttempted] = useState(false)
-  const navigate = useNavigate()
+  const [initialized, setInitialized] = useState(false)
 
-  // Calculate isAdmin based on profile role or hardcoded admin email
-  const isAdmin = profile?.role === 'admin' || user?.email === 'pastendro@gmail.com'
-
-  // Add a safety timeout to prevent infinite loading
-  useEffect(() => {
-    const safetyTimeout = setTimeout(() => {
-      if (loading) {
-        console.log('Auth safety timeout triggered - forcing loading to complete')
-        setLoading(false)
-      }
-    }, 2000) // Reduced from 3 seconds to 2 seconds
-
-    return () => clearTimeout(safetyTimeout)
-  }, [loading])
+  // Calculate isAdmin based on Django user permissions or profile role
+  const isAdmin = user?.is_staff || user?.is_superuser || profile?.role === 'admin' || user?.email === 'pastendro@gmail.com'
 
   useEffect(() => {
-    // Check active sessions and sets the user
-    const checkSession = async () => {
+    let mounted = true
+
+    const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        setUser(session?.user ?? null)
-        if (session?.user) {
-          fetchProfile(session.user.id)
-        } else {
+        console.log('Initializing Django authentication...')
+
+        // Check if user has valid token
+        if (!authService.isAuthenticated()) {
+          console.log('No valid token found')
+          if (mounted) {
+            setUser(null)
+            setProfile(null)
+            setLoading(false)
+            setInitialized(true)
+          }
+          return
+        }
+
+        // Ensure token is valid (refresh if needed)
+        const hasValidToken = await authService.ensureValidToken()
+        if (!hasValidToken) {
+          console.log('Token validation failed')
+          if (mounted) {
+            setUser(null)
+            setProfile(null)
+            setLoading(false)
+            setInitialized(true)
+          }
+          return
+        }
+
+        // Get current user data
+        const currentUser = await authService.getCurrentUser()
+        if (mounted && currentUser) {
+          console.log('Found current user:', currentUser.email)
+          setUser(currentUser)
+          authService.storeUser(currentUser)
+
+          // Get user profile
+          try {
+            const userProfile = await authService.getUserProfile()
+            if (mounted) {
+              setProfile(userProfile)
+            }
+          } catch (profileError) {
+            console.warn('Could not load user profile:', profileError)
+            // Create basic profile if needed
+            if (mounted) {
+              const basicProfile: UserProfile = {
+                id: 0,
+                user: currentUser.id,
+                full_name: `${currentUser.first_name} ${currentUser.last_name}`.trim() || currentUser.username,
+                phone: null,
+                country: null,
+                timezone: null,
+                avatar_url: null,
+                role: currentUser.is_staff || currentUser.is_superuser ? 'admin' : 'user',
+                created_at: currentUser.date_joined,
+                updated_at: currentUser.date_joined
+              }
+              setProfile(basicProfile)
+            }
+          }
+        }
+
+        if (mounted) {
           setLoading(false)
+          setInitialized(true)
         }
       } catch (error) {
-        console.error('Error getting session:', error)
-        setLoading(false)
-      }
-    }
-    
-    checkSession()
-
-    // Listen for changes on auth state
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        try {
-          await fetchProfile(session.user.id)
-        } catch (error) {
-          console.error('Error in auth state change:', error)
+        console.error('Error initializing auth:', error)
+        if (mounted) {
+          setUser(null)
+          setProfile(null)
           setLoading(false)
+          setInitialized(true)
         }
-      } else {
-        setProfile(null)
-        setLoading(false)
       }
-    })
+    }
 
-    return () => subscription.unsubscribe()
+    initializeAuth()
+
+    return () => {
+      mounted = false
+    }
   }, [])
-
-  const fetchProfile = async (userId: string) => {
-    // Prevent multiple fetch attempts for the same user
-    if (fetchAttempted && profile && profile.id === userId) {
-      setLoading(false)
-      return
-    }
-    
-    setFetchAttempted(true)
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) {
-        // If the profile doesn't exist, create a default one
-        if (error.code === 'PGRST116') {
-          const newProfile = {
-            id: userId,
-            full_name: user?.email?.split('@')[0] || 'User',
-            avatar_url: null,
-            role: user?.email === 'pastendro@gmail.com' ? 'admin' : 'user', // Grant admin access to pastendro@gmail.com
-          }
-          
-          const { error: insertError } = await supabase
-            .from('profiles')
-            .insert([newProfile])
-          
-          if (insertError) {
-            console.error('Error creating profile:', insertError)
-            
-            // If we can't create the profile in the database, still set it locally
-            // This ensures the user can access admin features
-            if (user?.email === 'pastendro@gmail.com') {
-              console.log('Setting admin role for pastendro@gmail.com')
-              setProfile({
-                ...newProfile,
-                role: 'admin'
-              } as Profile)
-            } else {
-              setProfile(newProfile as Profile)
-            }
-          } else {
-            setProfile(newProfile as Profile)
-          }
-        }
-      } else {
-        // If this is pastendro@gmail.com, ensure they have admin role
-        if (user?.email === 'pastendro@gmail.com' && data.role !== 'admin') {
-          console.log('Setting admin role for pastendro@gmail.com')
-          const updatedProfile = {
-            ...data,
-            role: 'admin'
-          }
-          setProfile(updatedProfile)
-          
-          // Try to update in database too
-          const { error: updateError } = await supabase
-            .from('profiles')
-            .update({ role: 'admin' })
-            .eq('id', userId)
-          
-          if (updateError) {
-            console.error('Error updating profile to admin:', updateError)
-          }
-        } else {
-          setProfile(data)
-        }
-      }
-    } catch (error) {
-      console.error('Unexpected error fetching profile:', error)
-      
-      // Ensure pastendro@gmail.com gets admin access even if there are errors
-      if (user?.email === 'pastendro@gmail.com') {
-        console.log('Setting admin role for pastendro@gmail.com despite errors')
-        setProfile({
-          id: userId,
-          full_name: user.email.split('@')[0] || 'Admin User',
-          avatar_url: null,
-          role: 'admin',
-          email: user.email
-        } as Profile)
-      }
-    } finally {
-      setLoading(false)
-    }
-  };
 
   const value = {
     user,
@@ -192,67 +126,127 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     isAdmin,
     signIn: async (email: string, password: string) => {
+      console.log('Starting Django sign in process for:', email)
+
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-        
-        if (data.session?.user) {
-          await fetchProfile(data.session.user.id)
+        setLoading(true)
+
+        const response = await authService.login({ email, password })
+
+        if (response.user) {
+          console.log('Sign in successful for:', response.user.email)
+          setUser(response.user)
+          authService.storeUser(response.user)
+
+          // Set profile from response or create basic one
+          if (response.profile) {
+            setProfile(response.profile)
+          } else {
+            const basicProfile: UserProfile = {
+              id: 0,
+              user: response.user.id,
+              full_name: `${response.user.first_name} ${response.user.last_name}`.trim() || response.user.username,
+              phone: null,
+              country: null,
+              timezone: null,
+              avatar_url: null,
+              role: response.user.is_staff || response.user.is_superuser ? 'admin' : 'user',
+              created_at: response.user.date_joined,
+              updated_at: response.user.date_joined
+            }
+            setProfile(basicProfile)
+          }
+
+          setLoading(false)
+          return { data: response, error: null }
         }
-        return { data, error }
-      } catch (unexpectedError) {
-        console.error('Unexpected error during sign in:', unexpectedError)
-        return { data: null, error: unexpectedError }
+
+        setLoading(false)
+        return { data: null, error: { message: 'Invalid response from server' } }
+      } catch (error: any) {
+        console.error('Sign in error:', error)
+        setLoading(false)
+        return { data: null, error: { message: error.message || 'Sign in failed' } }
       }
     },
-    signUp: async (email: string, password: string) => {
+    signUp: async (email: string, password: string, firstName?: string, lastName?: string) => {
       try {
-        const { data, error } = await supabase.auth.signUp({ email, password })
-        
-        if (data.session?.user) {
-          // Create a default profile for new users
-          const newProfile = {
-            id: data.session.user.id,
-            full_name: email.split('@')[0] || 'User',
-            avatar_url: null,
-            role: email === 'pastendro@gmail.com' ? 'admin' : 'user', // Grant admin access to pastendro@gmail.com
-          }
-          
-          await supabase
-            .from('profiles')
-            .insert([newProfile])
-          
-          setProfile(newProfile as Profile)
+        setLoading(true)
+
+        const registerData = {
+          username: email.split('@')[0], // Use email prefix as username
+          email,
+          password,
+          password_confirm: password,
+          first_name: firstName || '',
+          last_name: lastName || ''
         }
-        return { data, error }
-      } catch (unexpectedError) {
-        console.error('Unexpected error during sign up:', unexpectedError)
-        return { data: null, error: unexpectedError }
+
+        const response = await authService.register(registerData)
+
+        if (response.user) {
+          setUser(response.user)
+          authService.storeUser(response.user)
+
+          if (response.profile) {
+            setProfile(response.profile)
+          }
+
+          setLoading(false)
+          return { data: response, error: null }
+        }
+
+        setLoading(false)
+        return { data: null, error: { message: 'Registration failed' } }
+      } catch (error: any) {
+        console.error('Sign up error:', error)
+        setLoading(false)
+        return { data: null, error: { message: error.message || 'Sign up failed' } }
       }
     },
     signOut: async () => {
       try {
-        await supabase.auth.signOut()
+        console.log('Signing out...')
+
+        // Clear localStorage items
+        localStorage.removeItem('adminSession')
+        localStorage.removeItem('adminPath')
+
+        // Sign out from Django
+        await authService.logout()
+
+        // Clear local state immediately
         setUser(null)
         setProfile(null)
-        navigate('/')
+        setLoading(false)
+        setInitialized(true)
+
+        console.log('Successfully signed out')
       } catch (error) {
         console.error('Error signing out:', error)
+        // Clear state even if sign out fails
+        authService.clearStoredData()
+        setUser(null)
+        setProfile(null)
+        setLoading(false)
+        setInitialized(true)
       }
     },
     refreshProfile: async () => {
-      if (user?.id) {
-        // Reset fetch attempted flag to allow a fresh fetch
-        setFetchAttempted(false)
-        setLoading(true) // Set loading to true to indicate refresh is happening
-        try {
-          await fetchProfile(user.id)
-          return Promise.resolve(true) // Return success
-        } catch (error) {
-          console.error('Error refreshing profile:', error)
-          return Promise.resolve(false) // Return failure
-        }
-      } else {
-        return Promise.resolve(false)
+      if (!user?.id) {
+        return false
+      }
+
+      try {
+        setLoading(true)
+        const userProfile = await authService.getUserProfile(user.id)
+        setProfile(userProfile)
+        setLoading(false)
+        return true
+      } catch (error) {
+        console.error('Error refreshing profile:', error)
+        setLoading(false)
+        return false
       }
     }
   }
